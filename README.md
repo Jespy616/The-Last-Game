@@ -1,6 +1,6 @@
 # Last Game
 
-Hello
+Hello,Friend There
 
 ## Getting started
 
