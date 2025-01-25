@@ -111,6 +111,8 @@
 
 ## Use-Case Stories:
 ### Players:
+* As a gamer, I want to be able to log in, log out, and save my progress so that I can play my way on my time. 
+* As a gamer, I want a settings menu where I can change things like visuals, audio settings, and controls so I have the power to control my experience in the game.
 * As a casual gamer, I want to enjoy a low-difficulty, story-driven experience so that I can relax and immerse myself in the game without frustration.
 * As a hardcore gamer, I want to challenge myself with progressively difficult enemies and puzzles so that I can test and improve my skills.
 * As a speedrunner, I want to access a timer mode and optimized routes so that I can complete the game as quickly as possible and compete with others.
@@ -134,7 +136,9 @@
 
 ### Creators
 * As a developer, I want the code to be simple and understandable so I can easily make updates for future content.
-* As an AI system engineer, I want 
+* As an AI system engineer, I want access to a properly trained, robust AI model that can handle the demands of the game and continually improve.
+* As a front-end developer, I want a dynamic model for the user interface that can adapt to the creations of the AI.
+* As a back-end developer, I want a robust database shema that can handle the various creations the AI will produce for the player.
 
 ### Stakeholders:
 * As an investor, I want the game to show great potential for mass appeal so I can make a huge return on investment. 
