@@ -77,28 +77,27 @@
 * [**Evolving Narrative***](#evolving-narrative)
 
 ### Could-Have:
-* **Music**
-* **Inventory**
-* **Status Effects***
-* **Critical Hits***
-* **Mini Map**
-* **Dynamic Difficulty Adjustment (DDA)**
-* **Allies***
-* **Hardcore Mode (No revives)***
-* **Puzzles**
-* **Di Rolling**
-* **Side Quests**
-* **Game Modes**
-* **Lore Generation***
-* **Cut Scenes***
-* **Easter Eggs**
-* **Replayability**
-* **Multiple Saves**
+* [**Music**](#music)
+* [**Inventory**](#inventory)
+* [**Status Effects***](#status-effects)
+* [**Critical Hits***](#critical-hits)
+* [**Mini Map**](#mini-map)
+* [**Dynamic Difficulty Adjustment (DDA)**](#dynamic-difficulty-adjustment-dda)
+* [**Allies***](#allies)
+* [**Hardcore Mode (No revives)***](#hardcore-mode)
+* [**Puzzles**](#puzzles)
+* [**Di Rolling**](#di-rolling)
+* [**Side Quests**](#side-quests)
+* [**Game Modes**](#game-modes)
+* [**Lore Generation***](#lore-generation)
+* [**Cut Scenes***](#cutscenes)
+* [**Replayability**](#replayability)
+* [**Multiple Saves**](#multiple-saves)
 
 ### Won't-Have:
-* **Multiplayer***
-* **Skill Tree**
-* **Open-world exploration***
+* [**Multiplayer***](#multiplayer)
+* [**Skill Tree**](#skill-tree)
+* [**Open-world exploration***](#open-world-exploration)
 
 ### In-Depth Descriptions
 Note: Some of the descriptions were written by the author and then used by ChatGPT to apply proper and more clear langauge.
@@ -229,7 +228,7 @@ AI-generated puzzles add variety and challenge to gameplay. These could range fr
 
 ---
 
-#### **Dice Rolling**
+#### **Di Rolling**
 Luck-based mechanics simulate randomness for actions like:
 - Bargaining with merchants.
 - Determining the effectiveness of certain attacks.
