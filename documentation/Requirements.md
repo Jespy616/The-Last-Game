@@ -54,12 +54,12 @@
 
 ### Should-Have:
 
-* **Difficulty Rise**
-* **Story**
-* **Non Player Characters (NPCs)**
-* **Experience/Leveling**
-* **A.I.-Generated Sprites**
-* **Sound Effects***
+* [**Difficulty Rise**](#difficulty-rise)
+* [**Story**](#story)
+* [**Non Player Characters (NPCs)**](#non-player-characters-npcs)
+* [**Experience/Leveling**](#experience-and-leveling)
+* [**A.I.-Generated Sprites**](#ai-generated-sprites)
+* [**Sound Effects***](#sound-effects)
     * Move
     * Open Chest
     * Run into wall
@@ -71,10 +71,10 @@
     * Player death
     * Experience gain/Level Up
     * Taking stairs
-* **In Game Feedback**
-* **A.I Chat**
-* **Player Choice Impact***
-* **Evolving Narrative***
+* [**In Game Feedback**](#in-game-feedback)
+* [**A.I Chat**](#ai-pre-play-chat)
+* [**Player Choice Impact***](#player-choice-impact)
+* [**Evolving Narrative***](#evolving-narrative)
 
 ### Could-Have:
 * **Music**
