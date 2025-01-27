@@ -1,6 +1,7 @@
 # Last Game
+test two
 
-Hello,Friend There
+Hello,Friend There, hehe
 
 ## Getting started
 
