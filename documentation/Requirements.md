@@ -126,7 +126,7 @@
 * As an achievement hunter, I want to have difficult, niche, and hard-to-find missions to accomplish so I can get unique achievements I can show off to my friends and followers.
 * As a modder, I want the game to support third-party software and encourage player-generated content so I can customize the game even more to my liking.
 * As a parent playing with my kids, I want the game to stay away from morally questionable topics and teach my kids important lessons about friendship and problem solving so that they can learn while they play.
-* As an indie game critic, I want the tutorial to be so ridiculously easy to comlete that gamers won't make fun of me online when I struggle.
+* As an indie game critic, I want the tutorial to be so ridiculously easy to complete that gamers won't make fun of me online when I struggle.
 * As a real indie game critic, I want the game to make me feel intense emotions from the story and characters that provide commentary on real-world problems in society to inspire change in the players of the game. 
 * As a stat-focused min-maxer, I want to have skill points I can spend to create mathematically superior characters so I can feel superior to others. 
 * As a roleplayer, I want to have access to different character classes and abilities that affect the story so I can build a unique team and feel immersed in the world. 
