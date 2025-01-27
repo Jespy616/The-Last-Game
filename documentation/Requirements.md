@@ -515,7 +515,7 @@ Allows players to choose to view an ad which:
 - Could provide in game currency.
 - Improves odds of recieving better loot.
 - Gives the player another chance at an action or event.
->>>>>>> documentation/Requirements.md
+
 
 ### Could-Have
 
@@ -587,7 +587,7 @@ The game will remain a single-player experience, and features for community inte
 
 * Example text
 * example text
-<<<<<<< documentation/Requirements.md
+
 
 ### Should-Have:
 
