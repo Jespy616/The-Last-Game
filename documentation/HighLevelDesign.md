@@ -115,17 +115,13 @@ The document is intended for developers and stakeholders to ensure alignment in 
 
 ---
 
-## 9. Input and Output (I/O)
+## 9. Security and Privacy
 
-### Input
-[List different types of user inputs.]
+### Identified Risks
+[List potential risks, such as security vulnerabilities, technology dependencies, and user privacy concerns.]
 
-### Output
-[List different types of system outputs.]
-
----
-
-## 10. Security and Privacy
+### Mitigation Plans
+[Describe strategies to mitigate each identified risk.]
 
 ### Authentication and Authorization
 [Describe role-based access control and permission management.]
@@ -141,7 +137,7 @@ The document is intended for developers and stakeholders to ensure alignment in 
 
 ---
 
-## 11. Testing Strategy
+## 10. Testing Strategy
 
 ### Unit Testing
 [Describe how unit tests will be implemented.]
@@ -151,22 +147,13 @@ The document is intended for developers and stakeholders to ensure alignment in 
 
 ---
 
-## 12. Risks and Mitigations
-
-### Identified Risks
-[List potential risks, such as security vulnerabilities, technology dependencies, and user privacy concerns.]
-
-### Mitigation Plans
-[Describe strategies to mitigate each identified risk.]
-
----
-
-## 13. Legal Issues
+## 11. Business/Legal
 [Describe any legal considerations and disclaimers.]
+[Describe Business Models]
 
 ---
 
-## 14. Interactions Diagram
+## 12. Interactions Diagram
 [Provide an overview of how users and systems interact.]
 
 ---
