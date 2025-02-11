@@ -32,16 +32,26 @@ The document is intended for developers and stakeholders to ensure alignment in 
 ## 2. System Overview
 
 ### Problem Statement
-[Describe the problem your project aims to solve.]
+Modern game development often struggles with satisfying a wide variety of audiences. Traditional games rely on pre-designed assets and scripts, limiting replayability and adaptability. Players are looking for more dynamic, personalized experiences, where AI can shape the game world, narrative, and mechanics in real time.
+
+Additionally, designing a game that seamlessly integrates AI without disrupting the player experience poses challenges in optimization, content control, and performance consistency.
 
 ### Proposed Solution
-[Explain the proposed solution, how it addresses the problem, and any key benefits.]
+Our AI-driven video game leverages procedural generation and AI-controlled decision-making to create unique, dynamic gameplay experiences for each player. By incorporating advanced AI, the game will:
+
+- Generate dynamic storylines, dungeons, and interactions based on player choices.
+- Utilize AI-driven enemies that adapt to player behavior and tactics.
+- Provide real-time difficulty adjustments based on player performance.
+- Create AI-assisted character progression and quest development.
+
+This approach ensures a fresh and engaging experience every time a player starts a new session, increasing replayability and engagement.
 
 ### Hardware Platform
 
 #### Laptop/Desktop
-- **Website:** [How the system will function on desktops/laptops]
-- **Touchscreen Laptops:** [Considerations for touchscreen-enabled devices]
+- The game will be designed primarily for **desktop and laptop systems**, with support for Windows, macOS, and Linux.
+- It will run as a **web-based game** using modern frameworks such as **Svelte with Phaser.js**, ensuring cross-platform compatibility.
+- Players will interact using a **keyboard and mouse**, with a focus on **fluid UI navigation and real-time updates**.
 
 ---
 
@@ -225,13 +235,107 @@ The backend is responsible for handling **game logic, player interactions, authe
 ## 7. User Interface (UI) Design Overview
 
 ### UI/UX Principles
-[Explain core UI/UX principles such as accessibility and responsiveness.]
+Our game follows key UI/UX design principles to ensure an engaging and accessible experience:
+
+- **Consistency & Simplicity** – The UI follows intuitive design patterns, minimizing learning curves.
+- **Accessibility** – High-contrast colors, scalable fonts, and customizable controls enhance usability.
+- **Responsiveness** – UI components will adjust dynamically to different screen sizes and resolutions.
+- **Minimalist Approach** – UI elements remain unobtrusive to keep players immersed in gameplay.
+- **Intuitive Navigation** – Menus and HUD elements are designed to provide quick, clear access to important features.
+
+### Style Guide
+
+#### Color Pallet
+
+- This color pallet has been tested in a color blindness simulator to ensure all UI elements are distinct enough for useability.
+- **Hex Values**
+    - 912f56
+    - 48ddd4
+    - ffffff
+    - cffffc
+    - 000000
+
+<img src="Color-Pallet.png" width="40%">
 
 ### Mockups
-[Provide high-level mockups or wireframes.]
+
+<img src="Login-Mockup.png" width="90%">
+
+<img src="Create-Account-Mockup.png" width="90%">
+
+<img src="Settings-Mockup.png" width="90%">
+
+<img src="Subscription-Mockup.png" width="90%">
 
 ### Navigation Flow
-[Describe how users navigate through the app.]
+
+#### Login Page:
+1. User visits website.
+2. Inputs username and password.
+3. Optional: Checks "Remember Me" for persistent login.
+4. Clicks "Submit" button.
+5. **If credentials are valid:**
+   - User is redirected to the dashboard or home page.
+6. **If credentials are invalid:**
+   - Error message is displayed.
+   - User can retry login.
+7. **If user forgot password:**
+   - Clicks "Forgot Password?" link.
+   - Redirected to password reset page.
+   - Inputs email for password recovery.
+   - Receives email with reset link.
+8. User can also click "Create Account" to go to the signup page.
+
+#### Create Account Page:
+1. User navigates to the Create Account page.
+2. Inputs required details:
+   - Username
+   - Email
+   - Password (must meet complexity requirements)
+   - Confirm Password
+3. Accepts Terms and Conditions (Checkbox required to proceed).
+4. Clicks "Create Account" button.
+5. **If registration is successful:**
+   - Confirmation message is displayed.
+   - User receives a verification email.
+   - User is redirected to a login page after successful verification.
+6. **If registration fails:**
+   - Error message is displayed (e.g., email already in use, password too weak).
+   - User can correct the issues and retry.
+7. Option to go back to Login page via a back button.
+
+#### Settings Page:
+1. User accesses settings from the navigation menu.
+2. User updates desired settings:
+   - Edits username or email.
+   - Changes password (requires old password confirmation).
+   - Manage premium subscription.
+   - Switches between light and dark mode.
+3. Clicks "Save Changes" button.
+4. **If updates are successful:**
+   - Confirmation message is displayed.
+5. **If updates fail:**
+   - Error message is displayed.
+   - User can retry saving changes.
+6. User can navigate away or return to the dashboard.
+
+#### Subscription Page:
+1. User navigates to the subscription page.
+2. Sees available subscription plans:
+   - **Monthly ($4.99/month)**
+   - **Lifetime ($99.99)**
+3. Selects either "Monthly" or "Lifetime" subscription plan.
+4. Redirected to a Stripe payment page:
+   - Inputs payment details.
+   - Confirms billing information.
+   - Clicks "Subscribe" button.
+5. **If payment is successful:**
+   - Confirmation message is displayed.
+   - User gains access to premium features.
+6. **If payment fails:**
+   - Error message is displayed.
+   - User can retry payment.
+7. User can cancel or change subscription anytime in account settings.
 
 ---
 
