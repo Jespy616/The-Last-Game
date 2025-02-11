@@ -78,14 +78,33 @@ The document is intended for developers and stakeholders to ensure alignment in 
 
 ## 6. Integration Points (External Interfaces)
 
-### External Systems
-[List and describe external services/systems the project integrates with.]
-
-### APIs
-[List public/external APIs, including endpoints, methods, and data contracts.]
-
+### External Systems & APIs
+* **[Groq AI](https://console.groq.com/docs/overview)**
+  * Free
+  * Easy to set up
+  * Works well with Langchain/LangGraph
+    * Allows it to have more capabilities than a normal LLM
+    * Easy to add new capabilites
+  * allows multiple users use it without reducing performance 
+  * Faster performance than trying to run an LLM on our own hardware
+    * limited to <= 1,000 requests per day or 500,000 tokens per day
+    * Users are unlikely to hit the request limit even if they play for about 2-3 hours per day
+  * Overview of use:
+    * Server invokes python script using command line arguments
+    * Script parses arguments & invokes the LLM model using the API 
+    * Model calls a function to perform a goal (see [interactions diagram](#12-interactions-diagram) for possible functions)
+    * Check for valid output
+    * return results to server
+* Stripe
+  * Free
+  * Easy to implement
+  * Secure - uses AES-256 encryption, which is considered one of the most secure types
+ 
 ### Notifications
-[Describe notification mechanisms such as push notifications, emails, or SMS.]
+* Stripe - handled by API
+* Groq
+  * Uses API to check if the `429 Too Many Requrests` status code occured
+  * Pop up to notify user they hit the rate limit
 
 ---
 
@@ -154,8 +173,11 @@ The document is intended for developers and stakeholders to ensure alignment in 
 ---
 
 ## 12. Interactions Diagram
-[Provide an overview of how users and systems interact.]
+The diagram below represents how the components will interact with each other. The user will interact with the front end web pages which will send and recieve data from the server using HTTP protocol. The server will be able to interact with [Stripe](#11-businesslegal) to handle payments, a Python script which handles the connection to [Groq](#6-integration-points-external-interfaces), and the [database](#5-data-design). 
 
+
+
+![Interaction diagram](interaction-diagram.png)
 ---
 
 This document serves as a guide for developers and stakeholders to ensure successful project execution.
