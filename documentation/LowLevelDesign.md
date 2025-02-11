@@ -4,46 +4,52 @@
 
 ## Introduction
 
+---
+
 ## Backlog Development Plan
 - ### Sprint Breakdown (Sprint Goals)
   - **Sprint 1**
   - **Sprint 2**
   - **Sprint 3**
 
-- ### Sprint Task Breakdown (Tasks to acheive Goals)
-  - **Sprint 1:**
-    Front end:
-    Back end:
-  - **Sprint 2:**
-    Front end:
-    Back end:
-  - **Sprint 3:**
-    Front end:
-    Back end:
+### Sprint Task Breakdown (Tasks to acheive Goals)
+#### Sprint 1
+- **Front end:**
+- **Back end:**
+#### Sprint 2
+- **Front end:**
+- **Back end:**
+#### Sprint 3
+- **Front end:**
+- **Back end:**
 
-- ### All Tasks Outline (Summary of all Tasks)
+### All Tasks Outline (Summary of all Tasks)
 
+---
 ## System Architecture
-- ### Subsystems and UML Class Diagrams
-  - **Front-End Objects**
-  - **User Flow**
+### Subsystems and UML Class Diagrams
+#### Front-End Objects
 
-- ### User Interfaces
-  - **Accessibility**
-  - **Flow and Design for Pages**
+#### User Flow
 
-- ### Database Tables
 
-- ### Backend UML
+### User Interfaces
+#### Accessibility
+#### Flow and Design for Pages
 
-- ### System Performance
+### Database Tables
 
-- ### Security Risks
+### Backend UML
 
+### System Performance
+
+### Security Risks
+
+---
 ## Programming Languages and Frameworks
-- **Front End**
-- **Back End**
-- **APIs and External Interfaces**
+### Front End
+### Back End
+### APIs and External Interfaces
 
 ## Deployment Plan
 ### These are ideas! I took them from the best example, we can come up with our own!
