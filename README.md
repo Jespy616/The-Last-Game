@@ -4,4 +4,4 @@
 Explains the initial idea of the game. We are planning on doing a 2D top down rogue-like with the AI handling the floor layouts & contents, items, and bosses & enemies.
 
 ## Phase 1: [High Level Design Document](documentation/HighLevelDesign.md)
-Explains the initial idea of the game. We are planning on doing a 2D top down rogue-like with the AI handling the floor layouts & contents, items, and bosses & enemies.
+The high level design of the Last Game.
