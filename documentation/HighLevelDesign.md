@@ -27,7 +27,7 @@ This document focuses on the rationale behind design choices rather than specifi
 ### Audience
 The document is intended for developers and stakeholders to ensure alignment in development.
 
----
+
 
 ## 2. System Overview
 
@@ -53,7 +53,7 @@ This approach ensures a fresh and engaging experience every time a player starts
 - It will run as a **web-based game** using modern frameworks such as **Svelte with Phaser.js**, ensuring cross-platform compatibility.
 - Players will interact using a **keyboard and mouse**, with a focus on **fluid UI navigation and real-time updates**.
 
----
+
 
 ## 3. Architecture Design
 
@@ -63,7 +63,7 @@ This project follows a **client-server architecture**. The **client** interacts 
 
 The architecture is designed for **scalability and modularity**, ensuring that different components can be improved or replaced without affecting the overall system.
 
----
+
 
 ### Component Diagram
 
@@ -180,25 +180,126 @@ The backend is responsible for handling **game logic, player interactions, authe
 2. The AI agent **creates and returns world layouts, NPCs, and items**.
 3. The backend **stores and serves** this content as needed.
 
----
+
 
 ## 5. Data Design
 
-### Data Model
-- **Key Entities:** [List and describe the primary entities]
-- **Relationships:** [Describe entity relationships]
+## Data Model
 
-### Database Design
-- **Database Type:** [Relational (SQL) or NoSQL]
-- **Major Tables:** [Overview of the database schema]
-- **Indexes & Optimization:** [Performance considerations]
+## **Key Entities:**
+### User: A User model is a representation of a person who has an account and uses the game. This model will store the needed information to distinguish Users from eachother and keep data separated.
+* **userId**:(primary key) Identification for users
+* **username**: name to identify user
+* **email**: email for user
+* **password**: password for user
+* **players**: list of different players
+* **subscriptionLevel**: represents the subscription level of the user
 
-### Data Access Layer
-- **ORM or SQL Queries:** [Data access methods]
-- **Caching & Performance Optimization:** [Strategies to optimize data access]
-- **Encryption & Security:** [How sensitive data is protected]
+### Player: A Player model is a representation of the character the User model will play as in the game. This players design will be based off of different information the AI gathers to create the Player specifically for the User.
+* **userId**: foreign key to a user
+* **playerId**:(primary key) Identification for a player
+* **health**: health level for user
+* **inventory**: inventory object
+* **game**: foreign key to a game
+* **primaryWeapon**: foreign key to a weapon
+* **secondaryWeapon**: foreign key to a weapon
 
----
+### Game: A Game model will contain all the necessary data for objects, levels, objectives, and so forth for the Player.
+* **gameId**: identification for a game
+* **level**: Level the user is on
+* **map**: foreign key to a Map for the player to traverse
+* **playerSpecifications**: specified details from the User for the gameplay
+* **mainEnemies**: list of main enemies/bosses that need to be defeated during the level
+
+### Floor: A Floor model contains all the needed rooms and details about how the layout of the game should look.
+* **mapid**: identification for the map
+* **rooms**: list of different rooms to traverse
+
+### Room: A Room model contains all the needed values for rooms including enemies, chests, and adjacent rooms.
+* **roomid**: identification for a room
+* **enemies**: foreign key to enemies that are in the room
+* **chests**: foreign key to any chests that are in the room
+* **adjacentRooms**: rooms you can enter from the current room
+
+### Enemy: An Enemy model will represent the attack power, abilities, and health of different adversaries in the game. This will most-likely be an abstract class that different types of enemies inherit from. This will allow us to take advantage of polymorphism within our code.
+* **enemyid**:(primary key) an identification for an enemy
+* **attackLevel**: amount of damage dealt per attack
+* **attackFrequency**: how often the enemy attacks
+* **health**: the health of the enemy
+
+### Weapon: A Weapon model will represent the weapons/items that a Player can utilize to attack enemies. Weapons can be different objects (sword, potion, etc)so this will be an abstract class.
+* **weaponId**: an identification for a weapon
+* **attackDamage**: amount of damage dealt on attack
+* **health**: the amount of usage a weapon has
+
+### Chest: A Chest model will represent an object that is contained in different rooms that allow Players to pick up items.
+* **chestId**: identification for a chest
+* **weapon**: A Weapon obejct the chest contains
+
+## **Relationships:** 
+* **User** to **Player**: One-to-Many
+* **Player** to **Game**: One-to-One
+* **Player** to **Weapon**: One-to-One (Each player will be able to have one primary weapona and one secondary weapon at a time)
+* **Game** to **Floor**: One-to-One 
+* **Game** to **Enemy**: One-to-Many (The Game may have multiple boss enemies)
+* **Floor** to **Room**: One-to-Many (Each Floor will have multiple rooms)
+* **Room**  to **Chest**: One-to-Many (Each Room may contain multiple Chests)
+* **Room** to **Enemies**: One-to-Many (Each Room may contain multiple Enemies)
+
+## Database Design
+* We are going to use a postgresql which is a relational database. Utilizing a relational database will help us to keep our data organized, and allow us to perform any complex queries with speed and efficiency.
+
+## **Database Type:** 
+* We are going to be using a relational database since most of our data is all going to be related through things such as foreign keys, manytomany fields, etc.
+* Our database will focus on integrity and complex, relational queries which will be beneficial for tracking things such as player, room, floors, rooms traversed, etc.
+
+## **Major Tables:**
+### Users Table
+* **Table purpose:** Stores account details for each user.
+* **Columns:** `userId | username | email | password | subscriptionLevel`
+
+### Players Table
+* **Table purpose:** Represents a character controlled by a user.
+* **Columns:** `playerId | userId | health | primaryWeapon | secondaryWeapon | gameId`
+
+### Games Table
+* **Table purpose:** Stores details about the game session.
+* **Columns:** `gameId | level | floorId | playerSpecifications`
+
+### Floors Table
+* **Table purpose:** Stores information about different game maps.
+* **Columns:** `floorId | rooms`
+
+### Enemies Table
+* **Table purpose:** Stores information about in-game enemies.
+* **Columns:** `enemyId | attackLevel | attackFrequency | health`
+
+### Rooms Table
+* **Table purpose:** Stores a room's details.
+* **Columns:** `roomId | enemies | chests | adjacentFloors`
+
+### Weapon Table
+* **Table purpose:** Stores weapon details.
+* **Columns:** `weaponId | health | attackDamage`
+
+### Chest Table 
+* **Table purpose:** Represents a one-to-many relationship between rooms and chests.
+* **Columns:** `roomId | chestId | weaponId`
+
+## **Indexes & Optimization:** 
+* Indexes will be placed on enemies, players, and weapons on their id's since data from them will be needed and changed a lot. Such as an enemies level of a attack or health, and same with that of a player as well. Weapons, will need to be retrieved often depending on how much the player chooses to activate them or not. Details on health of an weapon and other details such as attack damage, for certain weapons, will be changed frequently during use. 
+
+## Data Access Layer
+* We are going to use an ORM called GORM which is an ORM for GO, that is compatable with GO GIN and Postgres. This will allow us the ease of avoiding a lot of the low-level work and creating an easier syntax for us to work with for communication with the database. That all involves queries, creating, and deletion of tables and much more.
+* GORM has a built in migration system, that will save us time with that work. 
+* The objects are based on Go structs which can cause an ease of utilizing OOP, since GO doesn't have traditional classes as many other languages do.
+
+## **Caching & Performance Optimization:** 
+* We can cache the current room (including weapons, enemies) and the rooms withing 1 to 2 layers away can be easily accessed and won't cause major queries to the database each time a player goes to a new room.
+
+## **Encryption & Security:** 
+* We will be hashing the passwords of users before storing them into the database.
+* We will also be encrypting the users emails to keep that piece of their information secure as well. 
 
 ## 6. Integration Points (External Interfaces)
 
@@ -230,7 +331,7 @@ The backend is responsible for handling **game logic, player interactions, authe
   * Uses API to check if the `429 Too Many Requrests` status code occured
   * Pop up to notify user they hit the rate limit
 
----
+
 
 ## 7. User Interface (UI) Design Overview
 
@@ -337,7 +438,7 @@ Our game follows key UI/UX design principles to ensure an engaging and accessibl
    - User can retry payment.
 7. User can cancel or change subscription anytime in account settings.
 
----
+
 
 ## 8. Game Interface Design Overview
 
@@ -434,7 +535,7 @@ Main menu will have buttons that do the following:
 - **Ad-based Rewards**: Players can re-roll chests by watching ads.
 - **Subscription Benefits**: Allows custom dungeon themes and unlimited chest re-rolls.
 
----
+
 
 ## 9. Security and Privacy
 #### Identified Risks:
@@ -474,7 +575,6 @@ Last Game will require at least a username and password for account creation. Us
 This approach was chosen because:
 
 * Efficiency – Reduces server load by avoiding frequent database queries.
-
 * Security – Stores minimal user information in the browser, reducing exposure to session hijacking.
 * Scalability – Works well with distributed systems.
 Each authenticated user will receive a JWT access token upon login. This token will be required for protected actions, such as saving game progress or accessing premium content. The system will implement token expiration and refresh tokens to ensure security.
@@ -504,18 +604,25 @@ This eliminates the risk of AI storing or processing user-provided personal data
 
 For payment security, see the [Stripe](#11-businesslegal) integration in Section 11. Business and Legal.
 
+
 ## 10. Testing Strategy
 
 ### Unit Testing
-[Describe how unit tests will be implemented.]
+* For every implemented function, class, or method created, a unit test should be created as well. The unit tests must included test cases that cover all possible actions and grounds that a user could cover.
+* For the frontend, Vitest will be utilized to create unit tests for the code that involves TypeScript and Svelte.
+* For the backend, the tests will be created utilizing GO's built in 'testing' package.
+* Gitlab CI/CD will be utilized and added to as more and more unit tests are created and added to the program. Pull requests must pass all previously created unit tests that have been added to the CI/CD pipeline before being merged into the main branch.
 
 ### Manual Testing
-[Outline manual testing procedures.]
+* For new functions and capabilities added to the program, a list of instructions to execute the function must be given. Those instructions then must be followed and executed by another member of the development team before the pull request can be merged into the main branch.
+* Once a pull request has been merged, the same manual testing must be performed on the main branch to gaurantee proper functionality.
+* During early stages of development, most of the functionality should be tested manually even after other pull requests have been merged.
 
 ### Docker
 To ensure testing remains consistent across developers, NaN has decided to use Docker for testing deployment. Docker offers a lightweight, scalable approach to application sharing that uses fewer resources then virtual machines and works on any platform or system. This approach will reduce time developers spend configuring the application to run on their particular system or framework, enabling faster testing and therefore faster deployment of updates and/or patches.
 
 ---
+
 
 ## 11. Business/Legal
 * Stripe (Business Payments)
@@ -533,12 +640,12 @@ To ensure testing remains consistent across developers, NaN has decided to use D
     * Posts articles and other resources to help people stay aware of laws
     * Free policy model offers more provisions for law like GDPR as opposed to other services like TermsFeed
 
+
 ## 12. Interactions Diagram
 The diagram below represents how the components will interact with each other. The user will interact with the front end web pages which will send and recieve data from the server using HTTP protocol. The server will be able to interact with [Stripe](#11-businesslegal) to handle payments, a Python script which handles the connection to [Groq](#6-integration-points-external-interfaces), and the [database](#5-data-design). 
 
-
-
 ![Interaction diagram](interaction-diagram.png)
 ---
+
 
 This document serves as a guide for developers and stakeholders to ensure successful project execution.
