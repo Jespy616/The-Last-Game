@@ -59,12 +59,14 @@
 ### User Interfaces
 #### Accessibility
 #### Flow and Design for Pages
+- AI Flow Chart
+![AI flow chart](ai-flow-chart.png)
 
 ### Database Tables
 
 ### Backend UML
 AI functions
-![AI UML](AIUML.png)
+![AI UML](ai-uml.png)
 
 ### System Performance
 
