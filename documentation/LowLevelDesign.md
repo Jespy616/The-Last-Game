@@ -16,12 +16,62 @@
 #### Sprint 1
 - **Front end:**
 - **Back end:**
+    - [ ] build backend file directory
+
+    - Create Api Endpoints
+        - [ ] Implement `/register` endpoint
+        - [ ] Implement `/login` endpoint
+        - [ ] Implement `/refreshToken` endpoint
+        - [ ] Implement `/create_game` endpoint
+        - [ ] Implement `/save-game` endpoint
+        - [ ] Implement `/subscribe` endpoint
+        - [ ] Implement `/unsubscribe` endpoint
+        - [ ] Implement **getters and setters** for all models and story
+
+
+    - Database Models (Using GORM)
+        - [ ] Create GORM models:
+            - [ ] User
+            - [ ] Players
+            - [ ] Game
+            - [ ] Floor
+            - [ ] Enemies
+            - [ ] Rooms
+            - [ ] Weapons
+            - [ ] Chests
+
+    - Game State Manager
+    - [ ] Create `create_game` method
+    - [ ] Create `save_game` method
+    - [ ] Implement **setters and getters** for all models
+        - [ ] Create **template models** for frontend use
+
+    - Build Docker Containers For Backend
+        - [ ] Get all Requirements for Backend Code
+        - [ ] Create docker file
+        - [ ] set whole team up with docker file
+
 #### Sprint 2
 - **Front end:**
 - **Back end:**
+    - [ ] Replaces Floor and Room Templates with the AI generated Floors and Rooms
+    - [ ] Implement `isAuthenticated` middleware
+    - [ ] Implement `Decryption` logic
+    - [ ] Implement `Encryption` logic
+    - [ ] Implement `Caching` mechanism
+    - [ ] When AI code is finished, update templates for:
+        - [ ] Enemies
+        - [ ] Weapons
+        - [ ] Chests
+
 #### Sprint 3
 - **Front end:**
 - **Back end:**
+    - [ ] Implement Story generation for between floors
+    - [ ] Implement `createSubscription`
+    - [ ] Add all stripe Methods in .auth file
+    - [ ] Work on Deployment Plan for backend
+
 
 ### All Tasks Outline (Summary of all Tasks)
 
