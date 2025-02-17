@@ -99,7 +99,7 @@ For authentication specifically, these methods will be used in the following:
 
 ### Middleware
 
-![MiddlewareUML](assets/middleware.png)
+![MiddlewareUML](./assets/middleware.png)
 
 Following initial encryption and token creation in authentication, any time the user does something that needs authenticating from the front end, endpoints called will be wrapped in middleware. One of these middlewares will be isAuthenticated(), which will be used in the following process:
 
