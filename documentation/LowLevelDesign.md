@@ -59,16 +59,18 @@
 ### User Interfaces
 #### Accessibility
 #### Flow and Design for Pages
-- AI Flow Chart
-![AI flow chart](ai-flow-chart.png)
 
 ### Database Tables
 
 ### Backend UML
-AI functions
-![AI UML](ai-uml.png)
+LLM functions
+![LLM UML](ai-uml.png)
+
+LLM Flow Chart
+![LLM flow chart](ai-flow-chart.png)
 
 ### System Performance
+In order to address the latency that LLMs introduce, we are using Groq to handle the computations needed to handle the LLMs. Groq offers access to LLMs on a generous limit for free users. Each user will be responsible for creating a Groq account and getting an API key. This will allow the game to be able to scale with the number of users so long as Groq's servers can handle the number of users.
 
 ### Security Risks
 
@@ -77,6 +79,9 @@ AI functions
 ### Front End
 ### Back End
 ### APIs and External Interfaces
+
+#### **Groq**
+Groq will be used to handle the hardware requirements that LLMs have, as explained in [System Performance](#system-performance). Users will be in charge of creating a Groq account from the [Groq dashboard](https://console.groq.com/login) and getting an API key. Users can manage their API key in their settings on the front end if they need to delete or change the API key associated with their account. 
 
 ## Deployment Plan
 ### These are ideas! I took them from the best example, we can come up with our own!
