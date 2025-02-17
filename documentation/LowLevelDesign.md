@@ -41,6 +41,8 @@
 
 ### Backend UML
 
+![UML](./assets/UML-backend.png)
+
 ### System Performance
 
 ### Security Risks
@@ -51,7 +53,7 @@ Last Game is structured in such a way as to block as many potential security ris
 For other security concerns mentioned in the High-Level Design Document, NaN's approach is to divide them between the following sections:
 
 #### Authentication
-Last Game will use JWT tokens for authenticating players. This approach will validate users that have logged in and will engage both the back end and front end to ensure user's game sessions are unique to them. When users create an account or log in, a token will be created and sent to the front end. The front end will then send the token through the Authorization header to the backend, which will validate that the user is authorized to retrieve relevant information. This approach will help with validating if users are subscribed or not in regards to Stripe and will keep each user's game experience consistent throughout their sessions and after playing and saving the game. 
+Last Game will use JWT tokens for authenticating players. This approach will validate users that have logged in and will engage both the back end and front end to ensure user's game sessions are unique to them. When users create an account or log in, a token will be created and sent to the front end. The front end will then send the token through the Authorization header to the backend, which will validate that the user is authorized to retrieve relevant information. This approach will help with validating if users are subscribed or not in regards to Stripe and will keep each user's game experience consistent throughout their sessions and after playing and saving the game.
 
 Implementation of JWT authentication will be done using the robust Go module jwt-go found at https://github.com/golang-jwt/jwt. This module offers multiple methods that will be helpful:
 
@@ -90,10 +92,10 @@ For authentication specifically, these methods will be used in the following:
 * Login()
   - recieves user information, checks it against the database, if match then sign in and create JWT token ((jwt.NewWithClaims(), token.SignedString())), if not then rejects sign in
 * Refresh_token()
-  - Creates a refresh token that will be sent with the access token so that new access tokens can be created without logging out the user. 
+  - Creates a refresh token that will be sent with the access token so that new access tokens can be created without logging out the user.
 
 #### Encryption in Middleware
-Following initial encryption and token creation in authentication, any time the user does something that needs authenticating from the front end, endpoints called will be wrapped in middleware. One of these middlewares will be isAuthenticated(), which will be used in the following process: 
+Following initial encryption and token creation in authentication, any time the user does something that needs authenticating from the front end, endpoints called will be wrapped in middleware. One of these middlewares will be isAuthenticated(), which will be used in the following process:
 
 | **Step** | **Action** |
 |----------|-----------|
@@ -110,7 +112,7 @@ The middleware checks the JWT token by:
 3. Extracting user data from the token and attaching it to the request context.
 4. Allowing or blocking the request based on validation.
 
-This will ensure that the requested data is sent to the correct users. 
+This will ensure that the requested data is sent to the correct users.
 
 ---
 ## Programming Languages and Frameworks
@@ -119,7 +121,7 @@ This will ensure that the requested data is sent to the correct users.
 ### APIs and External Interfaces
 
 #### **Stripe:**
-Stripe will be used to process payment information for subscriptions to Last Game. Code related to executing Stripe functions  will reside in the Authentication file. Payment information will be input through the front end subscription page, and related information will be sent to the back end and processed in the Authentication file. 
+Stripe will be used to process payment information for subscriptions to Last Game. Code related to executing Stripe functions  will reside in the Authentication file. Payment information will be input through the front end subscription page, and related information will be sent to the back end and processed in the Authentication file.
 * Create Developer Account with Stripe
 * Secure API key and store in environment variables to keep key secure
 * Use the Stripe SDK built for Go, github.com/stripe/stripe-go/ to accomplish the following taks:
@@ -133,7 +135,7 @@ Stripe will be used to process payment information for subscriptions to Last Gam
 
 * Back end recieves a Stripe Id that will be processed via process_payment() in the authentication file. The method will check that the email associated with the Stripe ID matches the email associated with the current user and either validate or deny moving forward with the subscription.
 
-* The back end will return a Stripe URL to the front end that will take the user to the payment screen. After processing payment and verifying with the backend through the webhook that the payment was successful or rejected, Stripe will redirect to our front end site. 
+* The back end will return a Stripe URL to the front end that will take the user to the payment screen. After processing payment and verifying with the backend through the webhook that the payment was successful or rejected, Stripe will redirect to our front end site.
 
 This approach  should increase security by removing the need to store payment information in the database. The database will only interact with customer and subscription IDs, meaning the database will never see sensitive payment information. That information and security will be offloaded to Stripe, which is well known and trusted in the community.
 
@@ -157,7 +159,7 @@ Docker allows the team to avoid "it works on my machine" issues, removes the nee
 | **Phaser.js** | Runs in frontend, served via browser | `import Phaser from "phaser";` |
 | **PostgreSQL** | Runs in Docker, backend connects via `DATABASE_URL` | `gorm.Open(postgres.Open(dsn))` |
 6. Use docker compose to start and stage the project
- 
+
 
 
 - **Development Environment Setup**
