@@ -52,7 +52,10 @@ Last Game is structured in such a way as to block as many potential security ris
 
 For other security concerns mentioned in the High-Level Design Document, NaN's approach is to divide them between the following sections:
 
-#### Authentication
+### Authentication
+
+![AuthUML](./assets/auth.png)
+
 Last Game will use JWT tokens for authenticating players. This approach will validate users that have logged in and will engage both the back end and front end to ensure user's game sessions are unique to them. When users create an account or log in, a token will be created and sent to the front end. The front end will then send the token through the Authorization header to the backend, which will validate that the user is authorized to retrieve relevant information. This approach will help with validating if users are subscribed or not in regards to Stripe and will keep each user's game experience consistent throughout their sessions and after playing and saving the game.
 
 Implementation of JWT authentication will be done using the robust Go module jwt-go found at https://github.com/golang-jwt/jwt. This module offers multiple methods that will be helpful:
@@ -94,7 +97,10 @@ For authentication specifically, these methods will be used in the following:
 * Refresh_token()
   - Creates a refresh token that will be sent with the access token so that new access tokens can be created without logging out the user.
 
-#### Encryption in Middleware
+### Middleware
+
+![MiddlewareUML](assets/middleware.png)
+
 Following initial encryption and token creation in authentication, any time the user does something that needs authenticating from the front end, endpoints called will be wrapped in middleware. One of these middlewares will be isAuthenticated(), which will be used in the following process:
 
 | **Step** | **Action** |
