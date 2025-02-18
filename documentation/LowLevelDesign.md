@@ -8,14 +8,13 @@
 
 ## Backlog Development Plan
 - ### Sprint Breakdown (Sprint Goals)
-<<<<<<< documentation/LowLevelDesign.md
   - **Sprint 1**
   Implement the basic UI structure, authentication, and API connections. 
   - **Sprint 2**
   Integrate game UI, refine navigation, and improve accessibility. 
   - **Sprint 3**
   Final testing, performance optimization, and deployment setup.  
->>>>>>> documentation/LowLevelDesign.md
+
 
 ### Sprint Task Breakdown (Tasks to acheive Goals)
 #### Sprint 1
@@ -80,6 +79,16 @@
       - [ ] Implement enemy movement towards the player (`enemyPathfind(Enemy, Player)`).
       - [ ] Implement simple enemy melee attack (`attack(Player)`).
 - **Back end:**
+  - AI
+    - [ ] Set up main script so that the server can invoke prompts
+    - [ ] Add map generation
+      - [ ] Add checks to make sure each doorway/chest can be accesed
+      - [ ] Add checks to make sure there is >= 1 door in each room
+      - [ ] Connect rooms together to make the floor
+      - [ ] If generation fails, use open room
+    - [ ] Add map generation tests
+      - [ ] check if each room is accessible
+      - [ ] check to see if reponse is in a proper format
 
 #### Sprint 2
 - **Front end:**
@@ -119,6 +128,17 @@
       - [ ] Implement `LoseLifeScene`.
       - [ ] Implement `SettingsScene`.
 - **Back end:**
+  - AI:
+    - [ ] Add option to generate enemies
+      - [ ] Add check to see if enemy is valid
+      - [ ] If generation fails, use default enemy
+    - [ ] Add option to generate weapons
+      - [ ] Add check to see if weapon is valid
+      - [ ] If generation fails, use default weapon
+    - [ ] Add chest generation to room/floor
+    - [ ] Add tests for enemies, weapons, chest generation
+      - [ ] Check if response is in proper format
+      - [ ] Check if there are enough chests in the floor ( >= 3)
 
 #### Sprint 3
 - **Front end:**
@@ -140,6 +160,8 @@
       - [ ] Final round of playtesting for balancing and bug fixes.
 
 - **Back end:**
+  - AI:
+    - [ ] Add story generation for in between floors
 
 ### All Tasks Outline (Summary of all Tasks)
 
@@ -331,8 +353,14 @@ The frontend communicates with **backend APIs** to fetch/update user data.
 ### Database Tables
 
 ### Backend UML
+#### LLM functions
+![LLM UML](ai-uml.png)
+
+#### LLM Flow Chart
+![LLM flow chart](ai-flow-chart.png)
 
 ### System Performance
+In order to address the latency that LLMs introduce, we are using Groq to handle the computations needed to handle the LLMs. Groq offers access to LLMs on a generous limit for free users. Each user will be responsible for creating a Groq account and getting an API key. This will allow the game to be able to scale with the number of users so long as Groq's servers can handle the number of users.
 
 ### Security Risks
 Last Game is structured in such a way as to block as many potential security risks as possible from the get-go. Last Game will only collect information that is absolutely necessary for a functioning game with accounts, including username, password, and email. Collecting little information will lessen risks of sensitive data leaks due to bad actors, This will also ensure Last Game complies with privacy Laws such as GDPR. Security for other portions of the project are handleded by the external services, such as Stripe or the Groq AI, that Last Game will make API calls to. For more information on how the security of these services will work with Last Game, see the following sections:
@@ -433,6 +461,9 @@ Stripe will be used to process payment information for subscriptions to Last Gam
 * The back end will return a Stripe URL to the front end that will take the user to the payment screen. After processing payment and verifying with the backend through the webhook that the payment was successful or rejected, Stripe will redirect to our front end site. 
 
 This approach  should increase security by removing the need to store payment information in the database. The database will only interact with customer and subscription IDs, meaning the database will never see sensitive payment information. That information and security will be offloaded to Stripe, which is well known and trusted in the community.
+
+#### **Groq**
+Groq will be used to handle the hardware requirements that LLMs have, as explained in [System Performance](#system-performance). Users will be in charge of creating a Groq account from the [Groq dashboard](https://console.groq.com/login) and getting an API key. Users can manage their API key in their settings on the front end if they need to delete or change the API key associated with their account. 
 
 
 ## Deployment Plan
