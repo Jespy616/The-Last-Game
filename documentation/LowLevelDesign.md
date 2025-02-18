@@ -350,14 +350,50 @@ The frontend communicates with **backend APIs** to fetch/update user data.
 | `GET /api/settings` | Fetches user preferences |
 | `POST /api/settings` | Updates user preferences |
 
-### Database Tables
+## Database Tables
+### Users Table
+* **Table purpose:** Stores account details for each user. Our subscription level will be an integer telling which type of payment plan they are on and the stripeId being the identifier for stripe since that is all we need for them to be abler to run and process payemnts for our user on the backend.
+* **Columns:** `userId:(primary key) int | username: string | email:(encrytped) string | password:(hashed) string | subscriptionLevel: int | stripeId: int`
+
+### Players Table
+* **Table purpose:** Represents a character controlled by a user. The player will be how the User is able to interact with and traverse through the game. The player will have a specific sprite id which will tell the front end which specific sprites to give the player based on different assumptions the AI has made about the type of game the user would like to play.
+* **Columns:** `playerId:(primary key) int | userId:(foreign key) int | health: int | primaryWeapon:(foreign key) Weapon | secondaryWeapon:(foreign key) Weapon | spriteId: int`
+
+### Games Table
+* **Table purpose:** Stores details about the game session. The game object will be the main object in the game that gets saved when the user wants to save the game state. The game objectw will be updated in the database either after a major level is finished or if the user presses the **"Save Game"** option in the menu.
+* **Columns:** `gameId:(primary key) int | level: int | floorId:(foreign key) Floor Object | playerSpecifications: string | playerId:(foreign key) Player Object | storyText: string`
+
+### Floors Table
+* **Table purpose:** Stores information about different game maps. The floor will store all the needed rooms necessary for the floor object. This will be stored in a two dimensional array. Some of the pieces of the array will contain room objects and some will be null. The floor will only be made up of the valid room objects. The playerIn attribute will be the identifier of the last room the player was in before the game object gets saved. This will allow the player to respawn back into the last room they were in when they try to load up their game again.
+* **Columns:** `floorId:(primary key) int | rooms: 2d array of Room objects | playerIn: Room Object`
+
+### Enemies Table
+* **Table purpose:** Stores information about in-game enemies. The enemies will be generated and placed into specific rooms.
+* **Columns:** `enemyId:(primary key) int | attackLevel: int | attackFrequency: int | health: int | spriteId: int`
+
+### Rooms Table
+* **Table purpose:** Stores a room's details. A room is considered **cleared** when all of the enemies in the room have been defeated. This will be an indicator if the room needs to be updated in the database or not when the user saves the Game state object.
+* **Columns:** `roomId:(primary key) int | enemies: List of Enemy objects | chest: Chest Object | adjacentFloors: A list of adjacent Floor Objects | cleared: boolean` 
+
+### Weapon Table
+* **Table purpose:** Stores weapon details.
+* **Columns:** `weaponId:(primary key) | health: int | attackDamage: int`
+
+### Chest Table 
+* **Table purpose:** Represents a one-to-many relationship between rooms and chests.
+* **Columns:** `chestId:(primary key) int | roomId:(foreign key) Room Object | weaponId:(foreign key) Weapon Object`
 
 ### Backend UML
+
+#### Game State Manager
+![Db Flow Chart](DBFlow.png)
+
 #### LLM functions
 ![LLM UML](ai-uml.png)
 
 #### LLM Flow Chart
 ![LLM flow chart](ai-flow-chart.png)
+
 
 ### System Performance
 In order to address the latency that LLMs introduce, we are using Groq to handle the computations needed to handle the LLMs. Groq offers access to LLMs on a generous limit for free users. Each user will be responsible for creating a Groq account and getting an API key. This will allow the game to be able to scale with the number of users so long as Groq's servers can handle the number of users.
@@ -467,7 +503,6 @@ Groq will be used to handle the hardware requirements that LLMs have, as explain
 
 
 ## Deployment Plan
-### These are ideas! I took them from the best example, we can come up with our own!
 
 ### Docker
 Docker allows the team to avoid "it works on my machine" issues, removes the need for each team member to download every software on the front end and back end to test the game, and makes deployment simple long term. Every team member will be able to fully focus on their respective components or assignments, allowing for a smoother development and testing process. As such, setting up docker for the game is a high priority task and involves the following steps:
@@ -487,11 +522,42 @@ Docker allows the team to avoid "it works on my machine" issues, removes the nee
 6. Use docker compose to start and stage the project
  
 
+#### 1. **Development Environment Setup**
+* **Version Control**: We will be utilizing Git and Gitlab to keep track of our work.
+* Technology Stack:
+	* **FrontEnd**: Svelte, TypeScript, Vite, Phaser.js
+	* **BackEnd**: Go Gin, GORM, Stripe
+	* **DataBase**: Postgres
+* Local Environments:
+	* Docker Containers will be utilized to keep all of our local environments acting with the same underlying operating system and technologies.
 
-- **Development Environment Setup**
-- **Staging Environment**
-- **User Acceptance Testing**
-- **Production Environment Testing**
-- **Production Deployment**
-- **Monitoring and Maintenance**
-- **Scaling**
+#### 2. **Development Pipeline**:
+* We will be utilizing GitLab CI/CD to ensure that any new changes or additions to the code must pass all required unit tests before being merged into the master branch.
+* Other conditions such as build time and network latency must be passed as well before being merged.
+* All pull request must be approved by at least the team lead at the time and whoever works within a similar development realm as the submitter. 
+#### 3. **User Acceptance Testing**
+* Ensure the UI, UX, and MVP is suitable for the key stakeholders in the project.
+* Check ups with the customer after major changes or updates have been pushed to ensure that we are all still aligned with our goals and values.
+#### 4. **Production Environment/Deployment**
+* Front End: 
+	* Will be hosted on Amazon CloudFront in a region closest to the major customers are to ensure quick access to edge locations where cached information will be stored.
+	* Will utilize Route53 for our domain name system service.
+	* Will utilize AWS S3 for storing any of our needed static assets such as our build folder generated from vite.
+
+* Back End: 
+	* Amazon ECS will be needed for delploying our docker containers.
+	* We can utilize AWS Elastic Beanstalk for simple deployment
+	* Amazon API Gateway will be utilized for a secure connection between the front end and backend services.
+* Database: 
+	* Amazon RDS will be utilized for our Postgres SQL database.
+* Scalability:
+	* Amazon Auto Scaling and Load Balancer will be utilized to automatically scale our backend servers based on set network parameters we choose.
+	* Amazon CloudWatch will be utilized for gathering data on performance and traffic.
+* Maintainance: 
+	* Amazon CodePipeline will allow for a seemless transition between our local code and our production, cloud hosted code. Any changes or fixes we need to do will be automatically updated through CodePipeline by updating whenever we make pushes/merges to our master branch.
+	* Frequent updates including bug tickets, network updates/improvements, and needed UX changes will be sent to the backlog so there will always be continual improvement upon the gameplay for the users.
+
+
+
+
+
