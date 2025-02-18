@@ -173,7 +173,24 @@ This will ensure that the requested data is sent to the correct users.
 ---
 ## Programming Languages and Frameworks
 ### Front End
+#### Frameworks
+- Svelte
+- Phaser.js
+#### Languages
+- TypeScript
 ### Back End
+#### Frameworks
+- Gin
+#### Modules Used
+- Redis for caching
+- Bcypt for password encyption
+- ChaCha20poly1305 for data encyption
+- GORM for ORM
+- LangChain for AI Agent
+#### Languages
+- Golang
+- Python
+
 ### APIs and External Interfaces
 
 #### **Stripe:**
@@ -194,6 +211,12 @@ Stripe will be used to process payment information for subscriptions to Last Gam
 * The back end will return a Stripe URL to the front end that will take the user to the payment screen. After processing payment and verifying with the backend through the webhook that the payment was successful or rejected, Stripe will redirect to our front end site.
 
 This approach  should increase security by removing the need to store payment information in the database. The database will only interact with customer and subscription IDs, meaning the database will never see sensitive payment information. That information and security will be offloaded to Stripe, which is well known and trusted in the community.
+
+
+#### Groq
+- Used for our LLM and is free
+- Needs an API Key
+- All Devs will use their own API Key
 
 
 ## Deployment Plan
