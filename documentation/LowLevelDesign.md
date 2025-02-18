@@ -9,95 +9,92 @@
 ## Backlog Development Plan
 - ### Sprint Breakdown (Sprint Goals)
   - **Sprint 1**
+  Implement the basic UI structure, authentication, and API connections. 
   - **Sprint 2**
+  Integrate game UI, refine navigation, and improve accessibility. 
   - **Sprint 3**
+  Final testing, performance optimization, and deployment setup.  
 
 ### Sprint Task Breakdown (Tasks to acheive Goals)
 #### Sprint 1
 - **Front end:**
 
 **Create These Pages**
-- **Login Page (`Login.svelte`)**
-  - Fields: **Username, Password**
-  - Buttons: **Login, Forgot Password, Create Account**
-  - API Call: `POST /api/login`
-  - Handles: **Error messages, input validation**
+  - **Login Page (`Login.svelte`)**
+    - [ ] Fields: **Username, Password**
+    - [ ] Buttons: **Login, Forgot Password, Create Account**
+    - [ ] API Call: `POST /api/login`
+    - [ ] Handles: **Error messages, input validation**
 
-- **Signup Page (`Signup.svelte`)**
-  - Fields: **Username, Email, Password, Confirm Password**
-  - Form Validation:
-    - **Username availability check**
-    - **Email format validation**
-    - **Password strength enforcement**
-  - API Call: `POST /api/register`
-  - Redirects to **Login page** after successful registration.
+  - **Signup Page (`Signup.svelte`)**
+    - [ ] Fields: **Username, Email, Password, Confirm Password**
+    - [ ] Form Validation:
+      - [ ] **Username availability check**
+      - [ ] **Email format validation**
+      - [ ] **Password strength enforcement**
+    - [ ] API Call: `POST /api/register`
+    - [ ] Redirects to **Login page** after successful registration.
 
-- **Subscription Page (`Subscription.svelte`)**
-  - Displays **subscription tiers** (Monthly, Lifetime).
-  - API Calls:
-    - `GET /api/subscription` (fetch available plans)
-    - `POST /api/subscribe` (process Stripe payment)
-  - Handles:
-    - **Success message for payment**
-    - **Error message if payment fails**
+  - **Subscription Page (`Subscription.svelte`)**
+    - [ ] Displays **subscription tiers** (Monthly, Lifetime).
+    - [ ] API Calls:
+      - [ ] `GET /api/subscription` (fetch available plans)
+      - [ ] `POST /api/subscribe` (process Stripe payment)
+    - [ ] Handles:
+      - [ ] **Success message for payment**
+      - [ ] **Error message if payment fails**
 
-- **Settings Page (`Settings.svelte`)**
-  - Fields:
-    - **Change Username**
-    - **Change Email**
-    - **Dark Mode Toggle**
-  - API Calls:
-    - `GET /api/settings` (fetch preferences)
-    - `POST /api/settings` (save preferences)
-  - Saves **preferences in localStorage & Svelte Store**.
+  - **Settings Page (`Settings.svelte`)**
+    - [ ] Fields:
+      - [ ] **Change Username**
+      - [ ] **Change Email**
+      - [ ] **Dark Mode Toggle**
+    - [ ] API Calls:
+      - [ ] `GET /api/settings` (fetch preferences)
+      - [ ] `POST /api/settings` (save preferences)
+    - [ ] Saves **preferences in localStorage & Svelte Store**.
 
+- **Global UI Components**
+  - [ ] **Navbar (`Navbar.svelte`)**
+    - Links to: **Home, Subscription, Settings**
+    - Updates **active page state** using Svelte Stores.
+  - [ ] **Reusable Components**
+    - `Button.svelte` – Standardized buttons.
+    - `FormInput.svelte` – Handles input fields.
 
-
-**Global UI Components**
-- **Navbar (`Navbar.svelte`)**
-  - Links to: **Home, Subscription, Settings**
-  - Updates **active page state** using Svelte Stores.
-
-- **Reusable Components**
-  - `Button.svelte` – Standardized buttons.
-  - `FormInput.svelte` – Handles input fields.
-
-
-**Accessibility Focus**
-- **Keyboard Navigation**: Tab-based control.
-- **Screen Reader Support**: ARIA labels for important elements.
-
+- **Accessibility Focus**
+  - [ ] **Keyboard Navigation**: Tab-based control.
+  - [ ] **Screen Reader Support**: ARIA labels for important elements.
 
 - **Back end:**
 #### Sprint 2
 - **Front end:**
 
-**UI/UX Improvements**
-- Improve **form validation & error messages**.
+- **UI/UX Improvements**
+  - [ ] Improve **form validation & error messages**.
 
+- **Authentication Improvements**
+  - [ ] **Forgot Password Page (`ForgotPassword.svelte`)**
+    - API Call: `POST /api/reset-password`
+    - Handles: **Sending password reset link via email**.
 
-**Authentication Improvements**
-- **Forgot Password Page (`ForgotPassword.svelte`)**
-  - API Call: `POST /api/reset-password`
-  - Handles: **Sending password reset link via email**.
+  - [ ] **Change Password Page (`ChangePassword.svelte`)**
+    - Fields: **Current Password, New Password, Confirm Password**
+    - API Call: `POST /api/update-password`
+    - Requires **current password validation**.
 
-- **Change Password Page (`ChangePassword.svelte`)**
-  - Fields: **Current Password, New Password, Confirm Password**
-  - API Call: `POST /api/update-password`
-  - Requires **current password validation**.
-
-**Navigation & Accessibility**
-- Improve **keyboard shortcuts** for better navigation.
-- Implement **high contrast mode** for visually impaired users.
+- **Navigation & Accessibility**
+  - [ ] Improve **keyboard shortcuts** for better navigation.
+  - [ ] Implement **high contrast mode** for visually impaired users.
 
 - **Back end:**
 #### Sprint 3
 - **Front end:**
 
-**Final Testing & Debugging**
-- **Unit Testing** with **Svelte Testing Library**.
-- **End-to-End Testing** with **Cypress**.
-- **Accessibility Testing** using **Google Lighthouse**.
+- **Final Testing & Debugging**
+  - [ ] **Unit Testing** with **Svelte Testing Library**.
+  - [ ] **End-to-End Testing** with **Cypress**.
+  - [ ] **Accessibility Testing** using **Google Lighthouse**.
 
 - **Back end:**
 
@@ -143,14 +140,28 @@ We use **Svelte Stores** to efficiently manage UI state.
    - If incorrect credentials → Display **error message**.
    - If a new user → Clicks “Create Account” → Redirects to Signup.
 
+   - **Elements:** Username, Password fields, Submit button.
+   - **Interactions:** Redirects to Dashboard if login is successful.
+   - **Accessibility:** Supports **keyboard navigation & screen readers**.
+
 2. **Signup Process (`Signup.svelte`)**
    - User fills out form → API Request to register.
    - Email validation check → If invalid, **error message**.
    - If successful → Redirect to **Login Page**.
+   - **Elements:** Username, Email, Password fields, Submit button.
+   - **Interactions:** Redirects to Dashboard if signup is successful.
+   - **Accessibility:** Supports **keyboard navigation & screen readers**.
 
 3. **Subscription Process (`Subscription.svelte`)**
    - User selects plan → Processes payment via **Stripe API**.
    - If successful → Grants **premium features**.
+   - **Elements:** Monthly & Lifetime subscription options.
+   - **Interactions:** Payment processing via **Stripe API**.
+   - **Error Handling:** Displays **errors on failed transactions**.
+
+4. **Settings Page (`Settings.svelte`)**
+- **Elements:** Change Username, Update Preferences.
+- **Interactions:** Saves settings in **local storage & database**.
 
 
 ### User Interfaces
@@ -163,20 +174,6 @@ We ensure **UI accessibility compliance** with **WCAG standards**.
 **Screen Reader Support** – Adding `aria-label` attributes to key elements  
 
 #### Flow and Design for Pages
-
-#### **Login Page (`Login.svelte`)**
-- **Elements:** Username, Password fields, Submit button.
-- **Interactions:** Redirects to Dashboard if login is successful.
-- **Accessibility:** Supports **keyboard navigation & screen readers**.
-
-#### **Subscription Page (`Subscription.svelte`)**
-- **Elements:** Monthly & Lifetime subscription options.
-- **Interactions:** Payment processing via **Stripe API**.
-- **Error Handling:** Displays **errors on failed transactions**.
-
-#### **Settings Page (`Settings.svelte`)**
-- **Elements:** Change Username, Update Preferences.
-- **Interactions:** Saves settings in **local storage & database**.
 
 ## **Database Interaction (API Endpoints)**
 The frontend communicates with **backend APIs** to fetch/update user data.
