@@ -9,6 +9,7 @@ This document focuses on the specific implementation details.
 
 ### Audience
 The document is intended for developers to ensure alignment in development.
+
 ---
 
 ## Backlog Development Plan
