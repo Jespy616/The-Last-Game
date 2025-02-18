@@ -58,6 +58,8 @@
 #### Sprint 2
 - **Front end:**
 - **Back end:**
+    - [ ] Implement `createSubscription`
+    - [ ] Add all stripe Methods in .auth file
     - [ ] Replaces Floor and Room Templates with the AI generated Floors and Rooms
     - [ ] Implement `isAuthenticated` middleware
     - [ ] Implement `Decryption` logic
@@ -72,9 +74,9 @@
 - **Front end:**
 - **Back end:**
     - [ ] Implement Story generation for between floors
-    - [ ] Implement `createSubscription`
-    - [ ] Add all stripe Methods in .auth file
+    - [ ] Final Testing
     - [ ] Work on Deployment Plan for backend
+    - [ ] Implement endpoints for high score and leader board
 
 
 ### All Tasks Outline (Summary of all Tasks)
