@@ -1,19 +1,78 @@
 # Low Level Design
 
-# [Please Look at this Link!! It has the rubric and needs for our document](https://usu.instructure.com/courses/769837/assignments/4714896)
-
 ## Introduction
+### Purpose
+This document serves as a reference for developers working on Last Game, ensuring that the development team can work independently while maintaining code compatibility.
+
+### Scope
+This document focuses on the specific implementation details.
+
+### Audience
+The document is intended for developers to ensure alignment in development.
 
 ---
 
 ## Backlog Development Plan
-- ### Sprint Breakdown (Sprint Goals)
-  - **Sprint 1**
-  Implement the basic UI structure, authentication, and API connections. 
-  - **Sprint 2**
-  Integrate game UI, refine navigation, and improve accessibility. 
-  - **Sprint 3**
-  Final testing, performance optimization, and deployment setup.  
+### Sprint 1 - Core Development
+
+#### Frontend (Svelte & Phaser)
+- **Authentication Pages**: Login, Signup, Forgot Password.
+- **Subscription Page**: Fetch plans, process Stripe payments.
+- **Settings Page**: Manage user preferences (dark mode, username, email).
+- **Game UI (Phaser)**: Implement basic **scene management**, **player controls**, and **API calls**.
+- **Global UI Components**: Navbar, buttons, form inputs.
+- **Accessibility Enhancements**: Keyboard navigation, ARIA labels.
+
+#### Backend
+- **Authentication System**: Register, Login, Refresh Token.
+- **API Endpoints**: Game creation, saving, subscriptions.
+- **Database Models (GORM)**: User, Game, Floor, Enemies, Rooms, Weapons, Chests.
+- **Game State Manager**: CRUD operations for game state.
+- **Docker Setup**: Create Docker files for backend deployment.
+
+#### AI & Procedural Generation
+- **Map Generation**: Ensure rooms are connected, accessible, and have proper door placement.
+- **Validation Checks**: Test if rooms and objects (chests, doors) are correctly generated.
+
+---
+
+### Sprint 2 - Feature Enhancements
+
+#### Frontend
+- **UI/UX Improvements**: Better form validation, improved error handling.
+- **Authentication Features**: Forgot password & change password flow.
+- **Phaser Game Improvements**:
+  - Implement **room management** system.
+  - Add **combat system** (attack, health tracking).
+  - Optimize **Svelte-Phaser integration** for UI overlays.
+
+#### Backend
+- **Subscription Handling**: Implement full Stripe integration.
+- **Security Enhancements**: Middleware for authentication, encryption, caching.
+- **AI Integration**: Replace placeholder floors/rooms with AI-generated content.
+
+#### AI & Procedural Generation
+- **Generate Enemies, Weapons, and Chests**: Ensure logical placement and balancing.
+- **Add AI-based Tests**: Validate generated elements for format correctness.
+
+---
+
+### Sprint 3 - Final Testing & Deployment
+
+#### Frontend
+- **Final Testing**: Unit & End-to-End testing using Svelte Testing Library & Cypress.
+- **Performance & Accessibility**: Optimize Lighthouse scores.
+
+#### Backend
+- **Game State Optimization**: Reduce unnecessary save operations.
+- **Final Testing & Debugging**: Deployment preparation.
+- **Leaderboard & High Scores**: Implement scoring system API.
+
+#### AI & Story Generation
+- **Generate AI-based Stories**: Provide narrative elements between floors.
+
+---
+Make with the assistance of ChatGPT.
 
 
 ### Sprint Task Breakdown (Tasks to acheive Goals)
@@ -220,8 +279,6 @@
     - [ ] Add story generation for in between floors
 
 
-### All Tasks Outline (Summary of all Tasks)
-
 ---
 ## System Architecture
 ### Subsystems and UML Class Diagrams
@@ -275,7 +332,7 @@ Interactable (abstract)
 ##### **Other Classes**
 - `Floor`
   - `String theme` The theme of the dungeon.
-  - `number level` 
+  - `number level`
   - `RoomObject[][] rooms` Contains all room objects in the floor
   - `RoomObject getRoomAt(number x, number y)` Returns a given RoomObject
 - `Player`
@@ -386,9 +443,9 @@ We use **Svelte Stores** to efficiently manage UI state.
 
 We ensure **UI accessibility compliance** with **WCAG standards**.
 
-**Keyboard Navigation** – `Tab` key support for form fields  
-**Color Contrast Compliance** – Ensuring readability for visually impaired users  
-**Screen Reader Support** – Adding `aria-label` attributes to key elements  
+**Keyboard Navigation** – `Tab` key support for form fields
+**Color Contrast Compliance** – Ensuring readability for visually impaired users
+**Screen Reader Support** – Adding `aria-label` attributes to key elements
 
 #### Flow and Design for Pages
 The Phaser application containing all game-related UI will be embeded within a Svelte page. Each component will work independently in a sort-of baton pass system to display all the necessary pages. The following UML diagram displays this interaction and outlines all frontend pages and scenes.
@@ -430,13 +487,13 @@ The frontend communicates with **backend APIs** to fetch/update user data.
 
 ### Rooms Table
 * **Table purpose:** Stores a room's details. A room is considered **cleared** when all of the enemies in the room have been defeated. This will be an indicator if the room needs to be updated in the database or not when the user saves the Game state object.
-* **Columns:** `roomId:(primary key) int | enemies: List of Enemy objects | chest: Chest Object | adjacentFloors: A list of adjacent Floor Objects | cleared: boolean` 
+* **Columns:** `roomId:(primary key) int | enemies: List of Enemy objects | chest: Chest Object | adjacentFloors: A list of adjacent Floor Objects | cleared: boolean`
 
 ### Weapon Table
 * **Table purpose:** Stores weapon details.
 * **Columns:** `weaponId:(primary key) | health: int | attackDamage: int`
 
-### Chest Table 
+### Chest Table
 * **Table purpose:** Represents a one-to-many relationship between rooms and chests.
 * **Columns:** `chestId:(primary key) int | roomId:(foreign key) Room Object | weaponId:(foreign key) Weapon Object`
 
@@ -536,7 +593,6 @@ This will ensure that the requested data is sent to the correct users.
 ---
 ## Programming Languages and Frameworks
 ### Front End
-<<<<<<< documentation/LowLevelDesign.md
 #### Frameworks
 - Svelte
 - Phaser.js
@@ -580,7 +636,7 @@ Stripe will be used to process payment information for subscriptions to Last Gam
 This approach  should increase security by removing the need to store payment information in the database. The database will only interact with customer and subscription IDs, meaning the database will never see sensitive payment information. That information and security will be offloaded to Stripe, which is well known and trusted in the community.
 
 #### **Groq**
-Groq will be used to handle the hardware requirements that LLMs have, as explained in [System Performance](#system-performance). Users will be in charge of creating a Groq account from the [Groq dashboard](https://console.groq.com/login) and getting an API key. Users can manage their API key in their settings on the front end if they need to delete or change the API key associated with their account. 
+Groq will be used to handle the hardware requirements that LLMs have, as explained in [System Performance](#system-performance). Users will be in charge of creating a Groq account from the [Groq dashboard](https://console.groq.com/login) and getting an API key. Users can manage their API key in their settings on the front end if they need to delete or change the API key associated with their account.
 
 
 ## Deployment Plan
@@ -615,26 +671,26 @@ Docker allows the team to avoid "it works on my machine" issues, removes the nee
 #### 2. **Development Pipeline**:
 * We will be utilizing GitLab CI/CD to ensure that any new changes or additions to the code must pass all required unit tests before being merged into the master branch.
 * Other conditions such as build time and network latency must be passed as well before being merged.
-* All pull request must be approved by at least the team lead at the time and whoever works within a similar development realm as the submitter. 
+* All pull request must be approved by at least the team lead at the time and whoever works within a similar development realm as the submitter.
 #### 3. **User Acceptance Testing**
 * Ensure the UI, UX, and MVP is suitable for the key stakeholders in the project.
 * Check ups with the customer after major changes or updates have been pushed to ensure that we are all still aligned with our goals and values.
 #### 4. **Production Environment/Deployment**
-* Front End: 
+* Front End:
 	* Will be hosted on Amazon CloudFront in a region closest to the major customers are to ensure quick access to edge locations where cached information will be stored.
 	* Will utilize Route53 for our domain name system service.
 	* Will utilize AWS S3 for storing any of our needed static assets such as our build folder generated from vite.
 
-* Back End: 
+* Back End:
 	* Amazon ECS will be needed for delploying our docker containers.
 	* We can utilize AWS Elastic Beanstalk for simple deployment
 	* Amazon API Gateway will be utilized for a secure connection between the front end and backend services.
-* Database: 
+* Database:
 	* Amazon RDS will be utilized for our Postgres SQL database.
 * Scalability:
 	* Amazon Auto Scaling and Load Balancer will be utilized to automatically scale our backend servers based on set network parameters we choose.
 	* Amazon CloudWatch will be utilized for gathering data on performance and traffic.
-* Maintainance: 
+* Maintainance:
 	* Amazon CodePipeline will allow for a seemless transition between our local code and our production, cloud hosted code. Any changes or fixes we need to do will be automatically updated through CodePipeline by updating whenever we make pushes/merges to our master branch.
 	* Frequent updates including bug tickets, network updates/improvements, and needed UX changes will be sent to the backlog so there will always be continual improvement upon the gameplay for the users.
 
