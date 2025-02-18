@@ -15,12 +15,90 @@
 ### Sprint Task Breakdown (Tasks to acheive Goals)
 #### Sprint 1
 - **Front end:**
+
+**Create These Pages**
+- **Login Page (`Login.svelte`)**
+  - Fields: **Username, Password**
+  - Buttons: **Login, Forgot Password, Create Account**
+  - API Call: `POST /api/login`
+  - Handles: **Error messages, input validation**
+
+- **Signup Page (`Signup.svelte`)**
+  - Fields: **Username, Email, Password, Confirm Password**
+  - Form Validation:
+    - **Username availability check**
+    - **Email format validation**
+    - **Password strength enforcement**
+  - API Call: `POST /api/register`
+  - Redirects to **Login page** after successful registration.
+
+- **Subscription Page (`Subscription.svelte`)**
+  - Displays **subscription tiers** (Monthly, Lifetime).
+  - API Calls:
+    - `GET /api/subscription` (fetch available plans)
+    - `POST /api/subscribe` (process Stripe payment)
+  - Handles:
+    - **Success message for payment**
+    - **Error message if payment fails**
+
+- **Settings Page (`Settings.svelte`)**
+  - Fields:
+    - **Change Username**
+    - **Change Email**
+    - **Dark Mode Toggle**
+  - API Calls:
+    - `GET /api/settings` (fetch preferences)
+    - `POST /api/settings` (save preferences)
+  - Saves **preferences in localStorage & Svelte Store**.
+
+
+
+**Global UI Components**
+- **Navbar (`Navbar.svelte`)**
+  - Links to: **Home, Subscription, Settings**
+  - Updates **active page state** using Svelte Stores.
+
+- **Reusable Components**
+  - `Button.svelte` – Standardized buttons.
+  - `FormInput.svelte` – Handles input fields.
+
+
+**Accessibility Focus**
+- **Keyboard Navigation**: Tab-based control.
+- **Screen Reader Support**: ARIA labels for important elements.
+
+
 - **Back end:**
 #### Sprint 2
 - **Front end:**
+
+**UI/UX Improvements**
+- Improve **form validation & error messages**.
+
+
+**Authentication Improvements**
+- **Forgot Password Page (`ForgotPassword.svelte`)**
+  - API Call: `POST /api/reset-password`
+  - Handles: **Sending password reset link via email**.
+
+- **Change Password Page (`ChangePassword.svelte`)**
+  - Fields: **Current Password, New Password, Confirm Password**
+  - API Call: `POST /api/update-password`
+  - Requires **current password validation**.
+
+**Navigation & Accessibility**
+- Improve **keyboard shortcuts** for better navigation.
+- Implement **high contrast mode** for visually impaired users.
+
 - **Back end:**
 #### Sprint 3
 - **Front end:**
+
+**Final Testing & Debugging**
+- **Unit Testing** with **Svelte Testing Library**.
+- **End-to-End Testing** with **Cypress**.
+- **Accessibility Testing** using **Google Lighthouse**.
+
 - **Back end:**
 
 ### All Tasks Outline (Summary of all Tasks)
@@ -30,12 +108,87 @@
 ### Subsystems and UML Class Diagrams
 #### Front-End Objects
 
+The frontend follows a **Component-Based Architecture** using **Svelte** with modular, reusable components.
+
+### **Frontend Subsystems & Component Breakdown**
+Each subsystem is implemented using **Svelte components**.
+
+| **Component**       | **Purpose** |
+|---------------------|------------|
+| `Login.svelte` | Handles user authentication UI (input fields, validation) |
+| `Signup.svelte` | UI for account registration, form validation |
+| `Subscription.svelte` | UI for selecting and processing payments via Stripe API |
+| `Settings.svelte` | User preferences (Appearance, Account settings) |
+| `Game.svelte` | Embeds **Phaser.js** for game rendering |
+| `Navbar.svelte` | Persistent navigation bar |
+| `Button.svelte` | Reusable button component |
+| `FormInput.svelte` | Handles form inputs (text, password) |
+| `Modal.svelte` | Displays popups (notifications, alerts) |
+| `ToastNotification.svelte` | Shows success/error messages |
+| `LoadingSpinner.svelte` | Displays a loading animation while waiting for API responses |
+
+### **State Management**
+We use **Svelte Stores** to efficiently manage UI state.
+
+| **Store Name**  | **Purpose** |
+|----------------|------------|
+| `authStore.js` | Stores authentication state (user session, token) |
+| `uiStore.js` | Stores UI preferences (dark mode, accessibility settings) |
+
 #### User Flow
+
+### **Key User Interactions**
+1. **User visits the Login Page (`Login.svelte`)**
+   - Enters credentials → API Request → Redirect to Dashboard.
+   - If incorrect credentials → Display **error message**.
+   - If a new user → Clicks “Create Account” → Redirects to Signup.
+
+2. **Signup Process (`Signup.svelte`)**
+   - User fills out form → API Request to register.
+   - Email validation check → If invalid, **error message**.
+   - If successful → Redirect to **Login Page**.
+
+3. **Subscription Process (`Subscription.svelte`)**
+   - User selects plan → Processes payment via **Stripe API**.
+   - If successful → Grants **premium features**.
 
 
 ### User Interfaces
 #### Accessibility
+
+We ensure **UI accessibility compliance** with **WCAG standards**.
+
+**Keyboard Navigation** – `Tab` key support for form fields  
+**Color Contrast Compliance** – Ensuring readability for visually impaired users  
+**Screen Reader Support** – Adding `aria-label` attributes to key elements  
+
 #### Flow and Design for Pages
+
+#### **Login Page (`Login.svelte`)**
+- **Elements:** Username, Password fields, Submit button.
+- **Interactions:** Redirects to Dashboard if login is successful.
+- **Accessibility:** Supports **keyboard navigation & screen readers**.
+
+#### **Subscription Page (`Subscription.svelte`)**
+- **Elements:** Monthly & Lifetime subscription options.
+- **Interactions:** Payment processing via **Stripe API**.
+- **Error Handling:** Displays **errors on failed transactions**.
+
+#### **Settings Page (`Settings.svelte`)**
+- **Elements:** Change Username, Update Preferences.
+- **Interactions:** Saves settings in **local storage & database**.
+
+## **Database Interaction (API Endpoints)**
+The frontend communicates with **backend APIs** to fetch/update user data.
+
+| **API Endpoint**       | **Purpose** |
+|-----------------------|------------|
+| `POST /api/login` | Authenticates users |
+| `POST /api/register` | Creates new accounts |
+| `GET /api/subscription` | Fetches available plans |
+| `POST /api/subscribe` | Processes payment |
+| `GET /api/settings` | Fetches user preferences |
+| `POST /api/settings` | Updates user preferences |
 
 ### Database Tables
 
@@ -115,6 +268,12 @@ This will ensure that the requested data is sent to the correct users.
 ---
 ## Programming Languages and Frameworks
 ### Front End
+
+| **Technology**  | **Purpose** |
+|---------------|------------|
+| **Svelte (TypeScript & HTML)** | Reactive UI framework |
+| **Tailwind CSS** | UI styling |
+
 ### Back End
 ### APIs and External Interfaces
 
