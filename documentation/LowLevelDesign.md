@@ -28,6 +28,10 @@
         - [ ] Implement `/unsubscribe` endpoint
         - [ ] Implement **getters and setters** for all models and story
 
+    - Authentication
+        - [ ] Implement Register
+        - [ ] Implement Login
+        - [ ] Implement RefreshToken
 
     - Database Models (Using GORM)
         - [ ] Create GORM models:
