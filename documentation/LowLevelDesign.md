@@ -9,15 +9,77 @@
 ## Backlog Development Plan
 - ### Sprint Breakdown (Sprint Goals)
   - **Sprint 1**
+  Implement the basic UI structure, authentication, and API connections. 
   - **Sprint 2**
+  Integrate game UI, refine navigation, and improve accessibility. 
   - **Sprint 3**
+  Final testing, performance optimization, and deployment setup.  
+
 
 ### Sprint Task Breakdown (Tasks to acheive Goals)
 #### Sprint 1
 - **Front end:**
+  - **Svelte**
+    - **Login Page (`Login.svelte`)**
+      - [ ] Fields: **Username, Password**
+      - [ ] Buttons: **Login, Forgot Password, Create Account**
+      - [ ] API Call: `POST /api/login`
+      - [ ] Handles: **Error messages, input validation**
+    - **Signup Page (`Signup.svelte`)**
+      - [ ] Fields: **Username, Email, Password, Confirm Password**
+      - [ ] Form Validation:
+        - [ ] **Username availability check**
+        - [ ] **Email format validation**
+        - [ ] **Password strength enforcement**
+      - [ ] API Call: `POST /api/register`
+      - [ ] Redirects to **Login page** after successful registration.
+    - **Subscription Page (`Subscription.svelte`)**
+      - [ ] Displays **subscription tiers** (Monthly, Lifetime).
+      - [ ] API Calls:
+        - [ ] `GET /api/subscription` (fetch available plans)
+        - [ ] `POST /api/subscribe` (process Stripe payment)
+      - [ ] Handles:
+        - [ ] **Success message for payment**
+        - [ ] **Error message if payment fails**
+    - **Settings Page (`Settings.svelte`)**
+      - [ ] Fields:
+        - [ ] **Change Username**
+        - [ ] **Change Email**
+        - [ ] **Dark Mode Toggle**
+      - [ ] API Calls:
+        - [ ] `GET /api/settings` (fetch preferences)
+        - [ ] `POST /api/settings` (save preferences)
+      - [ ] Saves **preferences in localStorage & Svelte Store**.
+    - **Global UI Components**
+      - [ ] **Navbar (`Navbar.svelte`)**
+        - Links to: **Home, Subscription, Settings**
+        - Updates **active page state** using Svelte Stores.
+      - [ ] **Reusable Components**
+        - `Button.svelte` – Standardized buttons.
+        - `FormInput.svelte` – Handles input fields.
+    - **Accessibility Focus**
+      - [ ] **Keyboard Navigation**: Tab-based control.
+      - [ ] **Screen Reader Support**: ARIA labels for important elements.
+  - **Phaser**
+    - **Scene Management**
+      - [ ] Implement `MainMenuScene` with navigation buttons.
+      - [ ] Implement `ThemeSelectionScene` and store the selected theme.
+      - [ ] Implement `DifficultySelectionScene` and pass selection to the backend.
+      - [ ] Implement `GameScene` as an empty shell.
+      - [ ] Implement `GameOverScene` and ensure it triggers `SetHighScore(level)`.
+    - **Backend API Calls**
+      - [ ] Implement `GetFloor(difficultyLevel, theme)` to fetch level data.
+      - [ ] Implement `Save(floorObject)` to update enemy/chest data.
+      - [ ] Implement `SetHighScore(level)` to update leaderboard.
+      - [ ] Implement `GetText()` to fetch AI-generated story text.
+    - **Basic Player Controls**
+      - [ ] Implement `move(direction)`.
+      - [ ] Implement `checkCollision(Player, direction)`.
+    - **Basic Enemy System**
+      - [ ] Implement enemy movement towards the player (`enemyPathfind(Enemy, Player)`).
+      - [ ] Implement simple enemy melee attack (`attack(Player)`).
 - **Back end:**
     - [ ] build backend file directory
-
     - Create Api Endpoints
         - [ ] Implement `/register` endpoint
         - [ ] Implement `/login` endpoint
@@ -55,8 +117,55 @@
         - [ ] Create docker file
         - [ ] set whole team up with docker file
 
+  - AI
+    - [ ] Set up main script so that the server can invoke prompts
+    - [ ] Add map generation
+      - [ ] Add checks to make sure each doorway/chest can be accesed
+      - [ ] Add checks to make sure there is >= 1 door in each room
+      - [ ] Connect rooms together to make the floor
+      - [ ] If generation fails, use open room
+    - [ ] Add map generation tests
+      - [ ] check if each room is accessible
+      - [ ] check to see if reponse is in a proper format
+
+
 #### Sprint 2
 - **Front end:**
+  - **Svelte**
+    - **UI/UX Improvements**
+      - [ ] Improve **form validation & error messages**.
+    - **Authentication Improvements**
+      - [ ] **Forgot Password Page (`ForgotPassword.svelte`)**
+        - API Call: `POST /api/reset-password`
+        - Handles: **Sending password reset link via email**.
+      - [ ] **Change Password Page (`ChangePassword.svelte`)**
+        - Fields: **Current Password, New Password, Confirm Password**
+        - API Call: `POST /api/update-password`
+        - Requires **current password validation**.
+    - **Navigation & Accessibility**
+      - [ ] Improve **keyboard shortcuts** for better navigation.
+      - [ ] Implement **high contrast mode** for visually impaired users.
+  - **Phaser**
+    - **Room Management**
+      - [ ] Implement `RoomObject` and different room types (`NormalRoom`, `ChestRoom`, `StairRoom`).
+      - [ ] Implement `getRoomAt(x, y)`.
+      - [ ] Implement `loadRoom(Room room)`.
+      - [ ] Implement `generateFloor(FloorObject floor)`.
+      - [ ] Implement `generateRoom(RoomObject room)`.
+
+    - **Combat & Health System**
+      - [ ] Implement `attack(Player)` logic.
+      - [ ] Implement enemy health tracking.
+      - [ ] Implement player health tracking.
+
+    - **Phaser-Svelte Integration**
+      - [ ] Implement event handling to pause/resume Phaser when Svelte UI is open.
+      - [ ] Ensure seamless UI overlay with proper layering.
+
+    - **UI & Overlays**
+      - [ ] Implement `ChestOpeningScene`.
+      - [ ] Implement `LoseLifeScene`.
+      - [ ] Implement `SettingsScene`.
 - **Back end:**
     - [ ] Implement `createSubscription`
     - [ ] Add all stripe Methods in .auth file
@@ -69,14 +178,46 @@
         - [ ] Enemies
         - [ ] Weapons
         - [ ] Chests
+  - AI:
+    - [ ] Add option to generate enemies
+      - [ ] Add check to see if enemy is valid
+      - [ ] If generation fails, use default enemy
+    - [ ] Add option to generate weapons
+      - [ ] Add check to see if weapon is valid
+      - [ ] If generation fails, use default weapon
+    - [ ] Add chest generation to room/floor
+    - [ ] Add tests for enemies, weapons, chest generation
+      - [ ] Check if response is in proper format
+      - [ ] Check if there are enough chests in the floor ( >= 3)
+
 
 #### Sprint 3
 - **Front end:**
+  - **Svelte**
+    - **Final Testing & Debugging**
+      - [ ] **Unit Testing** with **Svelte Testing Library**.
+      - [ ] **End-to-End Testing** with **Cypress**.
+      - [ ] **Accessibility Testing** using **Google Lighthouse**.
+  - **Phaser**
+    - **Save Optimization (Phaser)**
+      - [ ] Implement `compareFloorState(Floor oldFloor, Floor newFloor)`.
+      - [ ] Ensure `Save()` only updates changed elements.
+      - [ ] Call `Save()` when opening a chest (`openChest(Chest chest)`).
+      - [ ] Call `Save()` when progressing to a new floor (`progressToNextFloor()`).
+    - **Final Polish (Phaser)**
+      - [ ] Optimize floor loading to load only adjacent rooms.
+      - [ ] Implement animations for movement, attacks, and UI transitions.
+      - [ ] Implement additional sound effects for interaction.
+      - [ ] Final round of playtesting for balancing and bug fixes.
+
 - **Back end:**
     - [ ] Implement Story generation for between floors
     - [ ] Final Testing
     - [ ] Work on Deployment Plan for backend
     - [ ] Implement endpoints for high score and leader board
+
+  - AI:
+    - [ ] Add story generation for in between floors
 
 
 ### All Tasks Outline (Summary of all Tasks)
@@ -84,22 +225,238 @@
 ---
 ## System Architecture
 ### Subsystems and UML Class Diagrams
-#### Front-End Objects
 
-#### User Flow
+#### **Scene Structure & UML Layout - Phaser**
 
+The game consists of the following **scenes**:
 
-### User Interfaces
+1. **MainMenuScene** - Displays title screen, allows navigation to settings or new game.
+2. **ThemeSelectionScene** - Lets the player choose a theme between 3 options.
+3. **DifficultySelectionScene** - Selects difficulty (Easy-Medium-Hard); passes to backend for floor generation.
+4. **StoryScene** - Displays AI-generated story text while a new floor loads.
+5. **GameScene** - Main gameplay scene (handles player movement, enemy interactions, etc.).
+6. **LoseLifeScene** - Triggered when the player dies but has remaining lives.
+7. **GameOverScene** - Triggered when the player loses all lives; passes level to backend for high-score update.
+8. **ChestOpeningScene** - Displays chest contents after opening; triggers save.
+9. **SettingsScene** - Allows the player to manually save, adjust settings, or return to the main menu.
+
+##### **Scene Interactions**
+- `MainMenuScene` → `ThemeSelectionScene` → `DifficultySelectionScene` → `StoryScene` → `GameScene`
+- `GameScene` → (`LoseLifeScene` or `ChestOpeningScene`) → `GameScene`
+- `GameScene` → `GameOverScene` → `MainMenuScene`
+- `SettingsScene` is accessible from `GameScene` at any time.
+
+#### **Class Design & Inheritance - Phaser**
+Phaser will be passed all of this information from the backend when calling the `create-game` endpoint. It will create copies of all of these classes to update as the User interacts with the game. The following are the names and descriptions of all the classes that Phaser will use:
+
+##### **Rooms**
+```plaintext
+Room (abstract)
+│-- NormalRoom
+│-- ChestRoom (contains a Chest)
+│-- StairRoom (contains a Stair)
+```
+- `Room`
+  - `number type` 0: Normal, 1: Chest, 2: Stair.
+  - `string[][] tiles` Contains single-character entries denoting the type of tile.
+  - `EnemyObject[] enemies` Contains all enemies within the room.
+  - `boolean isCleared()`
+  - `updateEnemies(EnemyObject[])`
+
+##### **Interactable Objects**
+```plaintext
+Interactable (abstract)
+│-- Chest
+│-- Stair
+```
+- `Interactable`
+  - `boolean interact(Player)`
+
+##### **Other Classes**
+- `Floor`
+  - `String theme` The theme of the dungeon.
+  - `number level` 
+  - `RoomObject[][] rooms` Contains all room objects in the floor
+  - `RoomObject getRoomAt(number x, number y)` Returns a given RoomObject
+- `Player`
+  - `number health, posX, posY`
+  - `move(direction)` Updates posX and posY.
+  - `Item primaryWeapon, secondaryWeapon`
+- `Enemy`
+  - `number health, posX, posY`
+  - `Item weapon`
+  - `attack(Player)`
+- `Item`
+  - `string sprite`
+  - `number damage`
+  - `number type` 0: Melee, 1: Ranged, 2: Sweep, 3: AoE
+
+#### **Backend Interactions - Phaser**
+
+##### **API Endpoints**
+
+| Endpoint | Request | Response | Purpose |
+|----------|---------|----------|---------|
+| `GetFloor(number difficultyLevel, String theme)` | `difficultyLevel, theme` | `FloorObject` | Retrieves floor layout, rooms, enemies. |
+| `Save(Floor floorObject)` | `floorObject` | `200 OK` | Saves only updated enemy/chest attributes. |
+| `GetText()` | None | `String` | Returns AI-generated story text. |
+| `SetHighScore(number level)` | `level` | `200 OK` | Updates leaderboard on game over. |
+
+#### **Utility Functions - Phaser**
+
+##### **1. Room & Floor Management**
+- `loadRoom(Room room)`: Loads a room when entered.
+- `generateFloor(FloorObject floor)`: Initializes floor data from backend response.
+- `generateRoom(RoomObject room)`: Places tiles, enemies, and objects.
+
+##### **2. Collision & Movement**
+- `checkCollision(Player, direction)`: Ensures movement is valid.
+- `enemyPathfind(Enemy, Player)`: Moves enemies toward the player.
+
+##### **3. Save & Compare Changes**
+- `compareFloorState(Floor oldFloor, Floor newFloor)`: Determines what changed before saving. This optimizes Save() by only sending to the backend what changed.
+- `openChest(Chest chest)`: Calls `Save()` when a chest is opened. Prompts the user to take or leave the item.
+- `progressToNextFloor()`: Calls `GetFloor()` for the next level.
+
+#### **Phaser-Svelte Interaction**
+
+- **Svelte UI overlays Phaser**, pausing the game when active.
+- Phaser listens for an event to **resume** gameplay when UI is closed.
+- Svelte handles **login, leaderboards, accessibility settings, and subscription services**; Phaser handles **all other UI**.
+
+#### Front-End Objects - Svelte
+
+The frontend follows a **Component-Based Architecture** using **Svelte** with modular, reusable components.
+
+#### **Frontend Subsystems & Component Breakdown - Svelte**
+Each subsystem is implemented using **Svelte components**.
+
+| **Component**       | **Purpose** |
+|---------------------|------------|
+| `Login.svelte` | Handles user authentication UI (input fields, validation) |
+| `Signup.svelte` | UI for account registration, form validation |
+| `Subscription.svelte` | UI for selecting and processing payments via Stripe API |
+| `Settings.svelte` | User preferences (Appearance, Account settings) |
+| `Game.svelte` | Embeds **Phaser.js** for game rendering |
+| `Navbar.svelte` | Persistent navigation bar |
+| `Button.svelte` | Reusable button component |
+| `FormInput.svelte` | Handles form inputs (text, password) |
+| `Modal.svelte` | Displays popups (notifications, alerts) |
+| `ToastNotification.svelte` | Shows success/error messages |
+| `LoadingSpinner.svelte` | Displays a loading animation while waiting for API responses |
+
+#### **State Management**
+We use **Svelte Stores** to efficiently manage UI state.
+
+| **Store Name**  | **Purpose** |
+|----------------|------------|
+| `authStore.js` | Stores authentication state (user session, token) |
+| `uiStore.js` | Stores UI preferences (dark mode, accessibility settings) |
+
+### **Key User Interactions**
+1. **User visits the Login Page (`Login.svelte`)**
+   - Enters credentials → API Request → Redirect to Dashboard.
+   - If incorrect credentials → Display **error message**.
+   - If a new user → Clicks “Create Account” → Redirects to Signup.
+
+   - **Elements:** Username, Password fields, Submit button.
+   - **Interactions:** Redirects to Dashboard if login is successful.
+   - **Accessibility:** Supports **keyboard navigation & screen readers**.
+
+2. **Signup Process (`Signup.svelte`)**
+   - User fills out form → API Request to register.
+   - Email validation check → If invalid, **error message**.
+   - If successful → Redirect to **Login Page**.
+   - **Elements:** Username, Email, Password fields, Submit button.
+   - **Interactions:** Redirects to Dashboard if signup is successful.
+   - **Accessibility:** Supports **keyboard navigation & screen readers**.
+
+3. **Subscription Process (`Subscription.svelte`)**
+   - User selects plan → Processes payment via **Stripe API**.
+   - If successful → Grants **premium features**.
+   - **Elements:** Monthly & Lifetime subscription options.
+   - **Interactions:** Payment processing via **Stripe API**.
+   - **Error Handling:** Displays **errors on failed transactions**.
+
+4. **Settings Page (`Settings.svelte`)**
+- **Elements:** Change Username, Update Preferences.
+- **Interactions:** Saves settings in **local storage & database**.
+
 #### Accessibility
-#### Flow and Design for Pages
 
-### Database Tables
+We ensure **UI accessibility compliance** with **WCAG standards**.
+
+**Keyboard Navigation** – `Tab` key support for form fields  
+**Color Contrast Compliance** – Ensuring readability for visually impaired users  
+**Screen Reader Support** – Adding `aria-label` attributes to key elements  
+
+#### Flow and Design for Pages
+The Phaser application containing all game-related UI will be embeded within a Svelte page. Each component will work independently in a sort-of baton pass system to display all the necessary pages. The following UML diagram displays this interaction and outlines all frontend pages and scenes.
+
+![Front-End UML](./assets/Frontend%20UML.png)
+
+## **Database Interaction (API Endpoints)**
+The frontend communicates with **backend APIs** to fetch/update user data.
+
+| **API Endpoint**       | **Purpose** |
+|-----------------------|------------|
+| `POST /api/login` | Authenticates users |
+| `POST /api/register` | Creates new accounts |
+| `GET /api/subscription` | Fetches available plans |
+| `POST /api/subscribe` | Processes payment |
+| `GET /api/settings` | Fetches user preferences |
+| `POST /api/settings` | Updates user preferences |
+
+## Database Tables
+### Users Table
+* **Table purpose:** Stores account details for each user. Our subscription level will be an integer telling which type of payment plan they are on and the stripeId being the identifier for stripe since that is all we need for them to be abler to run and process payemnts for our user on the backend.
+* **Columns:** `userId:(primary key) int | username: string | email:(encrytped) string | password:(hashed) string | subscriptionLevel: int | stripeId: int`
+
+### Players Table
+* **Table purpose:** Represents a character controlled by a user. The player will be how the User is able to interact with and traverse through the game. The player will have a specific sprite id which will tell the front end which specific sprites to give the player based on different assumptions the AI has made about the type of game the user would like to play.
+* **Columns:** `playerId:(primary key) int | userId:(foreign key) int | health: int | primaryWeapon:(foreign key) Weapon | secondaryWeapon:(foreign key) Weapon | spriteId: int`
+
+### Games Table
+* **Table purpose:** Stores details about the game session. The game object will be the main object in the game that gets saved when the user wants to save the game state. The game objectw will be updated in the database either after a major level is finished or if the user presses the **"Save Game"** option in the menu.
+* **Columns:** `gameId:(primary key) int | level: int | floorId:(foreign key) Floor Object | playerSpecifications: string | playerId:(foreign key) Player Object | storyText: string`
+
+### Floors Table
+* **Table purpose:** Stores information about different game maps. The floor will store all the needed rooms necessary for the floor object. This will be stored in a two dimensional array. Some of the pieces of the array will contain room objects and some will be null. The floor will only be made up of the valid room objects. The playerIn attribute will be the identifier of the last room the player was in before the game object gets saved. This will allow the player to respawn back into the last room they were in when they try to load up their game again.
+* **Columns:** `floorId:(primary key) int | rooms: 2d array of Room objects | playerIn: Room Object`
+
+### Enemies Table
+* **Table purpose:** Stores information about in-game enemies. The enemies will be generated and placed into specific rooms.
+* **Columns:** `enemyId:(primary key) int | attackLevel: int | attackFrequency: int | health: int | spriteId: int`
+
+### Rooms Table
+* **Table purpose:** Stores a room's details. A room is considered **cleared** when all of the enemies in the room have been defeated. This will be an indicator if the room needs to be updated in the database or not when the user saves the Game state object.
+* **Columns:** `roomId:(primary key) int | enemies: List of Enemy objects | chest: Chest Object | adjacentFloors: A list of adjacent Floor Objects | cleared: boolean` 
+
+### Weapon Table
+* **Table purpose:** Stores weapon details.
+* **Columns:** `weaponId:(primary key) | health: int | attackDamage: int`
+
+### Chest Table 
+* **Table purpose:** Represents a one-to-many relationship between rooms and chests.
+* **Columns:** `chestId:(primary key) int | roomId:(foreign key) Room Object | weaponId:(foreign key) Weapon Object`
 
 ### Backend UML
 
+
 ![UML](./assets/UML-backend.png)
 
+#### Game State Manager
+![Db Flow Chart](DBFlow.png)
+
+#### LLM functions
+![LLM UML](ai-uml.png)
+
+#### LLM Flow Chart
+![LLM flow chart](ai-flow-chart.png)
+
+
 ### System Performance
+In order to address the latency that LLMs introduce, we are using Groq to handle the computations needed to handle the LLMs. Groq offers access to LLMs on a generous limit for free users. Each user will be responsible for creating a Groq account and getting an API key. This will allow the game to be able to scale with the number of users so long as Groq's servers can handle the number of users.
 
 ### Security Risks
 Last Game is structured in such a way as to block as many potential security risks as possible from the get-go. Last Game will only collect information that is absolutely necessary for a functioning game with accounts, including username, password, and email. Collecting little information will lessen risks of sensitive data leaks due to bad actors, This will also ensure Last Game complies with privacy Laws such as GDPR. Security for other portions of the project are handleded by the external services, such as Stripe or the Groq AI, that Last Game will make API calls to. For more information on how the security of these services will work with Last Game, see the following sections:
@@ -179,11 +536,15 @@ This will ensure that the requested data is sent to the correct users.
 ---
 ## Programming Languages and Frameworks
 ### Front End
+<<<<<<< documentation/LowLevelDesign.md
 #### Frameworks
 - Svelte
 - Phaser.js
 #### Languages
 - TypeScript
+- Tailwind CSS
+- HTML
+
 ### Back End
 #### Frameworks
 - Gin
@@ -218,15 +579,11 @@ Stripe will be used to process payment information for subscriptions to Last Gam
 
 This approach  should increase security by removing the need to store payment information in the database. The database will only interact with customer and subscription IDs, meaning the database will never see sensitive payment information. That information and security will be offloaded to Stripe, which is well known and trusted in the community.
 
-
-#### Groq
-- Used for our LLM and is free
-- Needs an API Key
-- All Devs will use their own API Key
+#### **Groq**
+Groq will be used to handle the hardware requirements that LLMs have, as explained in [System Performance](#system-performance). Users will be in charge of creating a Groq account from the [Groq dashboard](https://console.groq.com/login) and getting an API key. Users can manage their API key in their settings on the front end if they need to delete or change the API key associated with their account. 
 
 
 ## Deployment Plan
-### These are ideas! I took them from the best example, we can come up with our own!
 
 ### Docker
 Docker allows the team to avoid "it works on my machine" issues, removes the need for each team member to download every software on the front end and back end to test the game, and makes deployment simple long term. Every team member will be able to fully focus on their respective components or assignments, allowing for a smoother development and testing process. As such, setting up docker for the game is a high priority task and involves the following steps:
@@ -246,11 +603,42 @@ Docker allows the team to avoid "it works on my machine" issues, removes the nee
 6. Use docker compose to start and stage the project
 
 
+#### 1. **Development Environment Setup**
+* **Version Control**: We will be utilizing Git and Gitlab to keep track of our work.
+* Technology Stack:
+	* **FrontEnd**: Svelte, TypeScript, Vite, Phaser.js
+	* **BackEnd**: Go Gin, GORM, Stripe
+	* **DataBase**: Postgres
+* Local Environments:
+	* Docker Containers will be utilized to keep all of our local environments acting with the same underlying operating system and technologies.
 
-- **Development Environment Setup**
-- **Staging Environment**
-- **User Acceptance Testing**
-- **Production Environment Testing**
-- **Production Deployment**
-- **Monitoring and Maintenance**
-- **Scaling**
+#### 2. **Development Pipeline**:
+* We will be utilizing GitLab CI/CD to ensure that any new changes or additions to the code must pass all required unit tests before being merged into the master branch.
+* Other conditions such as build time and network latency must be passed as well before being merged.
+* All pull request must be approved by at least the team lead at the time and whoever works within a similar development realm as the submitter. 
+#### 3. **User Acceptance Testing**
+* Ensure the UI, UX, and MVP is suitable for the key stakeholders in the project.
+* Check ups with the customer after major changes or updates have been pushed to ensure that we are all still aligned with our goals and values.
+#### 4. **Production Environment/Deployment**
+* Front End: 
+	* Will be hosted on Amazon CloudFront in a region closest to the major customers are to ensure quick access to edge locations where cached information will be stored.
+	* Will utilize Route53 for our domain name system service.
+	* Will utilize AWS S3 for storing any of our needed static assets such as our build folder generated from vite.
+
+* Back End: 
+	* Amazon ECS will be needed for delploying our docker containers.
+	* We can utilize AWS Elastic Beanstalk for simple deployment
+	* Amazon API Gateway will be utilized for a secure connection between the front end and backend services.
+* Database: 
+	* Amazon RDS will be utilized for our Postgres SQL database.
+* Scalability:
+	* Amazon Auto Scaling and Load Balancer will be utilized to automatically scale our backend servers based on set network parameters we choose.
+	* Amazon CloudWatch will be utilized for gathering data on performance and traffic.
+* Maintainance: 
+	* Amazon CodePipeline will allow for a seemless transition between our local code and our production, cloud hosted code. Any changes or fixes we need to do will be automatically updated through CodePipeline by updating whenever we make pushes/merges to our master branch.
+	* Frequent updates including bug tickets, network updates/improvements, and needed UX changes will be sent to the backlog so there will always be continual improvement upon the gameplay for the users.
+
+
+
+
+
