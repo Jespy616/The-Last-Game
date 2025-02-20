@@ -26,7 +26,9 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
 
     def create_room():
         room = makeRooms(agent)
-        rooms.append(room)
+        if room is not None:
+            rooms.append(room)
+            print(room)
 
     for i in range(numFloors):
         thread = threading.Thread(target=create_room)
@@ -36,32 +38,31 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     for thread in threads:
         thread.join()
 
-    for room in rooms:
-        print(room)
-        print()
     print("Total rooms:", len(rooms))
 
 
 
 def makeRooms(agent):
-    # TODO - Implement LLM prompt for making rooms
-    chat_completion = agent.chat.completions.create(
-        messages=[
-            {
-                "role": "system",
-                "content": f"You are a floor planner that outputs rooms in JSON.\n The JSON object must use the schema: {json.dumps(Room.model_json_schema(), indent=2)}"
-            },
-            {
-                "role": "user",
-                "content": f"Create a room with a 2D array of tiles. Each room should be 9 tiles tall and 13 tiles wide Each tile can be one of the following characters: 'w' for walls '.' for floors. Be creative when creating rooms."
-            }
-        ],
-        model="llama3-70b-8192",
-        temperature=0.9,
-        stream=False,
-        response_format={"type": "json_object"}
-    )
-    rooms = Room.model_validate_json(chat_completion.choices[0].message.content)
+    try: # silences errors from the agent - prevents bad ouput messing up the server
+        chat_completion = agent.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are a floor planner that outputs rooms in JSON.\n The JSON object must use the schema: {json.dumps(Room.model_json_schema(), indent=2)}"
+                },
+                {
+                    "role": "user",
+                    "content": f"Create a room with a 2D array of tiles. Each room must be 9 tiles tall and 13 tiles wide and should have no empty tiles. Each tile can be only one of the following characters: 'w' for walls '.' for floors. Be creative when creating rooms."
+                }
+            ],
+            model="llama3-70b-8192",
+            temperature=0.9,
+            stream=False,
+            response_format={"type": "json_object"}
+        )
+        rooms = Room.model_validate_json(chat_completion.choices[0].message.content)
+    except Exception as e:
+        return
     return rooms
 
 def checkRooms(room, chestCount):
