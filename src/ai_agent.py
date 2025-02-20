@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from sys import exit
 import re
+from floorWorkflow import floorWorkflow
 
 def main():
     parser = ArgumentParser(description='Prompt the Groq LLM')
@@ -18,7 +19,8 @@ def main():
     if args.floor:
         args.floor = ' '.join(args.floor)
         floorStr = args.floor
-        parseFloor(floorStr, parser)
+        roomCount,  area, floorTiles, wallTiles = parseFloor(floorStr, parser)
+        floorWorkflow(roomCount, floorTiles, wallTiles, area, apiKey)
         # TODO pass parsed floor data to floorWorkflow 
 
     if args.weapon:
