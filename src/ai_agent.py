@@ -47,28 +47,28 @@ def parseList(parseString, parser, errorMsg):
 
 
 def parseFloor(floorStr, parser):
-        if floorStr.split(" ", 1)[0].isnumeric():
-            roomCount = int(floorStr.split(" ", 1).pop(0))
-        else:
-            print("Invalid number of rooms")
-            parser.print_help()
-            exit(0)
-        floorStr = floorStr.replace(f"{roomCount} ", "")
-        
-        if floorStr.split(" ", 1)[0].isalpha():
-            area = floorStr.split(" ", 1).pop(0)
-        else:
-            print("Invalid area")
-            parser.print_help()
-            exit(0)
-        floorStr = floorStr.replace(f"{area} ", "")
+    if floorStr.split(" ", 1)[0].isnumeric():
+        roomCount = int(floorStr.split(" ", 1).pop(0))
+    else:
+        print("Invalid number of rooms")
+        parser.print_help()
+        exit(0)
+    floorStr = floorStr.replace(f"{roomCount} ", "")
+    
+    if floorStr.split(" ", 1)[0].isalpha():
+        area = floorStr.split(" ", 1).pop(0)
+    else:
+        print("Invalid area")
+        parser.print_help()
+        exit(0)
+    floorStr = floorStr.replace(f"{area} ", "")
 
-        floorTiles = parseList(floorStr, parser, "Invalid floor tiles")
-        # Remove the parsed floor tiles from the string
-        floorStr = floorStr.replace(f"[{' '.join(floorTiles)}]", "").replace(f"[{', '.join(floorTiles)}]", "").strip()
-        wallTiles = parseList(floorStr, parser, "Invalid wall tiles")
+    floorTiles = parseList(floorStr, parser, "Invalid floor tiles")
+    # Remove the parsed floor tiles from the string
+    floorStr = floorStr.replace(f"[{' '.join(floorTiles)}]", "").replace(f"[{', '.join(floorTiles)}]", "").strip()
+    wallTiles = parseList(floorStr, parser, "Invalid wall tiles")
 
-        return roomCount, area, floorTiles, wallTiles
+    return roomCount, area, floorTiles, wallTiles
 
 if __name__ == '__main__':
     main()
