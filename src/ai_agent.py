@@ -11,7 +11,7 @@ def main():
     parser.add_argument("-s", "--story", nargs="*")
     args = parser.parse_args()
     
-    api_key = args.api_key
+    apiKey = args.api_key
     floorStr = ""
 
     # Splits the floor arguments into usable data
@@ -19,6 +19,7 @@ def main():
         args.floor = ' '.join(args.floor)
         floorStr = args.floor
         parseFloor(floorStr, parser)
+        # TODO pass parsed floor data to floorWorkflow 
 
     if args.weapon:
         pass # TODO implement weapon parsing
@@ -68,7 +69,13 @@ def parseFloor(floorStr, parser):
     floorStr = floorStr.replace(f"[{' '.join(floorTiles)}]", "").replace(f"[{', '.join(floorTiles)}]", "").strip()
     wallTiles = parseList(floorStr, parser, "Invalid wall tiles")
 
+    print("Room count:", roomCount)
+    print("Area:", area)
+    print("Floor tiles:", floorTiles)
+    print("Wall tiles:", wallTiles)
+
     return roomCount, area, floorTiles, wallTiles
+
 
 if __name__ == '__main__':
     main()
