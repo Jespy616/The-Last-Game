@@ -34,18 +34,18 @@ class Floor(BaseModel):
 
 def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     # TODO - Implement the workflow for creating floors
-    agent = Groq(api_key=apiKey, timeout=10)
+    agent = Groq(api_key=apiKey, timeout=5)
     rooms = []
     threads = []
 
-    def create_room():
+    def createRoom():
         room = makeRooms(agent)
+        # print(room)
         if room is not None:
             rooms.append(room)
-            print(room)
 
     for i in range(numFloors):
-        thread = threading.Thread(target=create_room)
+        thread = threading.Thread(target=createRoom)
         threads.append(thread)
         thread.start()
 
@@ -55,7 +55,7 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     roomCount = 0
     for room in rooms:
         status, reason = checkRooms(room, 0)
-        print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
+        print(f"Room: {roomCount}, Status {status}, Reason: {reason}\n")
         if not status:
             pass
         roomCount += 1
@@ -83,6 +83,7 @@ def makeRooms(agent):
         )
         rooms = Room.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
+        # print(e)
         return
     return rooms
 
@@ -90,6 +91,12 @@ def makeRooms(agent):
 def checkRooms(room, chestCount):
     # TODO - Implement logic for checking chests
     # TODO - Implement logic for checking rooms
+    print(room, end="")
+    for row in room:
+        for item in row:
+            if item not in ["w", "."]:
+                return False, "Garbage"
+
     if len(room) != ROOM_HEIGHT:
         return False, "Height"
     for row in room:
@@ -122,10 +129,17 @@ def checkRooms(room, chestCount):
         roomCopy[doorPos[i][0]][doorPos[i][1]] = "$"
     
     floodFill(roomCopy, floodX, floodY, "$", "*")
-    print(roomCopy)
     for row in roomCopy:
         if "$" in row:
             return False, "Doors"
+    
+    # Check if borders are walls
+    for i in range(ROOM_HEIGHT):
+        if room[i][0] != "w" or room[i][ROOM_WIDTH - 1] != "w":
+            return False, "Borders"
+    for i in range(ROOM_WIDTH):
+        if room[0][i] != "w" or room[ROOM_HEIGHT - 1][i] != "w":
+            return False, "Borders"
         
     return True, "Valid"
 
@@ -151,6 +165,8 @@ def chooseTiles(floorTiles, wallTiles, areaTo):
 
 
 def floodFill(array, x, y, target, replacement):
+    # Flood fill algorithm 
+    # Replaces all instances of target with replacement starting at (x,y) to check if all tiles are connected
     if target == replacement:
         return
 
