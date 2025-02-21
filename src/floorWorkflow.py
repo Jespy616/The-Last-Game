@@ -11,6 +11,10 @@ ROOM_WIDTH = 13
 ROOM_HEIGHT = 9
 
 class Room(BaseModel):
+    """
+    Represents a room in the floor plan\n
+    Used to define the structure and validate the room created by the LLM\n
+    """
     tiles: List[List[str]] = Field(..., description="2D array representing the room tiles")
 
     def __str__(self):
@@ -35,22 +39,31 @@ class Floor(BaseModel):
 
 
 def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
+    """
+    Defines the basic workflow for creating rooms created by the LLM:\n
+    1. Create rooms\n
+    2. Check rooms\n
+    3. Fix rooms\n
+    4. Connect rooms\n
+    5. Creates adjacency list\n
+    6. Choose tiles\n
+    """
     agent = Groq(api_key=apiKey, timeout=5)
     rooms = []
     threads = []
 
     # def createRoom():
-        # room = makeRooms(agent)
-        # if room is not None:
-            # rooms.append(room)
+    #     room = makeRooms(agent)
+    #     if room is not None:
+    #         rooms.append(room)
 
     # for i in range(numFloors):
-        # thread = threading.Thread(target=createRoom)
-        # threads.append(thread)
-        # thread.start()
+    #     thread = threading.Thread(target=createRoom)
+    #     threads.append(thread)
+    #     thread.start()
 
     # for thread in threads:
-        # thread.join()
+    #     thread.join()
 
     # Use this line for testing without LLM
     rooms = [floorDefaults[f"room{i+1}"] for i in range(len(floorDefaults))]
@@ -58,11 +71,11 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     roomCount = 0
     for room in rooms:
         status, reason = checkRooms(room, 0)
-        print(f"\nRoom: {roomCount}, Status {status}, Reason: {reason}")
         while not status:
             fixRoom(room, reason)
             status, reason = checkRooms(room, 0)
-            print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
+            # print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
+        print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
         if reason != "Valid":
             pass
         for row in room:
@@ -73,6 +86,9 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
 
 
 def makeRooms(agent):
+    """
+    Prompts the LLM to create a ROOM_HEIGHTxROOM_WIDTH room\n
+    """
     try: # silences errors from the agent - prevents bad ouput messing up the server
         chat_completion = agent.chat.completions.create(
             messages=[
@@ -98,6 +114,10 @@ def makeRooms(agent):
 
 
 def checkRooms(room, chestCount):
+    """
+    Checks if the room is valid\n
+    Evaluates if unrecognized symbols, incorrect height, incorrect width, missing borders, disconnected tiles, unreachable doors\n
+    """
     # TODO - Implement logic for checking chests
     # TODO - Implement logic for checking rooms
     # print(room, end="")
@@ -105,7 +125,7 @@ def checkRooms(room, chestCount):
     # Check if the room is random characters
     for row in room:
         for item in row:
-            if item not in ["w", ".", "*"]:
+            if item not in ["w", "."]:
                 return True, "Garbage"
 
     # Check if room is the correct size
@@ -161,6 +181,9 @@ def checkRooms(room, chestCount):
 
 
 def fixRoom(room, reason):
+    """Fixes the room based on the reason it failed the checkRooms function\n
+    If the room contains invalid symbols or is the wrong height, it will be discarded\n
+    """
     if reason == "Garbage":
         pass
     elif reason == "Height":
@@ -190,8 +213,6 @@ def fixRoom(room, reason):
         pass
 
 
-
-
 def connectRooms(roomCount):
     # TODO - Implement LLM prompt for creating floor map
     pass
@@ -205,6 +226,7 @@ def createAdjacency(floorMap, roomCount):
 def chooseTiles(floorTiles, wallTiles, areaTo):
     # TODO - Implement LLM prompt for choosing tiles
     pass
+
 
 def getFloodStart(arr):
     floodX = 1
@@ -220,8 +242,10 @@ def getFloodStart(arr):
 
 
 def floodFill(array, x, y, target, replacement):
-    # Flood fill algorithm 
-    # Replaces all instances of target with replacement starting at (x,y) to check if all tiles are connected
+    """Flood fill algorithm\n 
+    Replaces all instances of target with replacement starting at (x,y) to check if all tiles are connected\n
+    Used to check if all tiles are connected in a room\n
+    """
     if target == replacement:
         return
 
@@ -238,7 +262,11 @@ def floodFill(array, x, y, target, replacement):
             if cy < rows - 1: stack.append((cx, cy + 1))
 
 
-def aStar(array, startTile, goalTile, wallTile):
+def aStar(array, startTile, goalTile, wallTile): 
+    """ A* pathfinding algorithm\n
+    Finds the shortest path between two tiles in a 2D array\n
+    Replaces tiles in order to make the room connected
+    """
     def heuristic(a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
