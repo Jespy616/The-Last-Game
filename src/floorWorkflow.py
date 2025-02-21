@@ -40,27 +40,29 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     threads = []
 
     # def createRoom():
-    #     room = makeRooms(agent)
-    #     if room is not None:
-    #         rooms.append(room)
+        # room = makeRooms(agent)
+        # if room is not None:
+            # rooms.append(room)
 
     # for i in range(numFloors):
-    #     thread = threading.Thread(target=createRoom)
-    #     threads.append(thread)
-    #     thread.start()
+        # thread = threading.Thread(target=createRoom)
+        # threads.append(thread)
+        # thread.start()
 
     # for thread in threads:
-    #     thread.join()
+        # thread.join()
 
-    rooms = [floorDefaults[f"room{i+1}"] for i in range(2)]
+    # Use this line for testing without LLM
+    rooms = [floorDefaults[f"room{i+1}"] for i in range(len(floorDefaults))]
 
     roomCount = 0
     for room in rooms:
         status, reason = checkRooms(room, 0)
+        print(f"\nRoom: {roomCount}, Status {status}, Reason: {reason}")
         while not status:
             fixRoom(room, reason)
             status, reason = checkRooms(room, 0)
-        print(f"\nRoom: {roomCount}, Status {status}, Reason: {reason}")
+            print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
         if reason != "Valid":
             pass
         for row in room:
@@ -145,7 +147,7 @@ def checkRooms(room, chestCount):
     floodFill(roomCopy, floodX, floodY, ".", "*")
     for row in roomCopy:
         if "." in row:
-            return False, "Doors"
+            return True, "Doors"
     
     # Check if borders are walls
     for i in range(ROOM_HEIGHT):
