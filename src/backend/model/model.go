@@ -54,7 +54,7 @@ type Game struct {
 type Floor struct {
 	gorm.Model
 	Rooms [][]Room
-	PlaeryIn Room
+	PlayerIn Room
 }
 
 type Room struct {
