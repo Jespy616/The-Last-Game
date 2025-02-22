@@ -26,7 +26,7 @@ type User struct {
 	gorm.Model
 	Username	string
 	Email	string `gorm:"unique"`
-	Password	string
+	password	string
 	SubscriptionLevel	int
 	stripeId	int
 }
@@ -38,6 +38,8 @@ type Player struct {
 	PrimaryWeapon Weapon
 	SecondaryWeapon Weapon
 	SpriteId int
+	PosX	int
+	PosY	int
 }
 
 type Game struct {
@@ -61,20 +63,24 @@ type Room struct {
 	Chest	Chest
 	AdjacentRooms []Room	
 	Cleared	bool
+	Tiles [][]string
 }
 
 type Enemy struct {
 	gorm.Model
 	AttackLevel	int	
-	AttackFrequency	int
 	Health	int
+	Weapon	Weapon
 	SpriteId	int
+	PosX	int
+	PosY	int
 }
 
 type Weapon struct {
 	gorm.Model
-	Health	int
 	AttackDamagae	int
+	SpriteId	int
+	Type	int
 }
 
 type Chest struct {
