@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"time"
+
 
 	"github.com/gin-gonic/gin"
 	"backend/auth"
@@ -17,8 +17,8 @@ func main() {
 	r := gin.Default()
 
 	// Middleware
-	r.Use(gin.Logger())          // Logging requests
-	r.Use(gin.Recovery())        // Handle panics gracefully
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 
 	// Public Routes (No authentication required)
 	public := r.Group("/api")
@@ -31,12 +31,14 @@ func main() {
 
 	// Protected Routes (Require JWT)
 	protected := r.Group("/api/protected")
-	protected.Use() // Protect with JWT Authentication
+	protected.Use() // Protect with JWT Authentication, encypt
 	{
+		// game stuff
 		protected.GET("/create_game", game_manager.CreateGame)
 		protected.POST("/save_game", game_manager.SaveGame)
 		protected.POST("/subscribe", auth.Subscribe)
 		protected.POST("/unsubscribe", game_manager.Unsubscribe)
+
 		// get models
 		protected.GET("/get_user/:userId", game_manager.GetUser)
 		protected.GET("/get_player/:playerId", game_manager.GetPlayer)
@@ -46,6 +48,7 @@ func main() {
 		protected.GET("/get_room/:roomId", game_manager.GetRoom)
 		protected.GET("/get_chest/:chestId", game_manager.GetChest)
 		protected.GET("/get_weapon/:weaponId", game_manager.GetWeapon)
+
 		// set and change models
 		protected.POST("/set_user", game_manager.SetUser)
 		protected.POST("/set_player/:playerId", game_manager.SetPlayer)

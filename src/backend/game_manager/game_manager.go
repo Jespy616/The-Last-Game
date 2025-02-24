@@ -10,17 +10,17 @@ import (
 
 
 func GetUser(c *gin.Context) {
-	playerID := c.Param("userId")
+	userID := c.Param("userId")
 
-	var player model.User
-	result := model.DB.First(&player, "userId = ?", playerID)
+	var user model.User
+	result := model.DB.First(&user, "ID = ?", userID)
 
 	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
 		return
 	}
 
-	c.JSON(http.StatusOK, player)
+	c.JSON(http.StatusOK, user)
 }
 
 func GetPlayer(c *gin.Context) {
