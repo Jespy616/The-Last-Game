@@ -35,7 +35,31 @@ class Room(BaseModel):
 
 
 class Floor(BaseModel):
-    pass
+    """
+    Used to define the structure of the floor plan\n
+    """
+    floor: List[List[int]] = Field(..., description="2D array representing the individual adjacent rooms")
+
+    def __str__(self):
+        floor = ""
+        for row in self.floor:
+            floor += " ".join(row) + "\n"
+        return floor
+    
+    def __len__(self):
+        rooms = 0
+        for row in self.floor:
+            for item in row:
+                if item != 0:
+                    rooms += 1
+        return rooms
+    
+    def __iter__(self):
+        for row in self.floor:
+            yield row
+    
+    def __getitem__(self, index):
+        return self.floor[index]
 
 
 def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
@@ -52,10 +76,10 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     rooms = []
     threads = []
 
-    # def createRoom():
-    #     room = makeRooms(agent)
-    #     if room is not None:
-    #         rooms.append(room)
+    def createRoom():
+        room = makeRooms(agent)
+        if room is not None:
+            rooms.append(room)
 
     # for i in range(numFloors):
     #     thread = threading.Thread(target=createRoom)
@@ -66,23 +90,25 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     #     thread.join()
 
     # Use this line for testing without LLM
-    rooms = [floorDefaults[f"room{i+1}"] for i in range(len(floorDefaults))]
+    # rooms = [floorDefaults[f"room{i+1}"] for i in range(len(floorDefaults))]
 
-    roomCount = 0
-    for room in rooms:
-        status, reason = checkRooms(room, 0)
-        while not status:
-            fixRoom(room, reason)
-            status, reason = checkRooms(room, 0)
-            # print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
-        print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
-        if reason != "Valid":
-            pass
-        for row in room:
-            print(" ".join(row))
-        roomCount += 1
-    print("Total rooms:", len(rooms))
+    # roomCount = 0
+    # for room in rooms:
+    #     status, reason = checkRooms(room, 0)
+    #     while not status:
+    #         fixRoom(room, reason)
+    #         status, reason = checkRooms(room, 0)
+    #         # print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
+    #     print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
+    #     if reason != "Valid":
+    #         pass
+    #     for row in room:
+    #         print(" ".join(row))
+    #     roomCount += 1
+    # print("Total rooms:", len(rooms))
 
+    floorMap = connectRooms(numFloors, agent)
+    print(floorMap)
 
 
 def makeRooms(agent):
@@ -213,9 +239,34 @@ def fixRoom(room, reason):
         pass
 
 
-def connectRooms(roomCount):
-    # TODO - Implement LLM prompt for creating floor map
-    pass
+def connectRooms(roomCount, agent):
+    """
+    Prompts the LLM to create a floor connecting roomCount rooms
+    """
+    try:
+        chat_completion = agent.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are a floor planner that outputs floors in JSON format. The JSON object must use the schema: {json.dumps(Floor.model_json_schema(), indent=2)}"
+                },
+                {
+                    "role": "user",
+                    "content": f"Create a 6x6 floor plan with rooms numbered 1 to {roomCount}. Each room must be adjacent to another room. Fill empty spaces with 0."
+                }
+            ],
+            model="llama3-70b-8192",
+            temperature=0.9,
+            stream=False,
+            response_format={"type": "json_object"}
+        )
+        response_content = chat_completion.choices[0].message.content
+        responseJson = json.dumps(response_content, indent=2)
+        # print(responseJson)
+    except Exception as e:
+        print(e)
+        return None
+    return responseJson
 
 
 def createAdjacency(floorMap, roomCount):
