@@ -101,12 +101,3 @@ type Chest struct {
 	RoomIn	*Room
 	Weapon	Weapon
 }
-
-// Make Getters and Setters for bottom for models in the game state manager code. Room, Enemy, chest, Weapon. 
-// 9 by 13 Rooms
-// . is walkable and w is wall. 
-// Set size for floor. 
-// Random enemy and chest placement
-// 6 by 5 floor. Use example floor from Jaxton in discord.
-// For now, utilize dummy data for unit tests in GORM and api endpoints
-// add read me to create a local postgres database for local development and testing.
