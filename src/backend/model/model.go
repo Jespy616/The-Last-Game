@@ -41,16 +41,19 @@ type User struct {
 	Email	string `gorm:"unique"`
 	password	string
 	SubscriptionLevel	int
-	stripeId	int
+	stripeID	int
 }
 
 type Player struct {
 	gorm.Model
-	User	User
+	UserID uint
+	User	User 
 	Health	int
+	PrimaryWeaponID uint
 	PrimaryWeapon Weapon
+	SecondaryWeaponID uint
 	SecondaryWeapon Weapon
-	SpriteId int
+	SpriteID int
 	PosX	int
 	PosY	int
 }
@@ -58,23 +61,26 @@ type Player struct {
 type Game struct {
 	gorm.Model
 	Level	int
+	FloorID uint
 	Floor	Floor
 	PlayerSpecifications	string
+	PlayerID uint
 	Player	Player
 	StoryText	string
 }
 
 type Floor struct {
 	gorm.Model
-	Rooms [][]Room
-	PlayerIn Room
+	Rooms [][]Room `gorm:"foreignKey:FloorID"`
+	PlayerInID uint
+	PlayerIn Room `gorm:"foreignKey:PlayerInID"`
 }
 
 type Room struct {
 	gorm.Model
-	Enemies	[]Enemy
+	Enemies	[]Enemy `gorm:"foreignKey:RoomID"`
 	Chest	Chest
-	AdjacentRooms []Room	
+	AdjacentRooms []Room `gorm:"foreignKey:RoomID;"`
 	Cleared	bool
 	Tiles [][]string
 }
@@ -83,8 +89,9 @@ type Enemy struct {
 	gorm.Model
 	AttackLevel	int	
 	Health	int
+	WeaponID uint
 	Weapon	Weapon
-	SpriteId	int
+	SpriteID	int
 	PosX	int
 	PosY	int
 }
@@ -92,12 +99,13 @@ type Enemy struct {
 type Weapon struct {
 	gorm.Model
 	AttackDamagae	int
-	SpriteId	int
+	SpriteID	int
 	Type	int
 }
 
 type Chest struct {
 	gorm.Model
-	RoomIn	*Room
+	RoomID uint
+	RoomIn	*Room `gorm:"constraint:OnDelete:CASCADE"`
 	Weapon	Weapon
 }
