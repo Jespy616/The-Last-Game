@@ -2,16 +2,32 @@ package model
 
 import (
 	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
-// Base connect function that will be modified to meet database .env specifications
 func ConnectDB() {
-	dsn := "host=localhost user=myuser password=mypassword dbname=mydatabase port=5432 sslmode=disable TimeZone=UTC"
+	// Try loading .env-personal first
+	err := godotenv.Load(".env-personal")
+	if err != nil {
+		// If .env-personal doesn't exist, fallback to .env
+		log.Println("No .env-personal found, falling back to .env")
+		_ = godotenv.Load(".env")
+	}
+
+	// Construct the DSN using environment variables
+	dsn := "host=" + os.Getenv("DB_HOST") +
+		" user=" + os.Getenv("DB_USER") +
+		" password=" + os.Getenv("DB_PASSWORD") +
+		" dbname=" + os.Getenv("DB_NAME") +
+		" port=" + os.Getenv("DB_PORT") +
+		" sslmode=" + os.Getenv("DB_SSLMODE") +
+		" TimeZone=" + os.Getenv("DB_TIMEZONE")
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -88,3 +104,12 @@ type Chest struct {
 	RoomIn	*Room
 	Weapon	Weapon
 }
+
+// Make Getters and Setters for bottom for models in the game state manager code. Room, Enemy, chest, Weapon. 
+// 9 by 13 Rooms
+// . is walkable and w is wall. 
+// Set size for floor. 
+// Random enemy and chest placement
+// 6 by 5 floor. Use example floor from Jaxton in discord.
+// For now, utilize dummy data for unit tests in GORM and api endpoints
+// add read me to create a local postgres database for local development and testing.
