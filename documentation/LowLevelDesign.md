@@ -104,6 +104,7 @@ Make with the assistance of ChatGPT.
       - [ ] Fields:
         - [ ] **Change Username**
         - [ ] **Change Email**
+        - [ ] **Manage Subscription**
         - [ ] **Dark Mode Toggle**
       - [ ] API Calls:
         - [ ] `GET /api/settings` (fetch preferences)
