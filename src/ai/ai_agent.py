@@ -71,10 +71,10 @@ def parseFloor(floorStr, parser):
     floorStr = floorStr.replace(f"[{' '.join(floorTiles)}]", "").replace(f"[{', '.join(floorTiles)}]", "").strip()
     wallTiles = parseList(floorStr, parser, "Invalid wall tiles")
 
-    print("Room count:", roomCount)
-    print("Area:", area)
-    print("Floor tiles:", floorTiles)
-    print("Wall tiles:", wallTiles)
+    # print("Room count:", roomCount)
+    # print("Area:", area)
+    # print("Floor tiles:", floorTiles)
+    # print("Wall tiles:", wallTiles)
 
     return roomCount, area, floorTiles, wallTiles
 
