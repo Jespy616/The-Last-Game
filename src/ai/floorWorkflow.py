@@ -5,7 +5,7 @@ from typing import List
 import threading
 import heapq
 from copy import deepcopy
-from defaults import floorDefaults
+from defaults import roomDefaults, floorDefaults
 
 ROOM_WIDTH = 13
 ROOM_HEIGHT = 9
@@ -43,16 +43,13 @@ class Floor(BaseModel):
     def __str__(self):
         floor = ""
         for row in self.floor:
-            floor += " ".join(row) + "\n"
+            for item in row:
+                floor += str(item).rjust(3)
+            floor += "\n"
         return floor
     
     def __len__(self):
-        rooms = 0
-        for row in self.floor:
-            for item in row:
-                if item != 0:
-                    rooms += 1
-        return rooms
+        return len(self.floor)
     
     def __iter__(self):
         for row in self.floor:
@@ -75,40 +72,64 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     agent = Groq(api_key=apiKey, timeout=5)
     rooms = []
     threads = []
+    floorMap = floorDefaults[f"floor1"]
 
     def createRoom():
         room = makeRooms(agent)
         if room is not None:
             rooms.append(room)
+    
+    def createFloor():
+        floor = makeFloor(numFloors, agent)
+        if floor is not None:
+            floorMap = floor
+        return floorMap
 
-    # for i in range(numFloors):
-    #     thread = threading.Thread(target=createRoom)
-    #     threads.append(thread)
-    #     thread.start()
+    for i in range(numFloors):
+        thread = threading.Thread(target=createRoom)
+        threads.append(thread)
+        thread.start()
+    
+    thread = threading.Thread(target=createFloor)
+    threads.append(thread)
+    thread.start()
 
-    # for thread in threads:
-    #     thread.join()
+    for thread in threads:
+        thread.join()
 
     # Use this line for testing without LLM
-    # rooms = [floorDefaults[f"room{i+1}"] for i in range(len(floorDefaults))]
+    # rooms = [roomDefaults[f"room{}"] for i in range(len(roomDefaults))]
 
-    # roomCount = 0
-    # for room in rooms:
-    #     status, reason = checkRooms(room, 0)
-    #     while not status:
-    #         fixRoom(room, reason)
-    #         status, reason = checkRooms(room, 0)
-    #         # print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
-    #     print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
-    #     if reason != "Valid":
-    #         pass
-    #     for row in room:
-    #         print(" ".join(row))
-    #     roomCount += 1
+    roomCount = 0
+    for room in rooms:
+        status, reason = checkRooms(room, 0)
+        while not status:
+            fixRoom(room, reason)
+            status, reason = checkRooms(room, 0)
+            # print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
+        # print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
+        if reason != "Valid":
+            pass
+        # for row in room:
+        #     print(" ".join(row))
+        roomCount += 1
     # print("Total rooms:", len(rooms))
 
-    floorMap = connectRooms(numFloors, agent)
-    print(floorMap)
+    adjMatrix = createRoomAdjacency(floorMap, numFloors)
+    # print(floorMap)
+    # for item in adjMatrix:
+    #     print(item)
+
+    # Create JSON object
+    result = {
+        "rooms": [room.dict() for room in rooms],
+        "floorMap": floorMap,
+        "adjacencyMatrix": adjMatrix
+    }
+
+    # Convert to JSON string
+    result_json = json.dumps(result, indent=4)
+    print(result_json)
 
 
 def makeRooms(agent):
@@ -239,7 +260,7 @@ def fixRoom(room, reason):
         pass
 
 
-def connectRooms(roomCount, agent):
+def makeFloor(roomCount, agent):
     """
     Prompts the LLM to create a floor connecting roomCount rooms
     """
@@ -252,26 +273,47 @@ def connectRooms(roomCount, agent):
                 },
                 {
                     "role": "user",
-                    "content": f"Create a 6x6 floor plan with rooms numbered 1 to {roomCount}. Each room must be adjacent to another room. Fill empty spaces with 0."
+                    "content": f"Create a 2d 5x5 array that represents a floor plan. Each room is represented by a unique number. The floor plan must rooms from '1' to '{roomCount}'. Use 0 for empty rooms. Each room must be connected to at least one other room vertically or horizontally."
                 }
             ],
-            model="llama3-70b-8192",
+            model="mixtral-8x7b-32768",
             temperature=0.9,
             stream=False,
             response_format={"type": "json_object"}
         )
-        response_content = chat_completion.choices[0].message.content
-        responseJson = json.dumps(response_content, indent=2)
-        # print(responseJson)
+        floor = Floor.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
         print(e)
         return None
-    return responseJson
+    return floor
 
 
-def createAdjacency(floorMap, roomCount):
-    # TODO - Implement logic for creating adjacency list
-    pass
+def createRoomAdjacency(floorMap, roomCount):
+    adjMatrix = [[0 for _ in range(roomCount)] for _ in range(roomCount)]
+
+    for i in range(len(floorMap)):
+        for j in range(len(floorMap[i])):
+            if floorMap[i][j] == 0:
+                continue
+            
+            if j > 0 and floorMap[i][j - 1] != 0 and floorMap[i][j] <= roomCount and floorMap[i][j - 1] <= roomCount:
+                adjMatrix[floorMap[i][j] - 1][floorMap[i][j - 1] - 1] = "W"
+                adjMatrix[floorMap[i][j - 1] - 1][floorMap[i][j] - 1] = "E"
+
+            if j < len(floorMap[i]) - 1 and floorMap[i][j + 1] != 0 and floorMap[i][j] <= roomCount and floorMap[i][j + 1] <= roomCount:
+                adjMatrix[floorMap[i][j] - 1][floorMap[i][j + 1] - 1] = "E"
+                adjMatrix[floorMap[i][j + 1] - 1][floorMap[i][j] - 1] = "W"
+
+            if i > 0 and floorMap[i - 1][j] != 0 and floorMap[i][j] <= roomCount and floorMap[i - 1][j] <= roomCount:
+                adjMatrix[floorMap[i][j] - 1][floorMap[i - 1][j] - 1] = "N"
+                adjMatrix[floorMap[i - 1][j] - 1][floorMap[i][j] - 1] = "S"
+
+            if i < len(floorMap) - 1 and floorMap[i + 1][j] != 0 and floorMap[i][j] <= roomCount and floorMap[i + 1][j] <= roomCount:
+                adjMatrix[floorMap[i][j] - 1][floorMap[i + 1][j] - 1] = "S"
+                adjMatrix[floorMap[i + 1][j] - 1][floorMap[i][j] - 1] = "N"
+
+    return adjMatrix
+
 
 
 def chooseTiles(floorTiles, wallTiles, areaTo):
@@ -370,3 +412,5 @@ def aStar(array, startTile, goalTile, wallTile):
                 heapq.heappush(openSet, (fScore[neighbor], neighbor))
 
     return []
+
+
