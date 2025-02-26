@@ -598,8 +598,8 @@ This will ensure that the requested data is sent to the correct users.
 - Phaser.js
 #### Languages
 - TypeScript
-- Tailwind CSS
 - HTML
+- CSS
 
 ### Back End
 #### Frameworks
