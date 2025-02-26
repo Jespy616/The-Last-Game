@@ -35,6 +35,73 @@ func ConnectDB() {
 	log.Println("Database connected successfully")
 }
 
+func MigrateDB() {
+	query := `
+	CREATE TABLE IF NOT EXISTS floors (
+		id SERIAL PRIMARY KEY,
+		created_at TIMESTAMPTZ DEFAULT now(),
+		updated_at TIMESTAMPTZ DEFAULT now(),
+		deleted_at TIMESTAMPTZ,
+		player_in_id BIGINT
+	);`
+	
+	err := DB.Exec(query).Error
+	if err != nil {
+		log.Fatal("Failed to create floors table manually:", err)
+	}
+	log.Println("Floors table created successfully")
+	
+	err = DB.AutoMigrate(
+		&Floor{},
+		&Room{},
+		&Chest{},
+		&Weapon{},
+		&Enemy{},
+		&Player{},
+		&Game{},
+		&User{},
+		)
+	if err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
+	log.Println("Database migrated successfully")
+
+	query = `
+	DO $$ 
+	BEGIN 
+	    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+	                   WHERE table_name='floors' AND column_name='player_in_id') 
+	    THEN 
+	        ALTER TABLE floors ADD COLUMN player_in_id BIGINT;
+	    END IF;
+	    
+	    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+	                   WHERE table_name='floors' AND constraint_name='fk_floors_player_in') 
+	    THEN 
+	        ALTER TABLE floors ADD CONSTRAINT fk_floors_player_in
+	        FOREIGN KEY (player_in_id) REFERENCES rooms(id) ON DELETE SET NULL;
+	    END IF;
+	END $$;
+	`
+
+	err = DB.Exec(query).Error
+	if err != nil {
+		log.Fatal("Failed to alter floors table:", err)
+	}
+	log.Println("Floors table altered successfully")
+
+	query = `
+	ALTER TABLE rooms ADD COLUMN IF NOT EXISTS floor_id BIGINT;
+	ALTER TABLE rooms ADD CONSTRAINT fk_rooms_floor
+	FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE;
+	`
+	err = DB.Exec(query).Error
+	if err != nil {
+		log.Fatal("Failed to update rooms table:", err)
+	}
+	log.Println("Rooms table updated successfully with floor_id")
+}
+
 type User struct {
 	gorm.Model
 	Username	string
@@ -70,19 +137,24 @@ type Game struct {
 }
 
 type Floor struct {
-	gorm.Model
-	Rooms [][]Room `gorm:"foreignKey:FloorID"`
-	PlayerInID uint
-	PlayerIn Room `gorm:"foreignKey:PlayerInID"`
+    gorm.Model
+    Rooms      []Room `gorm:"foreignKey:FloorID;constraint:OnDelete:CASCADE;"`
+    PlayerInID uint
+    PlayerIn   *Room `gorm:"foreignKey:PlayerInID"`
 }
 
 type Room struct {
-	gorm.Model
-	Enemies	[]Enemy `gorm:"foreignKey:RoomID"`
-	Chest	Chest
-	AdjacentRooms []Room `gorm:"foreignKey:RoomID;"`
-	Cleared	bool
-	Tiles [][]string
+    gorm.Model
+    FloorID       uint `gorm:"not null;index"`
+    Floor         Floor `gorm:"constraint:OnDelete:CASCADE;"`
+    Enemies       []Enemy `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
+    ChestID       uint
+    Chest         Chest
+    AdjacentRooms []*Room `gorm:"many2many:room_adjacency;"`
+    Cleared       bool
+    Tiles         string `gorm:"type:text"`
+    XPos          uint
+    YPos          uint
 }
 
 type Enemy struct {
@@ -92,6 +164,8 @@ type Enemy struct {
 	WeaponID uint
 	Weapon	Weapon
 	SpriteID	int
+	RoomID uint
+	Room Room `gorm:"constraint:OnDelete:CASCADE;"`
 	PosX	int
 	PosY	int
 }
@@ -105,7 +179,8 @@ type Weapon struct {
 
 type Chest struct {
 	gorm.Model
-	RoomID uint
+	RoomInID uint
 	RoomIn	*Room `gorm:"constraint:OnDelete:CASCADE"`
+	WeaponID uint
 	Weapon	Weapon
 }
