@@ -14,7 +14,10 @@
 
 <div class="container">
   <div class="menu-background">
-    <h1 class="title page-title">Create Account</h1>
+    <div class="page-header">
+      <span class="back-arrow title page-title"><a href="/" use:link class="link">&lt;</a></span> 
+      <h1 class="title page-title">CREATE ACCOUNT</h1>
+    </div>
 
     <input class="input-field" type="text" placeholder="Username" bind:value={username} />
     <input class="input-field" type="email" placeholder="Email" bind:value={email} />

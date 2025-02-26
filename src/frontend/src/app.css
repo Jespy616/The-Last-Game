@@ -72,6 +72,29 @@ p {
   margin: 8px;
 }
 
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centers the title */
+  position: relative; /* Allows absolute positioning for the arrow */
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* Back arrow positioned in the left corner */
+.back-arrow {
+  position: absolute;
+  left: 15px;
+  cursor: pointer;
+}
+
+.back-arrow a {
+  text-decoration: none;
+  color: var(--white);
+  text-shadow: .05em .05em 0em var(--primary-color);
+  -webkit-text-stroke: .005em var(--primary-color);
+}
+
 /* Menu Background Box */
 .menu-background {
   background-color: var(--background-color);
@@ -234,7 +257,6 @@ input[type="checkbox"] {
   accent-color: var(--secondary-color);
 }
 
-/* Links - Create Account & Forgot Password */
 .links {
   display: flex;
   width: 80%;

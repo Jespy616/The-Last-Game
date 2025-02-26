@@ -1,4 +1,6 @@
 <script>
+  import { link } from "svelte-spa-router"; // Import `link` for navigation
+
   let darkMode = false;
 
   function toggleDarkMode() {
@@ -27,7 +29,11 @@
 </script>
 <div class="container">
   <div class="menu-background">
-    <h1 class="title page-title">Settings</h1>
+    <div class="page-header">
+      <span class="back-arrow title page-title"><a href="/" use:link class="link">&lt;</a></span> 
+      <h1 class="title page-title">SETTINGS</h1>
+    </div>
+    
 
     <button class="submit-button" on:click={editInfo}>
       Edit Username/Email

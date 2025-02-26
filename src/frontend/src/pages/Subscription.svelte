@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { link } from "svelte-spa-router"; // Import `link` for navigation
+
   function handleSubscription(type: "monthly" | "lifetime"): void {
     console.log("Subscribing to:", type);
     // TODO: Implement subscription API call
@@ -7,7 +9,10 @@
 
 <div class="container">
   <div class="menu-background">
-    <h1 class="title page-title">Subscriptions</h1>
+    <div class="page-header">
+      <span class="back-arrow title page-title"><a href="/settings" use:link class="link">&lt;</a></span> 
+      <h1 class="title page-title">SUBSCRIPTIONS</h1>
+    </div>
 
     <div class="premium-box">
       <div>
