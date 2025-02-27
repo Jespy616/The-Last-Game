@@ -6,7 +6,7 @@ import threading
 import heapq
 from copy import deepcopy
 from defaults import roomDefaults, floorDefaults
-from random import choice
+from random import randint 
 
 ROOM_WIDTH = 13
 ROOM_HEIGHT = 9
@@ -106,9 +106,9 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
         while not status:
             fixRoom(room, reason)
             status, reason = checkRooms(room, 0)
-            # print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
+            # print(f"Room: {roomCount + 1}, Status {status}, Reason: {reason}")
         if reason != "Valid":
-            pass
+            room = roomDefaults[f"room{randint(1, len(roomDefaults))}"] 
         # for row in room:
         #     print(" ".join(row))
         roomCount += 1
@@ -167,9 +167,8 @@ def makeRooms(agent):
         rooms = Room.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
         # print(e)
-        rooms = [roomDefaults[f"room{i}"] for i in range(len(roomDefaults))]
-        print("Default Room Used")
-        return choice(rooms)
+        rooms = roomDefaults[f"room{randint(1, len(roomDefaults))}"] 
+        return rooms
     return rooms
 
 
@@ -244,9 +243,7 @@ def fixRoom(room, reason):
     """Fixes the room based on the reason it failed the checkRooms function\n
     If the room contains invalid symbols or is the wrong height, it will be discarded\n
     """
-    if reason == "Garbage":
-        pass
-    elif reason == "Height":
+    if reason == "Garbage" or reason == "Height":
         pass
     elif reason == "Width":
         for row in room:
