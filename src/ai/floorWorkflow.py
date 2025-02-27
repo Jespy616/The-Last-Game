@@ -115,10 +115,15 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
         roomCount += 1
     # print("Total rooms:", len(rooms))
 
+    # print("\nFloor Map:")
     adjMatrix = createRoomAdjacency(floorMap, numFloors)
-    # print(floorMap)
-    # for item in adjMatrix:
-    #     print(item)
+    # for row in floorMap:
+    #     print(row)
+    # print("\nAdjacency Matrix:")
+    count = 1
+    for item in adjMatrix:
+        # print(f"{str(count).rjust(3)}: {item}")
+        count += 1
 
     # Create JSON object
     roomsDict = {}
@@ -162,7 +167,7 @@ def makeRooms(agent):
         )
         rooms = Room.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
-        print(e)
+        # print(e)
         return
     return rooms
 
@@ -290,7 +295,7 @@ def makeFloor(roomCount, agent):
         )
         floor = Floor.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
-        print(e)
+        # print(e)
         return None
     return floor
 
@@ -303,19 +308,19 @@ def createRoomAdjacency(floorMap, roomCount):
             if floorMap[i][j] == 0:
                 continue
             
-            if j > 0 and floorMap[i][j - 1] != "" and floorMap[i][j] <= roomCount and floorMap[i][j - 1] <= roomCount:
+            if j > 0 and floorMap[i][j - 1] != 0 and floorMap[i][j] <= roomCount and floorMap[i][j - 1] <= roomCount:
                 adjMatrix[floorMap[i][j] - 1][floorMap[i][j - 1] - 1] = "W"
                 adjMatrix[floorMap[i][j - 1] - 1][floorMap[i][j] - 1] = "E"
 
-            if j < len(floorMap[i]) - 1 and floorMap[i][j + 1] != "" and floorMap[i][j] <= roomCount and floorMap[i][j + 1] <= roomCount:
+            if j < len(floorMap[i]) - 1 and floorMap[i][j + 1] != 0 and floorMap[i][j] <= roomCount and floorMap[i][j + 1] <= roomCount:
                 adjMatrix[floorMap[i][j] - 1][floorMap[i][j + 1] - 1] = "E"
                 adjMatrix[floorMap[i][j + 1] - 1][floorMap[i][j] - 1] = "W"
 
-            if i > 0 and floorMap[i - 1][j] != "" and floorMap[i][j] <= roomCount and floorMap[i - 1][j] <= roomCount:
+            if i > 0 and floorMap[i - 1][j] != 0 and floorMap[i][j] <= roomCount and floorMap[i - 1][j] <= roomCount:
                 adjMatrix[floorMap[i][j] - 1][floorMap[i - 1][j] - 1] = "N"
                 adjMatrix[floorMap[i - 1][j] - 1][floorMap[i][j] - 1] = "S"
 
-            if i < len(floorMap) - 1 and floorMap[i + 1][j] != "" and floorMap[i][j] <= roomCount and floorMap[i + 1][j] <= roomCount:
+            if i < len(floorMap) - 1 and floorMap[i + 1][j] != 0 and floorMap[i][j] <= roomCount and floorMap[i + 1][j] <= roomCount:
                 adjMatrix[floorMap[i][j] - 1][floorMap[i + 1][j] - 1] = "S"
                 adjMatrix[floorMap[i + 1][j] - 1][floorMap[i][j] - 1] = "N"
 
