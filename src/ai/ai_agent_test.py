@@ -1,6 +1,6 @@
 from os import system, getenv
 
-apiKey = getenv("GROQ_API")
+apiKey = getenv("GROQ_API_KEY")
 
 a = [i for i in range(1, 6)]
 b = [i for i in range(6, 10)]

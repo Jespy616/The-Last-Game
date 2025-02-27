@@ -6,6 +6,7 @@ import threading
 import heapq
 from copy import deepcopy
 from defaults import roomDefaults, floorDefaults
+from random import choice
 
 ROOM_WIDTH = 13
 ROOM_HEIGHT = 9
@@ -98,9 +99,6 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     for thread in threads:
         thread.join()
 
-    # Use this line for testing without LLM
-    # rooms = [roomDefaults[f"room{}"] for i in range(len(roomDefaults))]
-
     roomCount = 0
     for room in rooms:
         status, reason = checkRooms(room, 0)
@@ -162,14 +160,16 @@ def makeRooms(agent):
                 }
             ],
             model="llama3-70b-8192",
-            temperature=0.9,
+            temperature=1,
             stream=False,
             response_format={"type": "json_object"}
         )
         rooms = Room.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
         # print(e)
-        return
+        rooms = [roomDefaults[f"room{i}"] for i in range(len(roomDefaults))]
+        print("Default Room Used")
+        return choice(rooms)
     return rooms
 
 
