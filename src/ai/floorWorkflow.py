@@ -72,7 +72,7 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     agent = Groq(api_key=apiKey, timeout=5)
     rooms = []
     threads = []
-    floorMap = floorDefaults[f"floor1"]
+    floorMap = None
 
     def createRoom():
         room = makeRooms(agent)
@@ -80,6 +80,7 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
             rooms.append(room)
     
     def createFloor():
+        nonlocal floorMap # Allows the function to modify the variable in the parent scope
         floor = makeFloor(numFloors, agent)
         if floor is not None:
             floorMap = floor
@@ -103,11 +104,11 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     roomCount = 0
     for room in rooms:
         status, reason = checkRooms(room, 0)
+        # print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
         while not status:
             fixRoom(room, reason)
             status, reason = checkRooms(room, 0)
             # print(f"Room: {roomCount}, Status {status}, Reason: {reason}")
-        # print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
         if reason != "Valid":
             pass
         # for row in room:
@@ -120,10 +121,10 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     # for row in floorMap:
     #     print(row)
     # print("\nAdjacency Matrix:")
-    count = 1
-    for item in adjMatrix:
-        # print(f"{str(count).rjust(3)}: {item}")
-        count += 1
+    # count = 1
+    # for item in adjMatrix:
+    #     print(f"{str(count).rjust(3)}: {item}")
+    #     count += 1
 
     # Create JSON object
     roomsDict = {}
@@ -134,7 +135,7 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
 
     result = {
         "rooms": roomsDict,
-        "floorMap": floorMap,
+        "floorMap": floorMap.dict()["floor"] if type(floorMap) == Floor else floorDefaults["floor1"],
         "adjacencyMatrix": adjMatrix
     }
 
@@ -296,7 +297,7 @@ def makeFloor(roomCount, agent):
         floor = Floor.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
         # print(e)
-        return None
+        return floorDefaults["floor1"]
     return floor
 
 
