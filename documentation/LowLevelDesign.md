@@ -178,9 +178,9 @@ Make with the assistance of ChatGPT.
 
   - AI
     - [x] Set up main script so that the server can invoke prompts
-    - [ ] Add map generation
+    - [x] Add map generation
       - [x] Add checks to make sure each doorway/chest can be accesed
-      - [ ] Add checks to make sure there is >= 1 door in each room
+      - [x] Add checks to make sure there is >= 1 door in each room
       - [x] Connect rooms together to make the floor
       - [x] If generation fails, use a default room
     - [ ] Add map generation tests
