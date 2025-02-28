@@ -79,40 +79,40 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
         if room is not None:
             rooms.append(room)
     
-    # for i in range(numFloors):
-    #     thread = threading.Thread(target=createRoom)
-    #     threads.append(thread)
-    #     thread.start()
+    for i in range(numFloors):
+        thread = threading.Thread(target=createRoom)
+        threads.append(thread)
+        thread.start()
     
-    # for thread in threads:
-    #     thread.join()
+    for thread in threads:
+        thread.join()
 
     roomCount = 0
     for room in rooms:
         status, reason = checkRooms(room, 0)
-        print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
+        # print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
         while not status:
             fixRoom(room, reason)
             status, reason = checkRooms(room, 0)
-            print(f"Room: {roomCount + 1}, Status {status}, Reason: {reason}")
+            # print(f"Room: {roomCount + 1}, Status {status}, Reason: {reason}")
         if reason != "Valid":
             room = roomDefaults[f"room{randint(1, len(roomDefaults))}"] 
-        for row in room:
-            print(" ".join(row))
+        # for row in room:
+        #     print(" ".join(row))
         roomCount += 1
-    print("Total rooms:", len(rooms))
+    # print("Total rooms:", len(rooms))
 
     floorMap = makeFloor(numFloors)
 
-    print("\nFloor Map:")
+    # print("\nFloor Map:")
     adjMatrix = createRoomAdjacency(floorMap, numFloors)
-    for row in floorMap:
-        print(row)
-    print("\nAdjacency Matrix:")
-    count = 1
-    for item in adjMatrix:
-        print(f"{str(count).rjust(3)}: {item}")
-        count += 1
+    # for row in floorMap:
+    #     print(row)
+    # print("\nAdjacency Matrix:")
+    # count = 1
+    # for item in adjMatrix:
+    #     print(f"{str(count).rjust(3)}: {item}")
+    #     count += 1
 
     # Create JSON object
     roomsDict = {}
@@ -129,7 +129,7 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
 
     # Convert to JSON string
     result_json = json.dumps(result, indent=4)
-    # print(result_json)
+    print(result_json)
     return result_json
 
 
@@ -169,7 +169,6 @@ def checkRooms(room, chestCount):
     """
     # TODO - Implement logic for checking chests
     # TODO - Implement logic for checking rooms
-    # print(room, end="")
 
     # Check if the room is random characters
     for row in room:
@@ -308,8 +307,8 @@ def makeFloor(roomCount):
         else:
             roomsRemaining.append(room)
 
-    for row in floor:
-        print(" ".join([str(item).rjust(3) for item in row]))
+    # for row in floor:
+    #     print(" ".join([str(item).rjust(3) for item in row]))
     return floor
 
 
