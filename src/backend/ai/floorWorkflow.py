@@ -5,7 +5,7 @@ from typing import List
 import threading
 import heapq
 from copy import deepcopy
-from defaults import roomDefaults, floorDefaults
+from defaults import roomDefaults
 from random import randint, shuffle, choice
 
 ROOM_WIDTH = 13
@@ -17,6 +17,8 @@ class Room(BaseModel):
     Used to define the structure and validate the room created by the LLM\n
     """
     tiles: List[List[str]] = Field(..., description="2D array representing the room tiles")
+    def __init__(self, tiles: List[List[str]]):
+        super().__init__(tiles=tiles)
 
     def __str__(self):
         room = ""
@@ -33,31 +35,6 @@ class Room(BaseModel):
     
     def __getitem__(self, index):
         return self.tiles[index]
-
-
-class Floor(BaseModel):
-    """
-    Used to define the structure of the floor plan\n
-    """
-    floor: List[List[int]] = Field(..., description="2D array representing the individual adjacent rooms")
-
-    def __str__(self):
-        floor = ""
-        for row in self.floor:
-            for item in row:
-                floor += str(item).rjust(3)
-            floor += "\n"
-        return floor
-    
-    def __len__(self):
-        return len(self.floor)
-    
-    def __iter__(self):
-        for row in self.floor:
-            yield row
-    
-    def __getitem__(self, index):
-        return self.floor[index]
 
 
 def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
@@ -87,6 +64,12 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     for thread in threads:
         thread.join()
 
+    floorMap = makeFloor(numFloors)
+    adjMatrix = createRoomAdjacency(floorMap, numFloors)
+
+    for room in floorMap:
+        print(" ".join([str(item).rjust(3) for item in room]))
+
     roomCount = 0
     for room in rooms:
         status, reason = checkRooms(room, 0)
@@ -95,41 +78,41 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
             fixRoom(room, reason)
             status, reason = checkRooms(room, 0)
             # print(f"Room: {roomCount + 1}, Status {status}, Reason: {reason}")
-        if reason != "Valid":
-            room = roomDefaults[f"room{randint(1, len(roomDefaults))}"] 
+        if reason != "Valid" and reason != "Doors":
+            room = roomDefaults[f"room{randint(1, len(roomDefaults))}"]
+        if reason == "Doors":
+            room = checkDoors(room, adjMatrix, roomCount)
         roomCount += 1
-        # for row in room:
-        #     print(" ".join(row))
+    #     for row in room:
+    #         print(" ".join(row))
+    #     print()
+
     # print("Total rooms:", len(rooms))
-
-    floorMap = makeFloor(numFloors)
-    adjMatrix = createRoomAdjacency(floorMap, numFloors)
-
-    # print("\nFloor Map:")
-    # for row in floorMap:
-    #     print(row)
-    # print("\nAdjacency Matrix:")
-    # count = 1
-    # for item in adjMatrix:
-    #     print(f"{str(count).rjust(3)}: {item}")
-    #     count += 1
+    print("\nFloor Map:")
+    for row in floorMap:
+        print(row)
+    print("\nAdjacency Matrix:")
+    count = 1
+    for item in adjMatrix:
+        print(f"{str(count).rjust(3)}: {item}")
+        count += 1
 
     # Create JSON object
     roomsDict = {}
     count = 1
     for room in rooms:
-        roomsDict[f"room{count}"] = room.dict()["tiles"]
+        roomsDict[f"room{count}"] = room.model_dump()["tiles"]
         count += 1
 
     result = {
         "rooms": roomsDict,
-        "floorMap": floorMap.dict()["floor"] if type(floorMap) == Floor else floorDefaults["floor1"],
+        "floorMap": floorMap,
         "adjacencyMatrix": adjMatrix
     }
 
     # Convert to JSON string
     result_json = json.dumps(result, indent=4)
-    print(result_json)
+    # print(result_json)
 
 
 def makeRooms(agent):
@@ -156,7 +139,7 @@ def makeRooms(agent):
         rooms = Room.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
         # print(e)
-        rooms = roomDefaults[f"room{randint(1, len(roomDefaults))}"] 
+        rooms = Room(roomDefaults[f"room{randint(1, len(roomDefaults))}"])
         return rooms
     return rooms
 
@@ -202,8 +185,8 @@ def checkRooms(room, chestCount):
         if "." in row:
             floodFill(room, floodX, floodY, "$", ".")
             return False, "Connections"
-    floodFill(room, floodX, floodY, "$", ".")
-        
+    floodFill(room, floodX, floodY, "$", ".") 
+
     # Check if doors are reachable
     doorPos = [(ROOM_HEIGHT // 2, 0), (ROOM_HEIGHT // 2, ROOM_WIDTH - 1), (0, ROOM_WIDTH // 2), (ROOM_HEIGHT - 1, ROOM_WIDTH // 2)]
     roomCopy = deepcopy(room)
@@ -225,6 +208,48 @@ def checkRooms(room, chestCount):
             return False, "Borders"
         
     return True, "Valid"
+
+
+def checkDoors(room, adjMatrix, roomIndex):
+    _, floodX, floodY = getFloodStart(room.tiles)
+    
+    # Check if doors are reachable
+    doorPos = [(ROOM_HEIGHT // 2, 0), (ROOM_HEIGHT // 2, ROOM_WIDTH - 1), (0, ROOM_WIDTH // 2), (ROOM_HEIGHT - 1, ROOM_WIDTH // 2)]
+    directions = ["W", "E", "N", "S"]
+    roomCopy = deepcopy(room.tiles)
+
+    for i in range(len(doorPos)):
+        if directions[i] in adjMatrix[roomIndex]:
+            roomCopy[doorPos[i][0]][doorPos[i][1]] = "."
+    
+    floodFill(roomCopy, floodX, floodY, ".", "$")
+    
+    while True: # repeat until all doors are reachable
+        _, floodX, floodY = getFloodStart(roomCopy)
+        for i in range(len(directions)):
+            if directions[i] in adjMatrix[roomIndex] and roomCopy[doorPos[i][0]][doorPos[i][1]] != "$":
+                floodFill(roomCopy, floodX, floodY, ".", "$")
+                path = aStar(roomCopy, ".", "$", "w")
+                for tile in path:
+                    room.tiles[tile[0]][tile[1]] = "."
+                    roomCopy[tile[0]][tile[1]] = "."
+                floodFill(roomCopy, floodX, floodY, "$", ".")
+        
+        floodFill(roomCopy, floodX, floodY, ".", "$")
+        rows = 0
+        for row in roomCopy:
+            if "." not in row:
+                rows += 1
+        if rows == ROOM_HEIGHT:
+            break
+
+    # Apply changes from roomCopy back to the original room
+    for y in range(ROOM_HEIGHT):
+        for x in range(ROOM_WIDTH):
+            if roomCopy[y][x] == "$":
+                room.tiles[y][x] = "."
+
+    return room
 
 
 def fixRoom(room, reason):
@@ -254,16 +279,14 @@ def fixRoom(room, reason):
         for tile in path:
             room[tile[0]][tile[1]] = "."
         floodFill(room, 1, 1, "$", ".")
-    elif reason == "Doors":
-        pass
 
 
 def makeFloor(roomCount):
     """
     Generates a random floor plan with roomCount rooms\n
     """
-    FLOOR_WIDTH = 6
-    FLOOR_HEIGHT = 6
+    FLOOR_WIDTH = roomCount // 2 + 1
+    FLOOR_HEIGHT = roomCount // 2
     floor = [[0 for _ in range(FLOOR_WIDTH)] for _ in range(FLOOR_HEIGHT)]
     roomsRemaining = [i for i in range(1, roomCount + 1)]
     shuffle(roomsRemaining)
@@ -404,6 +427,10 @@ def aStar(array, startTile, goalTile, wallTile):
                 start = (y, x)
             if array[y][x] == goalTile:
                 goal = (y, x)
+            if start and goal:
+                break
+        if start and goal:
+            break
 
     if not start or not goal:
         return []
