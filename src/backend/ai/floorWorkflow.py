@@ -97,15 +97,15 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
             # print(f"Room: {roomCount + 1}, Status {status}, Reason: {reason}")
         if reason != "Valid":
             room = roomDefaults[f"room{randint(1, len(roomDefaults))}"] 
+        roomCount += 1
         # for row in room:
         #     print(" ".join(row))
-        roomCount += 1
     # print("Total rooms:", len(rooms))
 
     floorMap = makeFloor(numFloors)
+    adjMatrix = createRoomAdjacency(floorMap, numFloors)
 
     # print("\nFloor Map:")
-    adjMatrix = createRoomAdjacency(floorMap, numFloors)
     # for row in floorMap:
     #     print(row)
     # print("\nAdjacency Matrix:")
@@ -130,7 +130,6 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     # Convert to JSON string
     result_json = json.dumps(result, indent=4)
     print(result_json)
-    return result_json
 
 
 def makeRooms(agent):
@@ -344,6 +343,7 @@ def chooseTiles(floorTiles, wallTiles, areaTo):
     pass
 
 
+# from here to the bottom of file are helper functions for room creation and checks
 def getFloodStart(arr):
     floodX = 1
     floodY = 1
@@ -435,5 +435,4 @@ def aStar(array, startTile, goalTile, wallTile):
                 heapq.heappush(openSet, (fScore[neighbor], neighbor))
 
     return []
-
 
