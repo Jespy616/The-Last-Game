@@ -6,7 +6,7 @@ import threading
 import heapq
 from copy import deepcopy
 from defaults import roomDefaults, floorDefaults
-from random import randint 
+from random import randint, shuffle, choice
 
 ROOM_WIDTH = 13
 ROOM_HEIGHT = 9
@@ -73,56 +73,46 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     agent = Groq(api_key=apiKey, timeout=5)
     rooms = []
     threads = []
-    floorMap = None
 
     def createRoom():
         room = makeRooms(agent)
         if room is not None:
             rooms.append(room)
     
-    def createFloor():
-        nonlocal floorMap # Allows the function to modify the variable in the parent scope
-        floor = makeFloor(numFloors, agent)
-        if floor is not None:
-            floorMap = floor
-        return floorMap
-
-    for i in range(numFloors):
-        thread = threading.Thread(target=createRoom)
-        threads.append(thread)
-        thread.start()
+    # for i in range(numFloors):
+    #     thread = threading.Thread(target=createRoom)
+    #     threads.append(thread)
+    #     thread.start()
     
-    thread = threading.Thread(target=createFloor)
-    threads.append(thread)
-    thread.start()
-
-    for thread in threads:
-        thread.join()
+    # for thread in threads:
+    #     thread.join()
 
     roomCount = 0
     for room in rooms:
         status, reason = checkRooms(room, 0)
-        # print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
+        print(f"\nRoom: {roomCount + 1}, Status {status}, Reason: {reason}")
         while not status:
             fixRoom(room, reason)
             status, reason = checkRooms(room, 0)
-            # print(f"Room: {roomCount + 1}, Status {status}, Reason: {reason}")
+            print(f"Room: {roomCount + 1}, Status {status}, Reason: {reason}")
         if reason != "Valid":
             room = roomDefaults[f"room{randint(1, len(roomDefaults))}"] 
-        # for row in room:
-        #     print(" ".join(row))
+        for row in room:
+            print(" ".join(row))
         roomCount += 1
-    # print("Total rooms:", len(rooms))
+    print("Total rooms:", len(rooms))
 
-    # print("\nFloor Map:")
+    floorMap = makeFloor(numFloors)
+
+    print("\nFloor Map:")
     adjMatrix = createRoomAdjacency(floorMap, numFloors)
-    # for row in floorMap:
-    #     print(row)
-    # print("\nAdjacency Matrix:")
-    # count = 1
-    # for item in adjMatrix:
-    #     print(f"{str(count).rjust(3)}: {item}")
-    #     count += 1
+    for row in floorMap:
+        print(row)
+    print("\nAdjacency Matrix:")
+    count = 1
+    for item in adjMatrix:
+        print(f"{str(count).rjust(3)}: {item}")
+        count += 1
 
     # Create JSON object
     roomsDict = {}
@@ -139,7 +129,7 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
 
     # Convert to JSON string
     result_json = json.dumps(result, indent=4)
-    print(result_json)
+    # print(result_json)
     return result_json
 
 
@@ -270,31 +260,56 @@ def fixRoom(room, reason):
         pass
 
 
-def makeFloor(roomCount, agent):
+def makeFloor(roomCount):
     """
-    Prompts the LLM to create a floor connecting roomCount rooms
+    Generates a random floor plan with roomCount rooms\n
     """
-    try:
-        chat_completion = agent.chat.completions.create(
-            messages=[
-                {
-                    "role": "system",
-                    "content": f"You are a floor planner that outputs floors in JSON format. The JSON object must use the schema: {json.dumps(Floor.model_json_schema(), indent=2)}"
-                },
-                {
-                    "role": "user",
-                    "content": f"Create a 2d 5x5 array that represents a floor plan. Each room is represented by a unique number. The floor plan must rooms from '1' to '{roomCount}'. Use 0 for empty rooms. Each room must be connected to at least one other room vertically or horizontally."
-                }
-            ],
-            model="mixtral-8x7b-32768",
-            temperature=0.9,
-            stream=False,
-            response_format={"type": "json_object"}
-        )
-        floor = Floor.model_validate_json(chat_completion.choices[0].message.content)
-    except Exception as e:
-        # print(e)
-        return floorDefaults["floor1"]
+    FLOOR_WIDTH = 6
+    FLOOR_HEIGHT = 6
+    floor = [[0 for _ in range(FLOOR_WIDTH)] for _ in range(FLOOR_HEIGHT)]
+    roomsRemaining = [i for i in range(1, roomCount + 1)]
+    shuffle(roomsRemaining)
+    previousRooms = [[randint(0, FLOOR_WIDTH - 1), randint(0, FLOOR_HEIGHT - 1)]]
+
+    def calculateDensity(x, y):
+        density = 0
+        for i in range(max(0, x - 1), min(FLOOR_WIDTH, x + 2)):
+            for j in range(max(0, y - 1), min(FLOOR_HEIGHT, y + 2)):
+                if floor[i][j] != 0:
+                    density += 1
+        return density
+
+    while roomsRemaining:
+        room = roomsRemaining.pop()
+        placedRoom = choice(previousRooms)
+        x = placedRoom[0]
+        y = placedRoom[1]
+
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        shuffle(directions)
+
+        bestDirection = None
+        lowestDensity = float('inf')
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < FLOOR_WIDTH and 0 <= ny < FLOOR_HEIGHT and floor[nx][ny] == 0:
+                density = calculateDensity(nx, ny)
+                if density < lowestDensity:
+                    lowestDensity = density
+                    bestDirection = (dx, dy)
+
+
+        if bestDirection and lowestDensity < 5:
+            x += bestDirection[0]
+            y += bestDirection[1]
+            floor[x][y] = room
+            previousRooms.append([x, y])
+        else:
+            roomsRemaining.append(room)
+
+    for row in floor:
+        print(" ".join([str(item).rjust(3) for item in row]))
     return floor
 
 
@@ -323,7 +338,6 @@ def createRoomAdjacency(floorMap, roomCount):
                 adjMatrix[floorMap[i + 1][j] - 1][floorMap[i][j] - 1] = "N"
 
     return adjMatrix
-
 
 
 def chooseTiles(floorTiles, wallTiles, areaTo):
