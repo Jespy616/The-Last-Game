@@ -80,18 +80,18 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
         if reason == "Doors":
             room = checkDoors(room, adjMatrix, roomCount)
         roomCount += 1
-    #     for row in room:
-    #         print(" ".join(row))
-    #     print()
+        # for row in room:
+        #     print(" ".join(row))
+        # print()
 
     # print("Total rooms:", len(rooms))
     # print("\nFloor Map:")
     # for row in floorMap:
     #     for item in row:
     #         if item == 0:
-    #             print("   ", end="")
+    #             print(" . ", end="")
     #         else:
-    #             print(f"{str(item).rjust(3)}", end="")
+    #             print(f"{str(item).center(3)}", end="")
     #     print()
     # print("\nAdjacency Matrix:")
     # count = 1
@@ -224,6 +224,17 @@ def checkDoors(room, adjMatrix, roomIndex):
         if directions[i] in adjMatrix[roomIndex]:
             roomCopy[doorPos[i][0]][doorPos[i][1]] = "."
     
+    for i in range(ROOM_HEIGHT):
+        if roomCopy[i][0] == "w":
+            roomCopy[i][0] = "*"
+        if roomCopy[i][ROOM_WIDTH - 1] == "w":
+            roomCopy[i][ROOM_WIDTH - 1] = "*"
+    for i in range(ROOM_WIDTH):
+        if roomCopy[0][i] == "w":
+            roomCopy[0][i] = "*"
+        if roomCopy[ROOM_HEIGHT - 1][i] == "w":
+            roomCopy[ROOM_HEIGHT - 1][i] = "*"
+    
     floodFill(roomCopy, floodX, floodY, ".", "$")
     
     while True: # repeat until all doors are reachable
@@ -231,7 +242,7 @@ def checkDoors(room, adjMatrix, roomIndex):
         for i in range(len(directions)):
             if directions[i] in adjMatrix[roomIndex] and roomCopy[doorPos[i][0]][doorPos[i][1]] != "$":
                 floodFill(roomCopy, floodX, floodY, ".", "$")
-                path = aStar(roomCopy, ".", "$", "w")
+                path = aStar(roomCopy, ".", "$", "w", "*")
                 for tile in path:
                     room.tiles[tile[0]][tile[1]] = "."
                     roomCopy[tile[0]][tile[1]] = "."
@@ -285,7 +296,7 @@ def fixRoom(room, reason):
 
 def makeFloor(roomCount):
     """
-    Generates a random floor plan with roomCount rooms\n
+    Generates a random floor plan with roomCount rooms
     """
     FLOOR_WIDTH = roomCount // 2 
     FLOOR_HEIGHT = roomCount // 2
@@ -293,6 +304,7 @@ def makeFloor(roomCount):
     roomsRemaining = [i for i in range(1, roomCount + 1)]
     shuffle(roomsRemaining)
     previousRooms = [[randint(0, FLOOR_WIDTH - 1), randint(0, FLOOR_HEIGHT - 1)]]
+    floor[previousRooms[0][0]][previousRooms[0][1]] = roomsRemaining.pop()
 
     def calculateDensity(x, y):
         density = 0
@@ -308,7 +320,7 @@ def makeFloor(roomCount):
         x = placedRoom[0]
         y = placedRoom[1]
 
-        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # Only horizontal and vertical directions
         shuffle(directions)
 
         bestDirection = None
@@ -317,21 +329,24 @@ def makeFloor(roomCount):
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             if 0 <= nx < FLOOR_WIDTH and 0 <= ny < FLOOR_HEIGHT and floor[nx][ny] == 0:
+                # Ensure the new room is adjacent to an existing room
+                if (nx > 0 and floor[nx - 1][ny] != 0) or (nx < FLOOR_WIDTH - 1 and floor[nx + 1][ny] != 0) or \
+                   (ny > 0 and floor[nx][ny - 1] != 0) or (ny < FLOOR_HEIGHT - 1 and floor[nx][ny + 1] != 0):
                     density = calculateDensity(nx, ny)
                     if density < lowestDensity:
                         lowestDensity = density
                         bestDirection = (dx, dy)
 
-        if bestDirection and lowestDensity <= 5: 
+        if bestDirection:
             x += bestDirection[0]
             y += bestDirection[1]
             floor[x][y] = room
             previousRooms.append([x, y])
         else:
             roomsRemaining.append(room)
+            if len(roomsRemaining) == 1:
+                break  # Prevent infinite loop if no valid moves are available
 
-    # for row in floor:
-    #     print(" ".join([str(item).rjust(3) for item in row]))
     return floor
 
 
@@ -402,7 +417,7 @@ def floodFill(array, x, y, target, replacement):
             if cy < rows - 1: stack.append((cx, cy + 1))
 
 
-def aStar(array, startTile, goalTile, wallTile): 
+def aStar(array, startTile, goalTile, wallTile, ignoreTile=None): 
     """ A* pathfinding algorithm\n
     Finds the shortest path between two tiles in a 2D array\n
     Replaces tiles in order to make the room connected
@@ -416,7 +431,8 @@ def aStar(array, startTile, goalTile, wallTile):
         for dir in dirs:
             neighbor = (node[0] + dir[0], node[1] + dir[1])
             if 0 <= neighbor[0] < len(array) and 0 <= neighbor[1] < len(array[0]):
-                result.append(neighbor)
+                if ignoreTile is None or array[neighbor[0]][neighbor[1]] != ignoreTile:
+                    result.append(neighbor)
         return result
 
     start = None
