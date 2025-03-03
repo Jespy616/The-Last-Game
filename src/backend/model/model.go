@@ -130,22 +130,7 @@ func TeardownTestDB() {
 }
 
 func MigrateDB() {
-	query := `
-	CREATE TABLE IF NOT EXISTS floors (
-		id SERIAL PRIMARY KEY,
-		created_at TIMESTAMPTZ DEFAULT now(),
-		updated_at TIMESTAMPTZ DEFAULT now(),
-		deleted_at TIMESTAMPTZ,
-		player_in_id BIGINT
-	);`
-	
-	err := DB.Exec(query).Error
-	if err != nil {
-		log.Fatal("Failed to create floors table manually:", err)
-	}
-	log.Println("Floors table created successfully")
-	
-	err = DB.AutoMigrate(
+	err := DB.AutoMigrate(
 		&Floor{},
 		&Room{},
 		&Chest{},
@@ -159,61 +144,6 @@ func MigrateDB() {
 		log.Fatal("Failed to migrate database:", err)
 	}
 	log.Println("Database migrated successfully")
-
-	query = `
-	DO $$ 
-	BEGIN 
-	    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-	                   WHERE table_name='floors' AND column_name='player_in_id') 
-	    THEN 
-	        ALTER TABLE floors ADD COLUMN player_in_id BIGINT;
-	    END IF;
-	    
-	    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
-	                   WHERE table_name='floors' AND constraint_name='fk_floors_player_in') 
-	    THEN 
-	        ALTER TABLE floors ADD CONSTRAINT fk_floors_player_in
-	        FOREIGN KEY (player_in_id) REFERENCES rooms(id) ON DELETE SET NULL;
-	    END IF;
-	END $$;
-	`
-
-	err = DB.Exec(query).Error
-	if err != nil {
-		log.Fatal("Failed to alter floors table:", err)
-	}
-	log.Println("Floors table altered successfully")
-
-	query = `
-	DO $$ 
-	BEGIN 
-		-- Check if the column exists
-		IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-					WHERE table_name='rooms' AND column_name='floor_id') 
-		THEN 
-			ALTER TABLE rooms ADD COLUMN floor_id BIGINT;
-		END IF;
-		
-		-- Check if the foreign key constraint exists before adding it
-		IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
-					WHERE table_name='rooms' AND constraint_name='fk_rooms_floor') 
-		THEN 
-			ALTER TABLE rooms ADD CONSTRAINT fk_rooms_floor
-			FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE;
-		END IF;
-	END $$;
-	`
-
-	// query = `
-	// ALTER TABLE rooms ADD COLUMN IF NOT EXISTS floor_id BIGINT;
-	// ALTER TABLE rooms ADD CONSTRAINT fk_rooms_floor
-	// FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE;
-	// `
-	err = DB.Exec(query).Error
-	if err != nil {
-		log.Fatal("Failed to update rooms table:", err)
-	}
-	log.Println("Rooms table updated successfully with floor_id")
 }
 
 func CloseDB(db *gorm.DB) {
@@ -262,16 +192,16 @@ type Game struct {
 type Floor struct {
     gorm.Model
     Rooms      []Room `gorm:"foreignKey:FloorID;constraint:OnDelete:CASCADE;"`
-    PlayerInID uint
-    PlayerIn   *Room `gorm:"foreignKey:PlayerInID"`
+    PlayerInID *uint `gorm:"default:null"`
 }
 
 type Room struct {
     gorm.Model
-    FloorID       uint `gorm:"not null;index"`
+    FloorID       *uint  `gorm:"default:null"`
+    Floor         *Floor  `gorm:"constraint:OnDelete:CASCADE;"`
     Enemies       []Enemy `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
-    ChestID       uint
-    Chest         Chest
+    ChestID       *uint   `gorm:"default:null"` 
+    Chest         *Chest   `gorm:"constraint:OnDelete:SET NULL;"`
     AdjacentRooms []*Room `gorm:"many2many:room_adjacency;"`
     Cleared       bool
     Tiles         string `gorm:"type:text"`
@@ -280,27 +210,28 @@ type Room struct {
 }
 
 type Enemy struct {
-	gorm.Model
-	AttackLevel	int	
-	Health	int
-	WeaponID uint
-	Weapon	Weapon
-	SpriteID	int
-	RoomID uint
-	PosX	int
-	PosY	int
+    gorm.Model
+    AttackLevel  int	
+    Health       int
+    WeaponID     *uint   `gorm:"default:null"`
+    Weapon       *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"`
+    SpriteID     int
+    RoomID       uint   `gorm:"index"`
+    Room         Room   `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
+    PosX         int
+    PosY         int
 }
 
 type Weapon struct {
 	gorm.Model
-	AttackDamagae	int
+	AttackDamage	int
 	SpriteID	int
 	Type	int
 }
 
 type Chest struct {
-	gorm.Model
-	RoomInID uint
-	WeaponID uint
-	Weapon	Weapon
+    gorm.Model
+    RoomInID  *uint   `gorm:"default:null"` // Nullable Room reference
+    WeaponID  *uint   `gorm:"default:null"` // ✅ Keep as a pointer to allow NULL
+    Weapon    *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"` // Remove weapon reference if deleted
 }
