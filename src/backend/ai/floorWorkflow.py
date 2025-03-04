@@ -298,8 +298,8 @@ def makeFloor(roomCount):
     """
     Generates a random floor plan with roomCount rooms
     """
-    FLOOR_WIDTH = roomCount // 2 
-    FLOOR_HEIGHT = roomCount // 2
+    FLOOR_WIDTH = (roomCount + 1) // 2
+    FLOOR_HEIGHT = (roomCount + 1) // 2
     floor = [[0 for _ in range(FLOOR_WIDTH)] for _ in range(FLOOR_HEIGHT)]
     roomsRemaining = [i for i in range(1, roomCount + 1)]
     shuffle(roomsRemaining)

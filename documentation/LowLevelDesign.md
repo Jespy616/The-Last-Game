@@ -183,9 +183,6 @@ Make with the assistance of ChatGPT.
       - [x] Add checks to make sure there is >= 1 door in each room
       - [x] Connect rooms together to make the floor
       - [x] If generation fails, use a default room
-    - [ ] Add map generation tests
-      - [ ] check if each room is accessible
-      - [ ] check to see if reponse is in a proper format
 
 
 #### Sprint 2
