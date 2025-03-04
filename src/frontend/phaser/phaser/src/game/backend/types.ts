@@ -1,5 +1,3 @@
-import Sprite from "phaser";
-
 export interface Player {
     id: number;
     health: number;
@@ -30,6 +28,10 @@ export interface RoomObject {
     type: 0 | 1 | 2; // 0: Normal, 1: Chest, 2: Stair
     tiles: string[][];
     // enemies: EnemyObject[];
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
 }
 
 export interface FloorObject {

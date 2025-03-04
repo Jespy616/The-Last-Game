@@ -21,21 +21,21 @@ export class DifficultySelection extends Phaser.Scene {
         // Create buttons
         const easyButton = this.add.text(width / 2 - 150, height / 2, 'Easy', { fontSize: '32px', color: '#fff' })
             .setOrigin(0.5)
-            .setInteractive()
+            .setInteractive({ useHandCursor: true })
             .on('pointerover', () => easyButton.setColor('#f00'))
             .on('pointerout', () => easyButton.setColor('#fff'))
             .on('pointerdown', () => this.startGame(0));
 
         const mediumButton = this.add.text(width / 2, height / 2, 'Medium', { fontSize: '32px', color: '#fff' })
             .setOrigin(0.5)
-            .setInteractive()
+            .setInteractive({ useHandCursor: true })
             .on('pointerover', () => mediumButton.setColor('#f00'))
             .on('pointerout', () => mediumButton.setColor('#fff'))
             .on('pointerdown', () => this.startGame(1));
 
         const hardButton = this.add.text(width / 2 + 160, height / 2, 'Hard', { fontSize: '32px', color: '#fff' })
             .setOrigin(0.5)
-            .setInteractive()
+            .setInteractive({ useHandCursor: true })
             .on('pointerover', () => hardButton.setColor('#f00'))
             .on('pointerout', () => hardButton.setColor('#fff'))
             .on('pointerdown', () => this.startGame(2));
@@ -45,7 +45,7 @@ export class DifficultySelection extends Phaser.Scene {
         const gameData = await GameFactory(difficulty, this.theme);
         console.log('Starting game with:', gameData);
         if (gameData) {
-            this.scene.start('Game', { roomId: 1, gameData });
+            this.scene.start('Room', { roomId: 1, gameData, pos: "center" });
         } else {
             console.error('Failed to create game data');
         }

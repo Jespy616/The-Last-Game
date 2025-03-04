@@ -3,7 +3,7 @@ import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 import type { GameObject, RoomObject } from '../backend/types';
 
-export class Game extends Scene
+export class Room extends Scene
 {
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
@@ -11,16 +11,45 @@ export class Game extends Scene
 
     constructor ()
     {
-        super('Game');
+        super('Room');
     }
     
     room: RoomObject;
     gameData: GameObject;
+    startX: number;
+    startY: number;
+    startFrame: number;
 
-    init(data: { roomId: number, gameData: GameObject }) {
-        console.log('Game scene initialized: ', data.roomId, data.gameData);
+    init(data: { roomId: number, gameData: GameObject, pos: string }) {
         this.room = data.gameData.floor.rooms.flat().find((room) => room.id === data.roomId)!;
         this.gameData = data.gameData;
+        switch(data.pos) {
+            case "right":
+                this.startX = 14;
+                this.startY = 4;
+                this.startFrame = 7;
+                break;
+            case "left":
+                this.startX = 0;
+                this.startY = 4;
+                this.startFrame = 11;
+                break;
+            case "top":
+                this.startX = 7;
+                this.startY = 0;
+                this.startFrame = 3;
+                break;
+            case "bottom":
+                this.startX = 7;
+                this.startY = 8;
+                this.startFrame = 15
+                break;
+            case "center":
+                this.startX = 7;
+                this.startY = 4;
+                this.startFrame = 3;
+                break;
+        }
     }
 
     preload() 
@@ -31,7 +60,7 @@ export class Game extends Scene
             frameWidth: 24,
             frameHeight: 24,
         });
-        this.load.spritesheet('enemy', 'assets/enemies/Mushroom3.png', {
+        this.load.spritesheet('enemy', 'assets/enemies/Werewolf3.png', {
             frameWidth: 32,
             frameHeight: 32,
         });
@@ -82,8 +111,9 @@ export class Game extends Scene
                         right: { leftFoot: 8, standing: 9, rightFoot: 10 },
                         up: { leftFoot: 12, standing: 13, rightFoot: 14 },
                     }, 
-                    startPosition: { x: 13, y: 4 }, 
+                    startPosition: { x: this.startX, y: this.startY }, 
                     offsetY: -4, 
+
                 },
                 { 
                     id: "enemy", 
@@ -96,6 +126,8 @@ export class Game extends Scene
         
         // Create Grid Engine
         this.gridEngine.create(tilemap, gridEngineConfig);
+        
+        playerSprite.setFrame(this.startFrame);
 
         this.gridEngine.movementStarted().subscribe(({ direction, charId }) => {
             if (charId === "enemy") {
@@ -110,14 +142,7 @@ export class Game extends Scene
                 enemySprite.anims.play('enemy-idle');
             }
             this.stopAllCharactersExceptPlayer();
-            const x = this.gridEngine.getPosition("player").x;
-            const y = this.gridEngine.getPosition("player").y;
-            if (x === 0 && y === 4) {
-                this.scene.start('Game', { roomId: 2, gameData: this.gameData });
-            }
-            else if (x === 14 && y === 4) {
-                this.scene.start('Game', { roomId: 1, gameData: this.gameData });
-            }
+            this.handleRoomChange(this.gridEngine.getPosition("player").x, this.gridEngine.getPosition("player").y);
         });
     }
 
@@ -274,6 +299,20 @@ export class Game extends Scene
         }
     }
 
+    handleRoomChange = (x: number, y: number) => {
+        if (x === 0 && y === 4 && this.gridEngine.getFacingDirection("player") === Direction.LEFT && this.room.left) {
+            this.scene.start('Room', { roomId: this.room.left, gameData: this.gameData, pos: "right" });
+        }
+        else if (x === 14 && y === 4 && this.gridEngine.getFacingDirection("player") === Direction.RIGHT && this.room.right) {
+            this.scene.start('Room', { roomId: this.room.right, gameData: this.gameData, pos: "left" });
+        }
+        else if (x === 7 && y === 0 && this.gridEngine.getFacingDirection("player") === Direction.UP && this.room.top) {
+            this.scene.start('Room', { roomId: this.room.top, gameData: this.gameData, pos: "bottom" });
+        }
+        else if (x === 7 && y === 8 && this.gridEngine.getFacingDirection("player") === Direction.DOWN && this.room.bottom) {
+            this.scene.start('Room', { roomId: this.room.bottom, gameData: this.gameData, pos: "top" });
+        }
+    }
     checkEnemiesAreInRange = () => {
         // Check if the enemy is in range
         const playerPos = this.gridEngine.getPosition("player");

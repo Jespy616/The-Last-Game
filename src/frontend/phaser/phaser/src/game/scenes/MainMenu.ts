@@ -18,7 +18,7 @@ export class MainMenu extends Scene
     {
         this.background = this.add.image(512, 384, 'background');
 
-        this.logo = this.add.image(512, 300, 'logo').setDepth(100);
+        // this.logo = this.add.image(512, 300, 'logo').setDepth(100);
 
         const startGame = this.title = this.add.text(512, 460, 'Start Game', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
@@ -39,12 +39,6 @@ export class MainMenu extends Scene
     
     changeScene ()
     {
-        if (this.logoTween)
-        {
-            this.logoTween.stop();
-            this.logoTween = null;
-        }
-
         this.scene.start('ThemeSelection');
     }
 }
