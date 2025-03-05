@@ -197,17 +197,21 @@ type Floor struct {
 
 type Room struct {
     gorm.Model
-    FloorID       *uint  `gorm:"default:null"`
-    Floor         *Floor  `gorm:"constraint:OnDelete:CASCADE;"`
-    Enemies       []Enemy `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
-    ChestID       *uint   `gorm:"default:null"` 
-    Chest         *Chest   `gorm:"constraint:OnDelete:SET NULL;"`
-    AdjacentRooms []*Room `gorm:"many2many:room_adjacency;"`
-    Cleared       bool
-    Tiles         string `gorm:"type:text"`
-    XPos          uint
-    YPos          uint
+    FloorID      *uint  `gorm:"default:null"`
+    Floor        *Floor  `gorm:"constraint:OnDelete:CASCADE;"`
+    Enemies      []Enemy `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
+    ChestID      *uint   `gorm:"default:null"` 
+    Chest        *Chest   `gorm:"constraint:OnDelete:SET NULL;"`
+    TopID        *uint  `gorm:"constraint:OnDelete:SET NULL;"`
+    BottomID     *uint  `gorm:"constraint:OnDelete:SET NULL;"`
+    LeftID       *uint  `gorm:"constraint:OnDelete:SET NULL;"`
+    RightID      *uint  `gorm:"constraint:OnDelete:SET NULL;"`
+    Cleared      bool
+    Tiles        string `gorm:"type:text"`
+    XPos         uint
+    YPos         uint
 }
+
 
 type Enemy struct {
     gorm.Model

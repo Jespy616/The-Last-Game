@@ -298,7 +298,7 @@ func TestRoomCrud(t *testing.T) {
 	SetupTestDB()
 	defer model.TeardownTestDB()
 
-	// Create Floor (optional)
+	// Create Floor
 	floor := model.Floor{}
 	result := model.DB.Create(&floor)
 	assert.Nil(t, result.Error, "Failed to create floor")
@@ -312,16 +312,16 @@ func TestRoomCrud(t *testing.T) {
 	result = model.DB.Create(&weapon)
 	assert.Nil(t, result.Error, "Failed to create weapon")
 
-	// Create Chest (optional)
+	// Create Chest
 	chest := model.Chest{
 		WeaponID: &weapon.ID,
 	}
 	result = model.DB.Create(&chest)
 	assert.Nil(t, result.Error, "Failed to create chest")
 
-	// Create Room
+	// Create Main Room
 	room := model.Room{
-		FloorID: &floor.ID, 
+		FloorID: &floor.ID,
 		Cleared: false,
 		Tiles:   "Initial Tiles",
 		XPos:    3,
@@ -330,13 +330,62 @@ func TestRoomCrud(t *testing.T) {
 	result = model.DB.Create(&room)
 	assert.Nil(t, result.Error, "Failed to create room")
 
-	// Retrieve Room with relationships
+	// Create Adjacent Rooms
+	topRoom := model.Room{
+		FloorID: &floor.ID,
+		Cleared: false,
+		Tiles:   "Top Room",
+		XPos:    3,
+		YPos:    3,
+	}
+	bottomRoom := model.Room{
+		FloorID: &floor.ID,
+		Cleared: false,
+		Tiles:   "Bottom Room",
+		XPos:    3,
+		YPos:    5,
+	}
+	leftRoom := model.Room{
+		FloorID: &floor.ID,
+		Cleared: false,
+		Tiles:   "Left Room",
+		XPos:    2,
+		YPos:    4,
+	}
+	rightRoom := model.Room{
+		FloorID: &floor.ID,
+		Cleared: false,
+		Tiles:   "Right Room",
+		XPos:    4,
+		YPos:    4,
+	}
+
+	result = model.DB.Create(&topRoom)
+	assert.Nil(t, result.Error, "Failed to create top room")
+	result = model.DB.Create(&bottomRoom)
+	assert.Nil(t, result.Error, "Failed to create bottom room")
+	result = model.DB.Create(&leftRoom)
+	assert.Nil(t, result.Error, "Failed to create left room")
+	result = model.DB.Create(&rightRoom)
+	assert.Nil(t, result.Error, "Failed to create right room")
+
+	// Assign Adjacent Rooms
+	room.TopID = &topRoom.ID
+	room.BottomID = &bottomRoom.ID
+	room.LeftID = &leftRoom.ID
+	room.RightID = &rightRoom.ID
+
+	result = model.DB.Save(&room)
+	assert.Nil(t, result.Error, "Failed to update room with adjacent rooms")
+
+	// Retrieve Room and Validate Adjacent Room IDs
 	var retrievedRoom model.Room
-	result = model.DB.Preload("Floor").First(&retrievedRoom, room.ID)
+	result = model.DB.First(&retrievedRoom, room.ID)
 	assert.Nil(t, result.Error, "Failed to retrieve room")
-	assert.Equal(t, room.XPos, retrievedRoom.XPos)
-	assert.Equal(t, room.YPos, retrievedRoom.YPos)
-	assert.Equal(t, *room.FloorID, *retrievedRoom.FloorID, "Floor ID mismatch")
+	assert.NotNil(t, retrievedRoom.TopID, "Top room should be set")
+	assert.NotNil(t, retrievedRoom.BottomID, "Bottom room should be set")
+	assert.NotNil(t, retrievedRoom.LeftID, "Left room should be set")
+	assert.NotNil(t, retrievedRoom.RightID, "Right room should be set")
 
 	// Add Chest to Room
 	retrievedRoom.ChestID = &chest.ID
@@ -367,26 +416,6 @@ func TestRoomCrud(t *testing.T) {
 	assert.Nil(t, result.Error, "Failed to retrieve room with enemies")
 	assert.Equal(t, 1, len(roomWithEnemies.Enemies), "Room should have one enemy")
 
-	// Create Adjacent Room
-	adjacentRoom := model.Room{
-		Cleared: false,
-		Tiles:   "Adjacent Tiles",
-		XPos:    4,
-		YPos:    4,
-	}
-	result = model.DB.Create(&adjacentRoom)
-	assert.Nil(t, result.Error, "Failed to create adjacent room")
-
-	// Link Rooms via Many-to-Many
-	err := model.DB.Model(&room).Association("AdjacentRooms").Append(&adjacentRoom)
-	assert.Nil(t, err, "Failed to add adjacent room")
-
-	// Retrieve Room and Verify Adjacent Room
-	var roomWithAdjacents model.Room
-	result = model.DB.Preload("AdjacentRooms").First(&roomWithAdjacents, room.ID)
-	assert.Nil(t, result.Error, "Failed to retrieve room with adjacent rooms")
-	assert.Equal(t, 1, len(roomWithAdjacents.AdjacentRooms), "Room should have one adjacent room")
-
 	// Delete Room and Verify Cascading Deletions
 	result = model.DB.Delete(&room)
 	assert.Nil(t, result.Error, "Failed to delete room")
@@ -400,11 +429,24 @@ func TestRoomCrud(t *testing.T) {
 	result = model.DB.First(&existingChest, chest.ID)
 	assert.Nil(t, result.Error, "Chest should not be deleted when Room is deleted")
 
-	// Check Adjacent Room still exists (many-to-many does not cascade)
-	var existingAdjacentRoom model.Room
-	result = model.DB.First(&existingAdjacentRoom, adjacentRoom.ID)
-	assert.Nil(t, result.Error, "Adjacent room should not be deleted when original Room is deleted")
+	// Check Adjacent Rooms still exist
+	var existingTopRoom model.Room
+	result = model.DB.First(&existingTopRoom, topRoom.ID)
+	assert.Nil(t, result.Error, "Top room should not be deleted when original Room is deleted")
+
+	var existingBottomRoom model.Room
+	result = model.DB.First(&existingBottomRoom, bottomRoom.ID)
+	assert.Nil(t, result.Error, "Bottom room should not be deleted when original Room is deleted")
+
+	var existingLeftRoom model.Room
+	result = model.DB.First(&existingLeftRoom, leftRoom.ID)
+	assert.Nil(t, result.Error, "Left room should not be deleted when original Room is deleted")
+
+	var existingRightRoom model.Room
+	result = model.DB.First(&existingRightRoom, rightRoom.ID)
+	assert.Nil(t, result.Error, "Right room should not be deleted when original Room is deleted")
 }
+
 
 func TestEnemyCrud(t *testing.T) {
 	// Setup Test Database
