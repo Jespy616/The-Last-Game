@@ -35,23 +35,102 @@ func ConnectDB() {
 	log.Println("Database connected successfully")
 }
 
-func MigrateDB() {
-	query := `
-	CREATE TABLE IF NOT EXISTS floors (
-		id SERIAL PRIMARY KEY,
-		created_at TIMESTAMPTZ DEFAULT now(),
-		updated_at TIMESTAMPTZ DEFAULT now(),
-		deleted_at TIMESTAMPTZ,
-		player_in_id BIGINT
-	);`
-	
-	err := DB.Exec(query).Error
+func ConnectTestDB() {
+	// Load .env-test first, fallback to .env if missing
+	err := godotenv.Load(".env-test")
 	if err != nil {
-		log.Fatal("Failed to create floors table manually:", err)
+		log.Println("No .env-test found, falling back to .env")
+		_ = godotenv.Load(".env")
 	}
-	log.Println("Floors table created successfully")
-	
-	err = DB.AutoMigrate(
+
+	// Get environment variables
+	testDBName := os.Getenv("DB_NAME") // Should be "last_game_test"
+	dbHost := os.Getenv("DB_HOST")
+	dbUser := os.Getenv("DB_USER")     // Test user (e.g., "testuser")
+	dbPass := os.Getenv("DB_PASSWORD")
+	dbPort := os.Getenv("DB_PORT")
+	sslMode := os.Getenv("DB_SSLMODE")
+	timeZone := os.Getenv("DB_TIMEZONE")
+
+	if testDBName == "" {
+		log.Fatal("DB_NAME is not set in the environment")
+	}
+
+	// Connect to PostgreSQL *without specifying a database*
+	rootDSN := "host=" + dbHost +
+		" user=postgres" + // Use PostgreSQL superuser to create the DB
+		" password=" + dbPass +
+		" port=" + dbPort +
+		" sslmode=" + sslMode
+
+	rootDB, err := gorm.Open(postgres.Open(rootDSN), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to PostgreSQL as superuser:", err)
+	}
+
+	// Check if the test database exists
+	var exists bool
+	rootDB.Raw("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = ?)", testDBName).Scan(&exists)
+
+	// If the database doesn't exist, create it
+	if !exists {
+		log.Println("Creating test database:", testDBName)
+		rootDB.Exec("CREATE DATABASE " + testDBName + " OWNER " + dbUser)
+		log.Println("Test database created successfully")
+	} else {
+		log.Println("Test database already exists:", testDBName)
+	}
+
+	// Now connect to the test database as the test user
+	dsn := "host=" + dbHost +
+		" user=" + dbUser +
+		" password=" + dbPass +
+		" dbname=" + testDBName +
+		" port=" + dbPort +
+		" sslmode=" + sslMode +
+		" TimeZone=" + timeZone
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to test database:", err)
+	}
+
+	DB = db
+	log.Println("Connected to test database:", testDBName)
+}
+
+func TeardownTestDB() {
+	log.Println("Cleaning up test database...")
+
+	// Close the active connection
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Println("Error retrieving DB connection:", err)
+		return
+	}
+	sqlDB.Close()
+
+	// Reconnect without specifying a database to drop the test DB
+	rootDSN := "host=" + os.Getenv("DB_HOST") +
+		" user=" + "postgres" +
+		" password=" + os.Getenv("DB_PASSWORD") +
+		" port=" + os.Getenv("DB_PORT") +
+		" sslmode=" + os.Getenv("DB_SSLMODE")
+
+	rootDB, err := gorm.Open(postgres.Open(rootDSN), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to reconnect to PostgreSQL before dropping test DB:", err)
+	}
+
+	// Drop the test database
+	testDBName := os.Getenv("DB_NAME")
+	log.Println("Dropping test database:", testDBName)
+	rootDB.Exec("DROP DATABASE IF EXISTS " + testDBName)
+	log.Println("Test database dropped successfully")
+}
+
+func MigrateDB() {
+	err := DB.AutoMigrate(
 		&Floor{},
 		&Room{},
 		&Chest{},
@@ -65,56 +144,30 @@ func MigrateDB() {
 		log.Fatal("Failed to migrate database:", err)
 	}
 	log.Println("Database migrated successfully")
+}
 
-	query = `
-	DO $$ 
-	BEGIN 
-	    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-	                   WHERE table_name='floors' AND column_name='player_in_id') 
-	    THEN 
-	        ALTER TABLE floors ADD COLUMN player_in_id BIGINT;
-	    END IF;
-	    
-	    IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
-	                   WHERE table_name='floors' AND constraint_name='fk_floors_player_in') 
-	    THEN 
-	        ALTER TABLE floors ADD CONSTRAINT fk_floors_player_in
-	        FOREIGN KEY (player_in_id) REFERENCES rooms(id) ON DELETE SET NULL;
-	    END IF;
-	END $$;
-	`
-
-	err = DB.Exec(query).Error
+func CloseDB(db *gorm.DB) {
+	sqlDB, err := db.DB()
 	if err != nil {
-		log.Fatal("Failed to alter floors table:", err)
+		log.Println("Error getting DB instance:", err)
+		return
 	}
-	log.Println("Floors table altered successfully")
-
-	query = `
-	ALTER TABLE rooms ADD COLUMN IF NOT EXISTS floor_id BIGINT;
-	ALTER TABLE rooms ADD CONSTRAINT fk_rooms_floor
-	FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE CASCADE;
-	`
-	err = DB.Exec(query).Error
-	if err != nil {
-		log.Fatal("Failed to update rooms table:", err)
-	}
-	log.Println("Rooms table updated successfully with floor_id")
+	sqlDB.Close()
 }
 
 type User struct {
 	gorm.Model
 	Username	string
 	Email	string `gorm:"unique"`
-	password	string
+	Password	string
 	SubscriptionLevel	int
-	stripeID	int
+	StripeID	int
 }
 
 type Player struct {
 	gorm.Model
-	UserID uint
-	User	User 
+	//UserID uint
+	//User	User
 	Health	int
 	PrimaryWeaponID uint
 	PrimaryWeapon Weapon
@@ -139,48 +192,52 @@ type Game struct {
 type Floor struct {
     gorm.Model
     Rooms      []Room `gorm:"foreignKey:FloorID;constraint:OnDelete:CASCADE;"`
-    PlayerInID uint
-    PlayerIn   *Room `gorm:"foreignKey:PlayerInID"`
+    PlayerInID uint `gorm:"default:null"`
+	FloorMap   string `gorm:"type:text"` // Store floor layout as JSON
+	Adjacency  string `gorm:"type:text"` // Store adjacency matrix as JSON
 }
 
 type Room struct {
     gorm.Model
-    FloorID       uint `gorm:"not null;index"`
-    Floor         Floor `gorm:"constraint:OnDelete:CASCADE;"`
-    Enemies       []Enemy `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
-    ChestID       uint
-    Chest         Chest
-    AdjacentRooms []*Room `gorm:"many2many:room_adjacency;"`
-    Cleared       bool
-    Tiles         string `gorm:"type:text"`
-    XPos          uint
-    YPos          uint
+	FloorID      *uint  `gorm:"default:null"`
+    Floor        *Floor  `gorm:"constraint:OnDelete:CASCADE;"`
+    Enemies      []Enemy `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
+    ChestID      *uint   `gorm:"default:null"`
+    Chest        *Chest   `gorm:"constraint:OnDelete:SET NULL;"`
+    TopID        *uint  `gorm:"constraint:OnDelete:SET NULL;"`
+    BottomID     *uint  `gorm:"constraint:OnDelete:SET NULL;"`
+    LeftID       *uint  `gorm:"constraint:OnDelete:SET NULL;"`
+    RightID      *uint  `gorm:"constraint:OnDelete:SET NULL;"`
+    Cleared      bool
+    Tiles        string `gorm:"type:text"`
+    XPos         uint
+    YPos         uint
 }
 
+
 type Enemy struct {
-	gorm.Model
-	AttackLevel	int	
-	Health	int
-	WeaponID uint
-	Weapon	Weapon
-	SpriteID	int
-	RoomID uint
-	Room Room `gorm:"constraint:OnDelete:CASCADE;"`
-	PosX	int
-	PosY	int
+    gorm.Model
+    AttackLevel  int
+    Health       int
+    WeaponID     *uint   `gorm:"default:null"`
+    Weapon       *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"`
+    SpriteID     int
+    RoomID       uint   `gorm:"index"`
+    PosX         int
+    PosY         int
 }
 
 type Weapon struct {
 	gorm.Model
-	AttackDamagae	int
+	AttackDamage	int
 	SpriteID	int
 	Type	int
 }
 
 type Chest struct {
-	gorm.Model
-	RoomInID uint
-	RoomIn	*Room `gorm:"constraint:OnDelete:CASCADE"`
-	WeaponID uint
-	Weapon	Weapon
+    gorm.Model
+    RoomInID  *uint   `gorm:"default:null"` // Nullable Room reference
+    WeaponID  *uint   `gorm:"default:null"` // ✅ Keep as a pointer to allow NULL
+    Weapon    *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"` // Remove weapon reference if deleted
 }
+
