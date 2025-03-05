@@ -6,9 +6,11 @@ export class DifficultySelection extends Phaser.Scene {
     constructor() {
         super({ key: 'DifficultySelection' });
     }
+
     theme: string;
 
     init(data: { theme: string }) {
+        // Get the theme from the previous scene
         this.theme = data.theme;
     }
 
@@ -18,7 +20,6 @@ export class DifficultySelection extends Phaser.Scene {
     create() {
         const { width, height } = this.scale;
 
-        // Create buttons
         const easyButton = this.add.text(width / 2 - 150, height / 2, 'Easy', { fontSize: '32px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
@@ -42,8 +43,10 @@ export class DifficultySelection extends Phaser.Scene {
     }
 
     async startGame(difficulty: number) {
+        // Fetch game data from backend
         const gameData = await GameFactory(difficulty, this.theme);
-        console.log('Starting game with:', gameData);
+
+        // Start first room scene
         if (gameData) {
             this.scene.start('Room', { roomId: 1, gameData, pos: "center" });
         } else {

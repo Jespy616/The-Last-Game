@@ -1,11 +1,11 @@
-export interface Player {
+export interface PlayerObject {
     id: number;
     health: number;
     currentHealth: number;
     posX: number;
     posY: number;
-    primaryWeapon: Item;
-    secondaryWeapon: Item;
+    primaryWeapon: ItemObject;
+    secondaryWeapon: ItemObject;
 }
 
 export interface EnemyObject {
@@ -13,10 +13,10 @@ export interface EnemyObject {
     health: number;
     posX: number;
     posY: number;
-    weapon: Item;
+    weapon: ItemObject;
 }
 
-export interface Item {
+export interface ItemObject {
     id: number;
     name: string;
     damage: number;
@@ -41,7 +41,7 @@ export interface FloorObject {
 }
 
 export interface GameObject {
-    // player: Player;
+    // player: PlayerObject;
     floor: FloorObject;
 }
 

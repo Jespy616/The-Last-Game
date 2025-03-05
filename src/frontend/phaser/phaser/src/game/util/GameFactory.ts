@@ -1,6 +1,8 @@
 import type { GameObject } from "../backend/types";
 
 export async function GameFactory(difficultyLevel: number, theme: string): Promise<GameObject | null> {
+    // UNCOMMENT FOR BACKEND INTEGRATION
+    //
     // try {
     //     const response = await fetch('/api/GetGame', {
     //         method: 'POST',
@@ -22,7 +24,9 @@ export async function GameFactory(difficultyLevel: number, theme: string): Promi
     //     console.error('Error loading game:', error);
     //     return null;
     // }
-    const game: GameObject = {
+
+    
+    const game: GameObject = { // COMMENT OUT FOR BACKEND INTEGRATION
         floor: {
             theme: theme,
             level: 1,
