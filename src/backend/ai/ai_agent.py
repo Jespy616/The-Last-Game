@@ -9,7 +9,7 @@ def main():
     parser.add_argument("-k", "--api_key", help="API key for the Groq LLM", required=True)
     floorHelp = "-f {Number of rooms} {area to} {floor tiles} {wall tiles}"
     parser.add_argument("-f", "--floor", nargs="*", help=floorHelp)
-    enemyHelp = "-e {sprite list}"
+    enemyHelp = "-e {Number of enemies} {sprite list}"
     parser.add_argument("-e", "--enemy", nargs="*")
     parser.add_argument("-w", "--weapon", nargs="?")
     parser.add_argument("-s", "--story", nargs="*")
@@ -26,8 +26,16 @@ def main():
 
     if args.enemy:
         args.enemy = " ".join(args.enemy)
+        numEnemies = args.enemy.split(" ", 1)[0]
+        if numEnemies.isnumeric():
+            numEnemies = int(numEnemies)
+        else:
+            print("Invalid number of enemies")
+            parser.print_help()
+            exit(0)
+        args.enemy = args.enemy.replace(f"{numEnemies} ", "")
         spriteList = parseList(args.enemy, parser, "Invalid enemy sprite list")
-        enemyWorkflow(spriteList, apiKey)
+        enemyWorkflow(spriteList, numEnemies, apiKey)
 
 
     if args.weapon:

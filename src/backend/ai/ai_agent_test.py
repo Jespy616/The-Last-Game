@@ -13,4 +13,4 @@ b = [i for i in range(6, 10)]
 # system(f"python3 src/backend/ai/ai_agent.py -k {apiKey} -f 15 castle {a} {b}") # missing wall tiles
 
 
-system(f"python3 src/backend/ai/ai_agent.py -k {apiKey} -e {a}") 
+system(f"python3 src/backend/ai/ai_agent.py -k {apiKey} -e 5 {a}") 
