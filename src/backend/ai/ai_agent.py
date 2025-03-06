@@ -22,7 +22,7 @@ def main():
     if args.floor:
         args.floor = ' '.join(args.floor)
         roomCount,  area, floorTiles, wallTiles = parseFloor(args.floor, parser)
-        floorWorkflow(roomCount, floorTiles, wallTiles, area, apiKey)
+        print(floorWorkflow(roomCount, floorTiles, wallTiles, area, apiKey))
 
     if args.enemy:
         args.enemy = " ".join(args.enemy)

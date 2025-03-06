@@ -80,9 +80,9 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
         if reason == "Doors":
             room = checkDoors(room, adjMatrix, roomCount)
         roomCount += 1
-        # for row in room:
-        #     print(" ".join(row))
-        # print()
+    #     for row in room:
+    #         print(" ".join(row))
+    #     print()
 
     # print("Total rooms:", len(rooms))
     # print("\nFloor Map:")
@@ -114,7 +114,7 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
 
     # Convert to JSON string
     result_json = json.dumps(result, indent=4)
-    print(result_json)
+    return result_json
 
 
 def makeRooms(agent):
@@ -275,6 +275,8 @@ def fixRoom(room, reason):
         for row in room:
             while len(row) < ROOM_WIDTH:
                 row.insert(len(row) - 1, ".")
+            while len(row) > ROOM_WIDTH:
+                row.pop()
     elif reason == "Borders":
         for i in range(ROOM_HEIGHT):
             if room[i][0] != "w":
@@ -298,8 +300,8 @@ def makeFloor(roomCount):
     """
     Generates a random floor plan with roomCount rooms
     """
-    FLOOR_WIDTH = (roomCount + 1) // 2
-    FLOOR_HEIGHT = (roomCount + 1) // 2
+    FLOOR_WIDTH = (roomCount + 2) // 2
+    FLOOR_HEIGHT = (roomCount + 2) // 2
     floor = [[0 for _ in range(FLOOR_WIDTH)] for _ in range(FLOOR_HEIGHT)]
     roomsRemaining = [i for i in range(1, roomCount + 1)]
     shuffle(roomsRemaining)
@@ -343,9 +345,7 @@ def makeFloor(roomCount):
             floor[x][y] = room
             previousRooms.append([x, y])
         else:
-            roomsRemaining.append(room)
-            if len(roomsRemaining) == 1:
-                break  # Prevent infinite loop if no valid moves are available
+            roomsRemaining.insert(0, room)  # Reinsert the room at the beginning of the list
 
     return floor
 
