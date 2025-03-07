@@ -18,7 +18,7 @@ func main() {
 
 	// Initialize DB
 	model.ConnectDB()
-	model.MigrateDB()
+	//model.MigrateDB() //Uncomment this line when you run main.go for the first time
 
 	// Public Routes (No authentication required)
 	//public := r.Group("/api")
@@ -67,7 +67,7 @@ func main() {
 	})
 
 	// Start the Server
-	port := ":8080"
+	port := ":8081"
 	log.Println("Server running on port", port)
 	r.Run(port)
 }
