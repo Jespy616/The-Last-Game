@@ -1,6 +1,6 @@
 FROM golang:latest
 
-WORKDIR /app/api-server
+WORKDIR /app
 
 # Copy go.mod and go.sum to download dependencies
 COPY ../go.mod ../go.sum ./
@@ -16,4 +16,4 @@ RUN go build -v -o ./build/ ./...
 EXPOSE 8080
 
 # Run the app
-CMD ["/app/api-server/build/api-server"]
+CMD ["/app/build/api-server"]

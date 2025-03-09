@@ -5,9 +5,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	"fmt"
+	// "fmt"
 
-	// "log"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -112,8 +112,8 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error encrypting email"})
 		return
 	}
-	fmt.Print(hashedPassword)
-	fmt.Print(encryptedEmail)
+	log.Print(hashedPassword)
+	log.Print(encryptedEmail)
 
 	// user := model.User{
 	// 	Username: req.Username,
@@ -130,6 +130,7 @@ func Register(c *gin.Context) {
 
 	// token, err := GenerateTokens(user.ID)
 	token, err := GenerateTokens(1)
+	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
@@ -216,7 +217,7 @@ func RefreshToken(c *gin.Context) {
 	// Send new tokens to frontend
 	c.JSON(http.StatusOK, gin.H{
 		"access_token": newTokens.AccessToken,
-		"refresh_token": newTokens.RefreshToken,
+		"refresh_token": req.RefreshToken,
 		"user_ID": userID,
 
 	})
