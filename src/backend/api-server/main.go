@@ -2,7 +2,7 @@ package main
 
 import (
 	"backend/auth"
-	// "backend/model"
+	"backend/model"
 
 	// "fmt"
 	"log"
@@ -19,7 +19,8 @@ func main() {
 	r.POST("/login", auth.Login)
 	r.POST("/refresh", auth.RefreshToken)
 
-	// model.ConnectDB()
+	model.ConnectDB()
+	model.MigrateDB()
 
 	// Get the port from the environment (useful for Docker)
 	port := os.Getenv("PORT")

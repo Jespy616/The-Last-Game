@@ -115,21 +115,21 @@ func Register(c *gin.Context) {
 	log.Print(hashedPassword)
 	log.Print(encryptedEmail)
 
-	// user := model.User{
-	// 	Username: req.Username,
-	// 	Email:    encryptedEmail, // Store encrypted email
-	// 	Password: hashedPassword,
-	// }
+	user := model.User{
+		Username: req.Username,
+		Email:    encryptedEmail, // Store encrypted email
+		Password: hashedPassword,
+	}
 
-	// // Save user to database
-	// if err := model.DB.Create(&user).Error; err != nil {
-	// 	log.Println("Database error:", err)
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
-	// 	return
-	// }
+	// Save user to database
+	if err := model.DB.Create(&user).Error; err != nil {
+		log.Println("Database error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		return
+	}
 
-	// token, err := GenerateTokens(user.ID)
-	token, err := GenerateTokens(1)
+	token, err := GenerateTokens(user.ID)
+	// token, err := GenerateTokens(1)
 	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
@@ -141,7 +141,7 @@ func Register(c *gin.Context) {
 		"message":       "Account created successfully",
 		"access_token":  token.AccessToken,
 		"refresh_token": token.RefreshToken,
-		// "user_ID": user.ID,
+		"user_ID": user.ID,
 	})
 }
 

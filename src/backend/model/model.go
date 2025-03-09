@@ -52,6 +52,8 @@ func ConnectTestDB() {
 	sslMode := os.Getenv("DB_SSLMODE")
 	timeZone := os.Getenv("DB_TIMEZONE")
 
+	log.Print(testDBName, dbHost, dbUser)
+
 	if testDBName == "" {
 		log.Fatal("DB_NAME is not set in the environment")
 	}
@@ -62,6 +64,8 @@ func ConnectTestDB() {
 		" password=" + dbPass +
 		" port=" + dbPort +
 		" sslmode=" + sslMode
+
+	log.Print(rootDSN)
 
 	rootDB, err := gorm.Open(postgres.Open(rootDSN), &gorm.Config{})
 	if err != nil {
