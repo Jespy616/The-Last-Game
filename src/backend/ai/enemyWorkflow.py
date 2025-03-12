@@ -5,6 +5,7 @@ import json
 import threading
 
 
+
 ATTACK_MIN = 1
 ATTACK_MAX = 10
 HEALTH_MIN = 1
@@ -65,7 +66,7 @@ def makeEnemy(agent, spriteList):
         )
         enemy = Enemy.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
-        # print(e)
+        print(e)
         enemy = Enemy(attack=randint(ATTACK_MIN, ATTACK_MAX), health=randint(HEALTH_MIN, HEALTH_MAX), sprite=choice(spriteList))
         return enemy
     return enemy

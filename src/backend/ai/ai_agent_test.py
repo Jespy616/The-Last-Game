@@ -1,4 +1,8 @@
 from os import system, getenv
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 apiKey = getenv("GROQ_API_KEY")
 
