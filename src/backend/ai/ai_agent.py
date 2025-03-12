@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from sys import exit
 import re
 import json
+import threading
 from floorWorkflow import floorWorkflow
 from enemyWorkflow import enemyWorkflow
 from weaponWorkflow import weaponWorkflow
@@ -22,51 +23,80 @@ def main():
     floors = None
     enemies = None
     weapons = None
+    story = None
+    threads = []
 
-    # Splits the floor arguments into usable data
     if args.floor:
-        args.floor = ' '.join(args.floor)
-        roomCount,  area, floorTiles, wallTiles = parseFloor(args.floor, parser)
-        floors = floorWorkflow(roomCount, floorTiles, wallTiles, area, apiKey)
+        def floor_thread_func():
+            nonlocal floors
+            args.floor = ' '.join(args.floor)
+            roomCount, area, floorTiles, wallTiles = parseFloor(args.floor, parser)
+            floors = floorWorkflow(roomCount, floorTiles, wallTiles, area, apiKey)
+        
+        floor_thread = threading.Thread(target=floor_thread_func)
+        threads.append(floor_thread)
+        floor_thread.start()
 
     if args.enemy:
-        args.enemy = " ".join(args.enemy)
-        numEnemies = args.enemy.split(" ", 1)[0]
-        if numEnemies.isnumeric():
-            numEnemies = int(numEnemies)
-        else:
-            print("Invalid number of enemies")
-            parser.print_help()
-            exit(0)
-        args.enemy = args.enemy.replace(f"{numEnemies} ", "")
-        spriteList = parseList(args.enemy, parser, "Invalid enemy sprite list")
-        enemies = enemyWorkflow(spriteList, numEnemies, apiKey)
-
+        def enemy_thread_func():
+            nonlocal enemies
+            args.enemy = " ".join(args.enemy)
+            numEnemies = args.enemy.split(" ", 1)[0]
+            if numEnemies.isnumeric():
+                numEnemies = int(numEnemies)
+            else:
+                print("Invalid number of enemies")
+                parser.print_help()
+                exit(0)
+            args.enemy = args.enemy.replace(f"{numEnemies} ", "")
+            spriteList = parseList(args.enemy, parser, "Invalid enemy sprite list")
+            enemies = enemyWorkflow(spriteList, numEnemies, apiKey)
+        
+        enemy_thread = threading.Thread(target=enemy_thread_func)
+        threads.append(enemy_thread)
+        enemy_thread.start()
 
     if args.weapon:
-        args.weapon = " ".join(args.weapon)
-        numWeapons = args.weapon.split(" ", 1)[0]
-        if numWeapons.isnumeric():
-            numWeapons = int(numWeapons)
-        else:
-            print("Invalid number of weapons")
-            parser.print_help()
-            exit(0)
-        args.weapon = args.weapon.replace(f"{numWeapons} ", "")
-        spriteList = parseList(args.weapon, parser, "Invalid weapon sprite list")
-        weapons = weaponWorkflow(spriteList, numWeapons, apiKey)
+        def weapon_thread_func():
+            nonlocal weapons
+            args.weapon = " ".join(args.weapon)
+            numWeapons = args.weapon.split(" ", 1)[0]
+            if numWeapons.isnumeric():
+                numWeapons = int(numWeapons)
+            else:
+                print("Invalid number of weapons")
+                parser.print_help()
+                exit(0)
+            args.weapon = args.weapon.replace(f"{numWeapons} ", "")
+            spriteList = parseList(args.weapon, parser, "Invalid weapon sprite list")
+            weapons = weaponWorkflow(spriteList, numWeapons, apiKey)
+        
+        weapon_thread = threading.Thread(target=weapon_thread_func)
+        threads.append(weapon_thread)
+        weapon_thread.start()
         
     if args.story:
         pass # TODO implement story parsing
+    
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
 
     outputJson = {}
     if floors:
-        outputJson["floors"] = floors
+        if isinstance(floors, str):
+            outputJson["floors"] = json.loads(floors)
+        else:
+            outputJson["floors"] = floors
     if enemies:
         outputJson["enemies"] = enemies
     if weapons:
         outputJson["weapons"] = weapons
-    print(json.dumps(outputJson))
+    if story:
+        outputJson["story"] = story
+
+    outputJson = json.dumps(outputJson, indent=4)
+    print(outputJson)
 
 
 def parseList(parseString, parser, errorMsg):
