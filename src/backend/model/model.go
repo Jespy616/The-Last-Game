@@ -120,7 +120,6 @@ func TeardownTestDB() {
 	rootDB, err := gorm.Open(postgres.Open(rootDSN), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to reconnect to PostgreSQL before dropping test DB:", err)
-		log.Fatal("Failed to reconnect to PostgreSQL before dropping test DB:", err)
 	}
 
 	// Drop the test database
@@ -129,7 +128,6 @@ func TeardownTestDB() {
 	rootDB.Exec("DROP DATABASE IF EXISTS " + testDBName)
 	log.Println("Test database dropped successfully")
 }
-
 
 func MigrateDB() {
 	err := DB.AutoMigrate(
@@ -148,17 +146,12 @@ func MigrateDB() {
 	log.Println("Database migrated successfully")
 }
 
-
-
 func CloseDB(db *gorm.DB) {
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Println("Error getting DB instance:", err)
 		return
-		log.Println("Error getting DB instance:", err)
-		return
 	}
-	sqlDB.Close()
 	sqlDB.Close()
 }
 
@@ -173,8 +166,8 @@ type User struct {
 
 type Player struct {
 	gorm.Model
-	//UserID uint
-	//User	User
+	UserID uint
+	User	User 
 	Health	int
 	PrimaryWeaponID uint
 	PrimaryWeapon Weapon
@@ -204,6 +197,7 @@ type Floor struct {
 	Adjacency  string `gorm:"type:text"` // Store adjacency matrix as JSON
 }
 
+
 type Room struct {
     gorm.Model
     FloorID      *uint  `gorm:"default:null"`
@@ -220,7 +214,6 @@ type Room struct {
     XPos         uint
     YPos         uint
 }
-
 
 
 type Enemy struct {
@@ -248,9 +241,4 @@ type Chest struct {
     RoomInID  *uint   `gorm:"default:null"` // Nullable Room reference
     WeaponID  *uint   `gorm:"default:null"` // ✅ Keep as a pointer to allow NULL
     Weapon    *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"` // Remove weapon reference if deleted
-    gorm.Model
-    RoomInID  *uint   `gorm:"default:null"` // Nullable Room reference
-    WeaponID  *uint   `gorm:"default:null"` // ✅ Keep as a pointer to allow NULL
-    Weapon    *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"` // Remove weapon reference if deleted
 }
-
