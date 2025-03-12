@@ -5,7 +5,6 @@ import json
 import threading
 
 
-
 ATTACK_MIN = 1
 ATTACK_MAX = 10
 HEALTH_MIN = 1
@@ -39,8 +38,15 @@ def enemyWorkflow(spriteList, numEnemies, apiKey):
     for thread in threads:
         thread.join()
 
-    for enemy in enemies:
-        print(enemy.json())
+    # for enemy in enemies:
+    #     print(enemy.json())
+
+    enemies_json = {
+        "enemies": [json.loads(enemy.json()) for enemy in enemies]
+    }
+
+    return enemies_json
+
 
 def makeEnemy(agent, spriteList):
     """
@@ -55,7 +61,7 @@ def makeEnemy(agent, spriteList):
                 },
                 {
                     "role": "user",
-                    "content": f"Create an enemy with an attack value between {ATTACK_MIN} and {ATTACK_MAX} inclusive, a health value between {HEALTH_MIN} and {HEALTH_MAX}. Pick one of the following: low attack with high health, high attack with low helath, or high attack with high health. Select a sprite from the following list: {json.dumps(spriteList)}. Be creative when making enemies"
+                    "content": f"Create an enemy with an attack value between {ATTACK_MIN} and {ATTACK_MAX} inclusive, a health value between {HEALTH_MIN} and {HEALTH_MAX} inclusive. Pick one of the following: low attack with high health, high attack with low helath, or high attack with high health. Select a sprite from the following list: {json.dumps(spriteList)}. Be creative when making enemies"
                 }
             ],
             model="llama3-8b-8192",
@@ -63,10 +69,8 @@ def makeEnemy(agent, spriteList):
             stream=False,
             response_format={"type": "json_object"}
         )
-        # print(chat_completion.choices[0].message.content)
         enemy = Enemy.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
-        # print(e)
         enemy = Enemy(attack=randint(ATTACK_MIN, ATTACK_MAX), health=randint(HEALTH_MIN, HEALTH_MAX), sprite=choice(spriteList))
         return enemy
     return enemy
