@@ -115,6 +115,8 @@ func Register(c *gin.Context) {
 	log.Print(hashedPassword)
 	log.Print(encryptedEmail)
 
+// TODO: NEED LOGIC TO MAKE SURE THE SAME PERSON ISNT GETTING CREATED TWICE
+
 	user := model.User{
 		Username: req.Username,
 		Email:    encryptedEmail, // Store encrypted email
@@ -191,8 +193,10 @@ func RefreshToken(c *gin.Context) {
 
 	// 🔹 Parse the refresh token
 	token, err := jwt.Parse(req.RefreshToken, func(token *jwt.Token) (interface{}, error) {
-		return os.Getenv("REFRESH_TOKEN_SECRET"), nil
+		return []byte(os.Getenv("REFRESH_TOKEN_SECRET")), nil
 	})
+
+	log.Print(token)
 
 	if err != nil || !token.Valid {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
