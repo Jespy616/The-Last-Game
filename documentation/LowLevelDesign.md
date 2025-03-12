@@ -104,6 +104,7 @@ Make with the assistance of ChatGPT.
       - [ ] Fields:
         - [ ] **Change Username**
         - [ ] **Change Email**
+        - [ ] **Manage Subscription**
         - [ ] **Dark Mode Toggle**
       - [ ] API Calls:
         - [ ] `GET /api/settings` (fetch preferences)
@@ -595,8 +596,8 @@ This will ensure that the requested data is sent to the correct users.
 - Phaser.js
 #### Languages
 - TypeScript
-- Tailwind CSS
 - HTML
+- CSS
 
 ### Back End
 #### Frameworks
