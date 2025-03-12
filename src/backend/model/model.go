@@ -52,8 +52,6 @@ func ConnectTestDB() {
 	sslMode := os.Getenv("DB_SSLMODE")
 	timeZone := os.Getenv("DB_TIMEZONE")
 
-	log.Print(testDBName, dbHost, dbUser)
-
 	if testDBName == "" {
 		log.Fatal("DB_NAME is not set in the environment")
 	}
@@ -64,8 +62,6 @@ func ConnectTestDB() {
 		" password=" + dbPass +
 		" port=" + dbPort +
 		" sslmode=" + sslMode
-
-	log.Print(rootDSN)
 
 	rootDB, err := gorm.Open(postgres.Open(rootDSN), &gorm.Config{})
 	if err != nil {
@@ -124,6 +120,7 @@ func TeardownTestDB() {
 	rootDB, err := gorm.Open(postgres.Open(rootDSN), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to reconnect to PostgreSQL before dropping test DB:", err)
+		log.Fatal("Failed to reconnect to PostgreSQL before dropping test DB:", err)
 	}
 
 	// Drop the test database
@@ -132,6 +129,7 @@ func TeardownTestDB() {
 	rootDB.Exec("DROP DATABASE IF EXISTS " + testDBName)
 	log.Println("Test database dropped successfully")
 }
+
 
 func MigrateDB() {
 	err := DB.AutoMigrate(
@@ -150,12 +148,17 @@ func MigrateDB() {
 	log.Println("Database migrated successfully")
 }
 
+
+
 func CloseDB(db *gorm.DB) {
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Println("Error getting DB instance:", err)
 		return
+		log.Println("Error getting DB instance:", err)
+		return
 	}
+	sqlDB.Close()
 	sqlDB.Close()
 }
 
@@ -170,8 +173,8 @@ type User struct {
 
 type Player struct {
 	gorm.Model
-	UserID uint
-	User	User 
+	//UserID uint
+	//User	User
 	Health	int
 	PrimaryWeaponID uint
 	PrimaryWeapon Weapon
@@ -196,7 +199,9 @@ type Game struct {
 type Floor struct {
     gorm.Model
     Rooms      []Room `gorm:"foreignKey:FloorID;constraint:OnDelete:CASCADE;"`
-    PlayerInID *uint `gorm:"default:null"`
+    PlayerInID uint `gorm:"default:null"`
+	FloorMap   string `gorm:"type:text"` // Store floor layout as JSON
+	Adjacency  string `gorm:"type:text"` // Store adjacency matrix as JSON
 }
 
 type Room struct {
@@ -215,6 +220,7 @@ type Room struct {
     XPos         uint
     YPos         uint
 }
+
 
 
 type Enemy struct {
@@ -242,4 +248,9 @@ type Chest struct {
     RoomInID  *uint   `gorm:"default:null"` // Nullable Room reference
     WeaponID  *uint   `gorm:"default:null"` // ✅ Keep as a pointer to allow NULL
     Weapon    *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"` // Remove weapon reference if deleted
+    gorm.Model
+    RoomInID  *uint   `gorm:"default:null"` // Nullable Room reference
+    WeaponID  *uint   `gorm:"default:null"` // ✅ Keep as a pointer to allow NULL
+    Weapon    *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"` // Remove weapon reference if deleted
 }
+
