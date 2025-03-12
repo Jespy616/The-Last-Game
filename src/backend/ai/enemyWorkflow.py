@@ -55,18 +55,18 @@ def makeEnemy(agent, spriteList):
                 },
                 {
                     "role": "user",
-                    "content": f"Create an enemy with an attack value between {ATTACK_MIN} and {ATTACK_MAX}, a health value between {HEALTH_MIN} and {HEALTH_MAX}. Pick one of the following: low attack with high health, high attack with low helath, or high attack with high health. Select a sprite from the following list: {json.dumps(spriteList)}. Be creative when making enemies"
+                    "content": f"Create an enemy with an attack value between {ATTACK_MIN} and {ATTACK_MAX} inclusive, a health value between {HEALTH_MIN} and {HEALTH_MAX}. Pick one of the following: low attack with high health, high attack with low helath, or high attack with high health. Select a sprite from the following list: {json.dumps(spriteList)}. Be creative when making enemies"
                 }
             ],
-            model="llama3-70b-8192",
-            # model="mixtral-8x7b-32768",
+            model="llama3-8b-8192",
             temperature=1,
             stream=False,
             response_format={"type": "json_object"}
         )
+        # print(chat_completion.choices[0].message.content)
         enemy = Enemy.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
-        print(e)
+        # print(e)
         enemy = Enemy(attack=randint(ATTACK_MIN, ATTACK_MAX), health=randint(HEALTH_MIN, HEALTH_MAX), sprite=choice(spriteList))
         return enemy
     return enemy
