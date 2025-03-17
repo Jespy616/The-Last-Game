@@ -30,6 +30,10 @@ type TokenPair struct {
 	RefreshToken string
 }
 
+type RefreshInfo struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
 func hashString(str string) (string, error) {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(str), bcrypt.DefaultCost)
 	return string(hashed), err
@@ -101,6 +105,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
+
 	hashedPassword, err := hashString(req.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error hashing password"})
@@ -150,10 +155,14 @@ func Register(c *gin.Context) {
 func Login(c *gin.Context) {
 	var req AccountRequest
 
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	log.Print(req)
+	log.Print(c)
 
 	var user model.User
 
@@ -184,8 +193,9 @@ func Login(c *gin.Context) {
 
 // RefreshToken handles the renewal of access tokens using a valid refresh token.
 func RefreshToken(c *gin.Context) {
-	var req TokenPair
+	var req RefreshInfo
 
+	
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
@@ -193,29 +203,25 @@ func RefreshToken(c *gin.Context) {
 
 	// 🔹 Parse the refresh token
 	token, err := jwt.Parse(req.RefreshToken, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("REFRESH_TOKEN_SECRET")), nil
-	})
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, http.ErrAbortHandler
+		   }
+		   return []byte(os.Getenv("REFRESH_TOKEN_SECRET")), nil
+		  })
+		 
 
-	log.Print(token)
+		if err != nil || !token.Valid {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+			return
+		   }
 
-	if err != nil || !token.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
-		return
-	}
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		userID := claims["user_id"].(float64)
 
-	// 🔹 Extract user ID
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || claims["user_id"] == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
-		return
-	}
-
-	// Generate new access token
-	userID := uint(claims["user_id"].(float64))
-	newTokens, err := GenerateTokens(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate new tokens"})
-		return
+		newTokens, err := GenerateTokens(uint(userID))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate new tokens"})
+			return
 	}
 
 	// Send new tokens to frontend
@@ -223,6 +229,8 @@ func RefreshToken(c *gin.Context) {
 		"access_token": newTokens.AccessToken,
 		"refresh_token": req.RefreshToken,
 		"user_ID": userID,
-
 	})
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+	}
 }

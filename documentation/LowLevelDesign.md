@@ -151,9 +151,9 @@ Make with the assistance of ChatGPT.
         - [ ] Implement **getters and setters** for all models and story
 
     - Authentication
-        - [ ] Implement Register
-        - [ ] Implement Login
-        - [ ] Implement RefreshToken
+        - [x] Implement Register
+        - [x] Implement Login
+        - [x] Implement RefreshToken
 
     - Database Models (Using GORM)
         - [ ] Create GORM models:
@@ -173,9 +173,9 @@ Make with the assistance of ChatGPT.
         - [ ] Create **template models** for frontend use
 
     - Build Docker Containers For Backend
-        - [ ] Get all Requirements for Backend Code
-        - [ ] Create docker file
-        - [ ] set whole team up with docker file
+        - [x] Get all Requirements for Backend Code
+        - [x] Create docker file
+        - [x] set whole team up with docker file
 
   - AI
     - [x] Set up main script so that the server can invoke prompts
@@ -227,9 +227,9 @@ Make with the assistance of ChatGPT.
     - [ ] Implement `createSubscription`
     - [ ] Add all stripe Methods in .auth file
     - [ ] Replaces Floor and Room Templates with the AI generated Floors and Rooms
-    - [ ] Implement `isAuthenticated` middleware
+    - [x] Implement `isAuthenticated` middleware
     - [ ] Implement `Decryption` logic
-    - [ ] Implement `Encryption` logic
+    - [x] Implement `Encryption` logic
     - [ ] Implement `Caching` mechanism
     - [ ] When AI code is finished, update templates for:
         - [ ] Enemies
