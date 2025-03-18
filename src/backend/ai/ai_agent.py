@@ -6,6 +6,7 @@ import threading
 from floorWorkflow import floorWorkflow
 from enemyWorkflow import enemyWorkflow
 from weaponWorkflow import weaponWorkflow
+from storyWorkflow import storyWorkflow
 
 def main():
     parser = ArgumentParser(description='Prompt the Groq LLM')
@@ -76,7 +77,21 @@ def main():
         weapon_thread.start()
         
     if args.story:
-        pass # TODO implement story parsing
+        def storyThreadFunc():
+            nonlocal story
+            story = " ".join(args.story)
+            if len(story.split(" ", 2)) != 3:
+                print("Invalid story format")
+                parser.print_help()
+                exit(0)
+            prevArea = story.split(" ", 1)[0]
+            nextArea = story.split(" ", 2)[1]
+            prevStory = story.split(" ", 2)[2]
+            story = storyWorkflow(prevArea, nextArea, prevStory, apiKey)
+        
+        storyThread = threading.Thread(target=storyThreadFunc)
+        threads.append(storyThread)
+        storyThread.start()
     
     # Wait for all threads to complete
     for thread in threads:
