@@ -36,6 +36,34 @@ class Room(BaseModel):
     def __getitem__(self, index):
         return self.tiles[index]
 
+class Tiles(BaseModel):
+    """
+    Represents the tiles used in the room\n
+    Used to define the structure and validate the tiles created by the LLM\n
+    """
+    floor: str = Field(..., description="The tile used for the floor")
+    wall: str = Field(..., description="The tile used for the walls")
+    def __init__(self, floor: str, wall: str):
+        super().__init__(floor=floor, wall=wall)
+
+    def __str__(self):
+        return f"Floor: {self.floor}, Wall: {self.wall}"
+
+    def __len__(self):
+        return 2
+    
+    def __iter__(self):
+        yield self.floor
+        yield self.wall
+    
+    def __getitem__(self, index):
+        if index == 0:
+            return self.floor
+        elif index == 1:
+            return self.wall
+        else:
+            raise IndexError
+
 
 def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     """
@@ -49,6 +77,8 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     """
     agent = Groq(api_key=apiKey, timeout=5)
     rooms = []
+    floorTiles = [choice(floorTiles)]
+    wallTiles = [choice(wallTiles)]
     threads = []
 
     def createRoom():
@@ -56,10 +86,21 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
         if room is not None:
             rooms.append(room)
     
+    def pickTiles():
+        floors, walls= chooseTiles(floorTiles, wallTiles, areaTo, agent)
+        if floors is not None and walls is not None:
+            floorTiles[0] = floors
+            wallTiles[0] = walls
+    
+
     for i in range(numFloors):
         thread = threading.Thread(target=createRoom)
         threads.append(thread)
         thread.start()
+    
+    thread = threading.Thread(target=pickTiles)
+    threads.append(thread)
+    thread.start()
     
     for thread in threads:
         thread.join()
@@ -109,7 +150,9 @@ def floorWorkflow(numFloors, floorTiles, wallTiles, areaTo, apiKey):
     result = {
         "rooms": roomsDict,
         "floorMap": floorMap,
-        "adjacencyMatrix": adjMatrix
+        "adjacencyMatrix": adjMatrix,
+        "floorTiles": floorTiles[0],
+        "wallTiles": wallTiles[0]
     }
 
     # Convert to JSON string
@@ -377,9 +420,32 @@ def createRoomAdjacency(floorMap, roomCount):
     return adjMatrix
 
 
-def chooseTiles(floorTiles, wallTiles, areaTo):
-    # TODO - Implement LLM prompt for choosing tiles
-    pass
+def chooseTiles(floorTiles, wallTiles, areaTo, agent):
+    """
+    Prompts the LLM to choose the tiles for the room\n
+    """
+    try:
+        chat_completion = agent.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are a floor designer that is in charge of picking the tiles in a room. You will be given the floor and wall tiles to choose from and the area to place the room in. Format your response as a JSON object with the schema: {json.dumps(Tiles.model_json_schema(), indent=2)}"
+                },
+                {
+                    "role": "user",
+                    "content": f"Choose the best fitting floor tiles from {floorTiles} best fitting wall tile from {wallTiles} to fit the map for the {areaTo} area."
+                }
+            ],
+                model="llama3-70b-8192",
+                temperature=1,
+                stream=False,
+                response_format={"type": "json_object"}
+        )
+        tiles = Tiles.model_validate_json(chat_completion.choices[0].message.content)
+    except Exception as e:
+        print(e)
+        tiles = Tiles(floor=choice(floorTiles), wall=choice(wallTiles))
+    return tiles.floor, tiles.wall
 
 
 # from here to the bottom of file are helper functions for room creation and checks
