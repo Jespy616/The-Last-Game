@@ -183,7 +183,7 @@ def makeRooms(agent):
         )
         rooms = Room.model_validate_json(chat_completion.choices[0].message.content)
     except Exception as e:
-        # print(e)
+        print(e)
         rooms = Room(roomDefaults[f"room{randint(1, len(roomDefaults))}"])
         return rooms
     return rooms

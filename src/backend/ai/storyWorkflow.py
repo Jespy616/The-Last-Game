@@ -22,12 +22,17 @@ def makeStory(agent, prevArea, nextArea, prevStory, story):
                     "content": f"Previous area: {prevArea}\nNext area: {nextArea}\nPrevious story: {prevStory}"
                 }
             ],
-            model="llama-3.3-70b-versatile",
+            model="qwen-2.5-32b",
             temperature=1,
             max_tokens=250,
         )
         story = chat_completion.choices[0].message.content
     except Exception as e:
         print(f"Error: {e}")
-        story = "An error occurred while generating the story"
+        if "Invalid API Key" in str(e):
+            story = "Invalid API Key"
+        elif "Rate limit reached" in str(e):
+            story = "Rate limit reached"
+        else:
+            story = "An error occurred while generating the story"
     return story
