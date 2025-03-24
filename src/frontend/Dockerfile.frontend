@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install svelte --save
 
 # Copy the rest of the frontend code
 COPY . .
@@ -18,4 +18,4 @@ RUN npm run build
 EXPOSE 5173
 
 # Serve frontend using a lightweight server
-CMD ["npx", "serve", "dist"]
+CMD ["npx","serve", "build"]
