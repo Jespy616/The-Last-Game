@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"backend/game_manager"
 	"backend/model"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -15,6 +16,14 @@ func main() {
 	// Middleware
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	r.Use(cors.New(cors.Config{
+        AllowAllOrigins:  true,
+        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+        AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+        ExposeHeaders:    []string{"Content-Length"},
+        AllowCredentials: true,
+    }))
 
 	// Initialize DB
 	model.ConnectDB()
