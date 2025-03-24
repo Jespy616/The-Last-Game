@@ -67,7 +67,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 12,
                                 posY: 3,
                                 damage: 5,
-                                spriteName: 'Werewolf',
+                                spriteName: 'Mushroom',
                                 level: 1
                             },
                             {
@@ -87,7 +87,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 7,
                                 posY: 7,
                                 damage: 20,
-                                spriteName: 'Werewolf',
+                                spriteName: 'Mushroom',
                                 level: 3
                             }
                         ]
@@ -116,7 +116,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 12,
                                 posY: 3,
                                 damage: 5,
-                                spriteName: 'Werewolf',
+                                spriteName: 'Mushroom',
                                 level: 1
                             },
                             {
@@ -136,7 +136,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 7,
                                 posY: 7,
                                 damage: 20,
-                                spriteName: 'Werewolf',
+                                spriteName: 'Mushroom',
                                 level: 3
                             }
                         ]
@@ -164,7 +164,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 12,
                                 posY: 3,
                                 damage: 5,
-                                spriteName: 'Werewolf',
+                                spriteName: 'Mushroom',
                                 level: 1
                             },
                             {
@@ -184,7 +184,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 7,
                                 posY: 7,
                                 damage: 20,
-                                spriteName: 'Werewolf',
+                                spriteName: 'Mushroom',
                                 level: 3
                             }
                         ]

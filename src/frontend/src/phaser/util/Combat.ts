@@ -22,7 +22,6 @@ async function enemyAttack(enemy: EnemyObject, player: PlayerObject) {
 
         enemy.spriteObject!.anims.play(`${enemy.spriteObject!.texture.key}-attack`);
         player.currentHealth -= damage;
-        player.healthBar!.updateHealthBar(player.currentHealth);
         console.log(`${enemy.spriteObject!.texture.key} attacks player for ${damage} damage`);
         setTimeout(() => resolve(true), TURN_DELAY); // Wait for attack animation to finish
     }).then(() => {
@@ -41,7 +40,6 @@ export async function playerAttack(enemy: EnemyObject, player: PlayerObject) {
         
         console.log(`Player attacks ${enemy.spriteObject!.texture.key} for ${damage} damage`);
         enemy.currentHealth -= damage;
-        enemy.healthBar!.updateHealthBar(enemy.currentHealth);
         
         setTimeout(() => resolve(true), TURN_DELAY); // Wait for attack animation to finish
     }); 

@@ -6,7 +6,7 @@ import type { GameObject, PlayerObject, RoomObject } from '../backend/types';
 import { createTilemap } from '../util/CreateTilemap';
 import { createPlayerAnimation, createEnemyAnimation, destroyAnimations } from '../util/Animations';
 import { playerAttack, handleEnemyTurns } from '../util/Combat';
-import { HealthBar } from '../ui/HealthBar';
+import { EnemyHealthBar } from '../ui/EnemyHealthBar';
 
 export class Room extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -78,18 +78,18 @@ export class Room extends Scene {
 
         // Create Tilemap
         const tilemap = createTilemap(this, this.room.tiles, 'tiles');
-
-
+        
         // Create Player and Health Bar
         this.player.spriteObject = this.add.sprite(0, 0, 'player'); 
-        this.gameData.player.healthBar = new HealthBar(this, 0, 0, this.player.currentHealth, this.player.maxHealth);
+
+        // Start the GUI scene
+        this.scene.launch('Gui', this.player);
 
         // Create Player Animation
         createPlayerAnimation(this, 'player-interact-down', 2, 3);
         createPlayerAnimation(this, 'player-interact-left', 6, 7);
         createPlayerAnimation(this, 'player-interact-right', 10, 11);
         createPlayerAnimation(this, 'player-interact-up', 14, 15);
-        this.player.spriteObject.setFrame(this.startFrame);
 
         // Set Camera to Follow Player
         this.cameras.main.startFollow(this.player.spriteObject, true);
@@ -110,18 +110,23 @@ export class Room extends Scene {
         for (let enemy of this.room.enemies) {
             enemy.spriteObject = this.add.sprite(0, 0, `enemy${enemy.id}`);
             enemy.spriteObject.anims.play(`enemy${enemy.id}-idle`);
-            enemy.healthBar = new HealthBar(this, 0, 0, enemy.currentHealth, enemy.maxHealth);
+            enemy.healthBar = new EnemyHealthBar(this, 0, 0, enemy.currentHealth, enemy.maxHealth);
         }
         
-        // Update health bar positions and check for enemy/player death
         this.events.on('update', () => {
-            this.player.healthBar!.setPosition(this.player.spriteObject!.x + this.player.spriteObject!.width / 2, this.player.spriteObject!.y + this.player.spriteObject!.height / 2);
-            if (this.player.currentHealth <= 0) {
+            // Check Player Death
+            if (this.player.spriteObject && this.player.currentHealth <= 0) {
+                this.gridEngine.removeCharacter(this.player.spriteObject!.texture.key);
+                this.player.spriteObject!.destroy();
                 this.changeScene();
             }
+            // Update Enemy Health Bars
             for (let enemy of this.room.enemies) {
                 if (enemy && enemy.healthBar && enemy.spriteObject) {
-                    enemy.healthBar.setPosition(enemy.spriteObject.x + enemy.spriteObject.width / 2, enemy.spriteObject.y + enemy.spriteObject.height / 2);
+                    enemy.healthBar.updatePosition(enemy.spriteObject.x + enemy.spriteObject.width / 2, enemy.spriteObject.y + enemy.spriteObject.height / 2);
+                    enemy.healthBar.updateHealth(enemy.currentHealth);
+
+                    // Check Enemy Death
                     if (enemy.currentHealth <= 0) {
                         this.gridEngine.removeCharacter(enemy.spriteObject!.texture.key);
                         enemy.spriteObject!.destroy();
@@ -158,6 +163,8 @@ export class Room extends Scene {
         
         // Create Grid Engine
         this.gridEngine.create(tilemap, gridEngineConfig);
+
+        this.player.spriteObject.setFrame(this.startFrame);
         
         const moveStart = this.gridEngine.movementStarted().subscribe(({ direction, charId }) => {
             // Player Movement: Enemies follow
@@ -203,7 +210,6 @@ export class Room extends Scene {
             // Player reaches new tile: Handle enemy turns
             if (charId === 'player') {
                 this.player.currentHealth = Math.min(this.player.currentHealth + 1, this.player.maxHealth);
-                this.player.healthBar!.updateHealthBar(this.player.currentHealth)
                 handleEnemyTurns(this.player, this.room.enemies);
             }
         });

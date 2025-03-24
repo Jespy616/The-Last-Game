@@ -1,6 +1,7 @@
 import { Boot } from './scenes/Boot';
 import { GameOver } from './scenes/GameOver';
 import { Room } from './scenes/Room';
+import { Gui } from './scenes/Gui';
 import { MainMenu } from './scenes/MainMenu';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
@@ -21,6 +22,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Preloader,
         MainMenu,
         Room,
+        Gui,
         GameOver,
         ThemeSelection,
         DifficultySelection
