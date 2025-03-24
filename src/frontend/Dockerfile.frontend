@@ -18,4 +18,4 @@ RUN npm run build
 EXPOSE 5173
 
 # Serve frontend using a lightweight server
-CMD ["npx","serve", "build"]
+CMD ["npm","run","dev","--", "--host", "--port", "3000"]
