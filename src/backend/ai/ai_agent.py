@@ -10,17 +10,30 @@ from storyWorkflow import storyWorkflow
 
 def main():
     parser = ArgumentParser(description='Prompt the Groq LLM')
+
+    # API key argument - Is the only required argument
     parser.add_argument("-k", "--api_key", help="API key for the Groq LLM", required=True)
+
+    # Floor argument
     floorHelp = "-f {Number of rooms} {area to} {floor tiles} {wall tiles}"
     parser.add_argument("-f", "--floor", nargs="*", help=floorHelp)
+
+    # Enemy argument
     enemyHelp = "-e {Number of enemies} {sprite list}"
     parser.add_argument("-e", "--enemy", nargs="*", help=enemyHelp)
+
+    # Weapon argument
     weaponHelp = "-w {number of weapons} {sprite list}"
     parser.add_argument("-w", "--weapon", nargs="*", help=weaponHelp)
+
+    # Story argument
     parser.add_argument("-s", "--story", nargs="*")
     args = parser.parse_args()
     
     apiKey = args.api_key
+
+    # Results are stored in these variables to allow for threading
+    # Defaulted to None if the argument is not provided
     floors = None
     enemies = None
     weapons = None
@@ -28,9 +41,13 @@ def main():
     threads = []
 
     if args.floor:
+        # Function to allow threading
         def floor_thread_func():
+            # Nonlocal variable to allow for assignment to the outer scope
             nonlocal floors
+            # Convert the list of arguments to a string
             args.floor = ' '.join(args.floor)
+            # Parse the floor argument with the parseFloor function
             roomCount, area, floorTiles, wallTiles = parseFloor(args.floor, parser)
             floors = floorWorkflow(roomCount, floorTiles, wallTiles, area, apiKey)
         
@@ -39,9 +56,13 @@ def main():
         floor_thread.start()
 
     if args.enemy:
+        # Threading function
         def enemy_thread_func():
+            # Nonlocal variable to allow for assignment to the outer scope
             nonlocal enemies
+            # Convert the list of arguments to a string
             args.enemy = " ".join(args.enemy)
+            # Get the number of enemies
             numEnemies = args.enemy.split(" ", 1)[0]
             if numEnemies.isnumeric():
                 numEnemies = int(numEnemies)
@@ -50,6 +71,7 @@ def main():
                 parser.print_help()
                 exit(0)
             args.enemy = args.enemy.replace(f"{numEnemies} ", "")
+            # Get the sprite list using the parseList function
             spriteList = parseList(args.enemy, parser, "Invalid enemy sprite list")
             enemies = enemyWorkflow(spriteList, numEnemies, apiKey)
         
@@ -58,6 +80,8 @@ def main():
         enemy_thread.start()
 
     if args.weapon:
+        # Same format as the enemy argument parsing
+        # Threading function
         def weapon_thread_func():
             nonlocal weapons
             args.weapon = " ".join(args.weapon)
@@ -77,9 +101,13 @@ def main():
         weapon_thread.start()
         
     if args.story:
+        # Threading function
         def storyThreadFunc():
             nonlocal story
+            # Convert the list of arguments to a string
             story = " ".join(args.story)
+            # Split the argument based on the first 2 spaces
+            # ensures that the first 2 are areas and story stays intact
             if len(story.split(" ", 2)) != 3:
                 print("Invalid story format")
                 parser.print_help()
@@ -97,6 +125,7 @@ def main():
     for thread in threads:
         thread.join()
 
+    # Create the output JSON from the results
     outputJson = {}
     if floors:
         if isinstance(floors, str):
@@ -104,9 +133,9 @@ def main():
         else:
             outputJson["floors"] = floors
     if enemies:
-        outputJson["enemies"] = enemies
+        outputJson["enemies"] = enemies["enemies"]
     if weapons:
-        outputJson["weapons"] = weapons
+        outputJson["weapons"] = weapons["weapons"]
     if story:
         outputJson["story"] = story
 
@@ -118,47 +147,48 @@ def parseList(parseString, parser, errorMsg):
     # Use regex to find the first array 
     pattern = re.compile(r'\[([^\]]+)\]')
     match = pattern.search(parseString)
+    # if the pattern is found, get the first array 
     if match:
-        tiles = match.group(1)
-        if ',' in tiles:
-            tiles = tiles.split(',')
+        arr = match.group(1)
+        if ',' in arr:
+            arr = arr.split(',')
         else:
-            tiles = tiles.split()
-        tiles = [tile.strip() for tile in tiles]
-        floorTiles = list(tiles)
+            arr = arr.split()
+        arr = [item.strip() for item in arr]
+        results = list(arr)
     else:
+        # if not found, print error message and help
         print(errorMsg)
         parser.print_help()
         exit(0)
-    return floorTiles
+    return results
 
 
 def parseFloor(floorStr, parser):
+    # get the number of rooms
     if floorStr.split(" ", 1)[0].isnumeric():
         roomCount = int(floorStr.split(" ", 1).pop(0))
     else:
         print("Invalid number of rooms")
         parser.print_help()
         exit(0)
+    # remove number of rooms from the string
     floorStr = floorStr.replace(f"{roomCount} ", "")
     
+    # get the area
     if floorStr.split(" ", 1)[0].isalpha():
         area = floorStr.split(" ", 1).pop(0)
     else:
         print("Invalid area")
         parser.print_help()
         exit(0)
+    # remove the area from the string
     floorStr = floorStr.replace(f"{area} ", "")
 
     floorTiles = parseList(floorStr, parser, "Invalid floor tiles")
     # Remove the parsed floor tiles from the string
     floorStr = floorStr.replace(f"[{' '.join(floorTiles)}]", "").replace(f"[{', '.join(floorTiles)}]", "", 1).strip()
     wallTiles = parseList(floorStr, parser, "Invalid wall tiles")
-
-    # print("Room count:", roomCount)
-    # print("Area:", area)
-    # print("Floor tiles:", floorTiles)
-    # print("Wall tiles:", wallTiles)
 
     return roomCount, area, floorTiles, wallTiles
 

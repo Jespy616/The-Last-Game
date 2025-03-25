@@ -13,6 +13,9 @@ apiKey = getenv("GROQ_API_KEY")
 a = ["stone", "grass", "dirt", "wood"]
 b = ["castle", "swamp", "cave", "forest"]
 
+'''
+Example use cases for command line arguments
+'''
 # system(f"python3 src/backend/ai/ai_agent.py -f a") # Missing API key
 # system(f"python3 src/backend/ai/ai_agent.py -k api_key -f a") # Invalid number of rooms
 # system(f"python3 src/backend/ai/ai_agent.py -k api_key -f 1 1") # Invalid area
