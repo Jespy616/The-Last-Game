@@ -1,6 +1,6 @@
 from groq import Groq
-from pydantic import BaseModel, Field
 
+# Main function for generating a story
 def storyWorkflow(prevArea, nextArea, prevStory, apiKey):
     agent = Groq(api_key=apiKey, timeout=5)
     story = makeStory(agent, prevArea, nextArea, prevStory, "")
@@ -28,11 +28,11 @@ def makeStory(agent, prevArea, nextArea, prevStory, story):
         )
         story = chat_completion.choices[0].message.content
     except Exception as e:
-        print(f"Error: {e}")
+        # Provide a reason while it failed to report to the user
         if "Invalid API Key" in str(e):
             story = "Invalid API Key"
         elif "Rate limit reached" in str(e):
             story = "Rate limit reached"
         else:
-            story = "An error occurred while generating the story"
+            story = "An error occurred while generating the story. Please try again."
     return story

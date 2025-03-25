@@ -4,27 +4,25 @@ from random import randint, choice
 import json
 import threading
 
-
+# Constants for defining the enemy stats range
 ATTACK_MIN = 1
 ATTACK_MAX = 10
 HEALTH_MIN = 1
 HEALTH_MAX = 10
 
-# High attk, low health
-# Low attk, high health
-# High attk, high health
-
+# Define the enemy model for the LLM and validating the response
 class Enemy(BaseModel):
     attack: int = Field(..., description="The attack power of the enemy")
     health: int = Field(..., description="The health of the enemy")
     sprite: str = Field(..., description="The sprite of the enemy")
 
-
+# Main function for enemy generation
 def enemyWorkflow(spriteList, numEnemies, apiKey):
     agent = Groq(api_key=apiKey, timeout=5)
     enemies = []
     threads = []
     
+    # Threading function to create an enemy
     def createEnemy():
         enemy = makeEnemy(agent, spriteList)
         if enemy is not None:
@@ -37,9 +35,6 @@ def enemyWorkflow(spriteList, numEnemies, apiKey):
     
     for thread in threads:
         thread.join()
-
-    # for enemy in enemies:
-    #     print(enemy.json())
 
     enemies_json = {
         "enemies": [json.loads(enemy.json()) for enemy in enemies]
@@ -74,5 +69,3 @@ def makeEnemy(agent, spriteList):
         enemy = Enemy(attack=randint(ATTACK_MIN, ATTACK_MAX), health=randint(HEALTH_MIN, HEALTH_MAX), sprite=choice(spriteList))
         return enemy
     return enemy
-
-

@@ -4,22 +4,26 @@ from random import randint, choice
 import json
 import threading
 
+# Constants for weapon stats generation
 ATTACK_MIN = 1
 ATTACK_MAX = 10
 TYPES = [0, 1, 2, 3] # Melee, Line, AOE, Sweep
 
 
+# Pydantic model for prompting the LLM and validating the response
 class WeaponBase(BaseModel):
     attack: int = Field(..., description="The attack power of the weapon")
     type: int = Field(..., description="The attack type of the weapon")
     sprite: str = Field(..., description="The sprite of the weapon")
 
 
+# Main function for weapon generation
 def weaponWorkflow(spriteList, numWeapons, apiKey):
     agent = Groq(api_key=apiKey, timeout=5)
     weapons = []
     threads = []
     
+    # Threading function
     def createWeapon():
         weapon = makeWeapon(agent, spriteList)
         if weapon is not None:
@@ -32,9 +36,6 @@ def weaponWorkflow(spriteList, numWeapons, apiKey):
     
     for thread in threads:
         thread.join()
-
-    # for weapon in weapons:
-    #     print(weapon.json())
 
     weapons_json = {
         "weapons": [json.loads(weapon.json()) for weapon in weapons]

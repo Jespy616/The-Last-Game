@@ -29,7 +29,7 @@ Example use cases for command line arguments
 # system(f"python3 src/backend/ai/ai_agent.py -k {apiKey} -s none castle \"no previous story\"") # Story generation
 
 # system(f"python3 src/backend/ai/ai_agent.py -k {apiKey} -f 15 castle {b} {b} -e 10 {a} -w 10 {a}") # Floor, enemy, weapon generation    
-# system(f"python3 src/backend/ai/ai_agent.py -k {apiKey} -f 15 castle {b} {b} -e 10 {a} -w 10 {a} -s none castle \"no previous story\"") # All generation
+system(f"python3 src/backend/ai/ai_agent.py -k {apiKey} -f 15 castle {b} {b} -e 10 {a} -w 10 {a} -s none castle \"no previous story\"") # All generation
 
 
 class TestAI(unittest.TestCase):
@@ -164,5 +164,5 @@ class TestAI(unittest.TestCase):
         result = subprocess.run(cmd, capture_output=True, text=True)
         self.assertNotEqual(result, "Invalid API Key", "Process should fail with invalid API key")
             
-if __name__ == "__main__":
-    unittest.main()
+# if __name__ == "__main__":
+#     unittest.main()
