@@ -107,10 +107,7 @@ class TestAI(unittest.TestCase):
     
     def test_enemy_generation(self):
         """Test enemy generation functionality"""
-        enemy_data = self.ai_result["enemies"]
-        self.assertIn("enemies", enemy_data)
-        
-        enemies = enemy_data["enemies"]
+        enemies = self.ai_result["enemies"]
         self.assertIsInstance(enemies, list)
         self.assertGreater(len(enemies), 0)  # Should have at least one enemy
         
@@ -132,10 +129,7 @@ class TestAI(unittest.TestCase):
     
     def test_weapon_generation(self):
         """Test weapon generation functionality"""
-        weapon_data = self.ai_result["weapons"]
-        self.assertIn("weapons", weapon_data)
-        
-        weapons = weapon_data["weapons"]
+        weapons = self.ai_result["weapons"]
         self.assertIsInstance(weapons, list)
         self.assertGreater(len(weapons), 0)  # Should have at least one weapon
         
