@@ -15,14 +15,14 @@ def makeStory(agent, prevArea, nextArea, prevStory, story):
             messages=[
                 {
                     "role": "system",
-                    "content": f"You are a dungeon master that outputs a story in text. You will be given the previous area and story and the next story to base your story off of. Do not use names for the player or for locations.\n The story must be a string."
+                    "content": f"You are a dungeon master that outputs a story in text. You will be given the previous area and story and the next story to base your story off of. Do not use names for the player or for locations.\n The story must be a English string."
                 },
                 {
                     "role": "user",
                     "content": f"Previous area: {prevArea}\nNext area: {nextArea}\nPrevious story: {prevStory}"
                 }
             ],
-            model="qwen-2.5-32b",
+            model="llama-3.3-70b-versatile",
             temperature=1,
             max_tokens=250,
         )
@@ -34,5 +34,5 @@ def makeStory(agent, prevArea, nextArea, prevStory, story):
         elif "Rate limit reached" in str(e):
             story = "Rate limit reached"
         else:
-            story = "An error occurred while generating the story. Please try again."
+            story = f"An error occurred while generating the story. Please try again."
     return story
