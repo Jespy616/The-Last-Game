@@ -157,9 +157,9 @@ func CloseDB(db *gorm.DB) {
 
 type User struct {
 	gorm.Model
-	Username	string
+	Username	string `gorm:"unique"`
 	Email	string `gorm:"unique"`
-	Password	string
+	Password	string `gorm:"unique"`
 	SubscriptionLevel	int
 	StripeID	int
 }

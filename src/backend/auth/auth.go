@@ -131,7 +131,7 @@ func Register(c *gin.Context) {
 	// Save user to database
 	if err := model.DB.Create(&user).Error; err != nil {
 		log.Println("Database error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a unique user. Username, Password, or Email is already in use."})
 		return
 	}
 
