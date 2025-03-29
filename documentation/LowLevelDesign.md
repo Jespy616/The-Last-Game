@@ -177,15 +177,12 @@ Make with the assistance of ChatGPT.
         - [ ] set whole team up with docker file
 
   - AI
-    - [ ] Set up main script so that the server can invoke prompts
-    - [ ] Add map generation
-      - [ ] Add checks to make sure each doorway/chest can be accesed
-      - [ ] Add checks to make sure there is >= 1 door in each room
-      - [ ] Connect rooms together to make the floor
-      - [ ] If generation fails, use open room
-    - [ ] Add map generation tests
-      - [ ] check if each room is accessible
-      - [ ] check to see if reponse is in a proper format
+    - [x] Set up main script so that the server can invoke prompts
+    - [x] Add map generation
+      - [x] Add checks to make sure each doorway/chest can be accesed
+      - [x] Add checks to make sure there is >= 1 door in each room
+      - [x] Connect rooms together to make the floor
+      - [x] If generation fails, use a default room
 
 
 #### Sprint 2
@@ -238,16 +235,16 @@ Make with the assistance of ChatGPT.
         - [ ] Weapons
         - [ ] Chests
   - AI:
-    - [ ] Add option to generate enemies
-      - [ ] Add check to see if enemy is valid
-      - [ ] If generation fails, use default enemy
-    - [ ] Add option to generate weapons
-      - [ ] Add check to see if weapon is valid
-      - [ ] If generation fails, use default weapon
-    - [ ] Add chest generation to room/floor
-    - [ ] Add tests for enemies, weapons, chest generation
-      - [ ] Check if response is in proper format
-      - [ ] Check if there are enough chests in the floor ( >= 3)
+    - [x] Add option to generate enemies
+      - [x] Add check to see if enemy is valid
+      - [x] If generation fails, use default enemy
+    - [x] Add option to generate weapons
+      - [x] Add check to see if weapon is valid
+      - [x] If generation fails, use default weapon
+    - [x] Add tests for enemies, weapons, chest generation
+      - [x] Check if response is in proper format
+      - [x] Check if there are enough chests in the floor ( >= 3)
+    - [x] Add story generation for in between floors
 
 
 #### Sprint 3
@@ -274,9 +271,6 @@ Make with the assistance of ChatGPT.
     - [ ] Final Testing
     - [ ] Work on Deployment Plan for backend
     - [ ] Implement endpoints for high score and leader board
-
-  - AI:
-    - [ ] Add story generation for in between floors
 
 
 ---

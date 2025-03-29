@@ -1,3 +1,5 @@
+
+
 roomDefaults = {
     "room1": [
         ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
@@ -254,7 +256,7 @@ roomDefaults = {
         ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
         ],
 }
-
+   
 
 
 floorDefaults = {
