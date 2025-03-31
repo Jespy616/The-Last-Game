@@ -27,7 +27,7 @@ func main() {
 
 	// Initialize DB
 	model.ConnectDB()
-	//model.MigrateDB() //Uncomment this line when you run main.go for the first time
+	model.MigrateDB() //Uncomment this line when you run main.go for the first time
 
 	// Public Routes (No authentication required)
 	//public := r.Group("/api")
@@ -43,15 +43,15 @@ func main() {
 	protected.Use() // Protect with JWT Authentication, encypt
 	{
 		// game stuff
-		protected.GET("/create_user", game_manager.CreateUser)
 		protected.GET("/create_game", game_manager.CreateGame)
+		protected.GET("/create_floor", game_manager.CreateFloor)
 		//protected.POST("/save_game", game_manager.SaveGame)
 		//protected.POST("/subscribe", auth.Subscribe)
 		//protected.POST("/unsubscribe", game_manager.Unsubscribe)
 
 		// get models
-		protected.GET("/get_user/:userId", game_manager.GetUser)
-		protected.GET("/get_player/:playerId", game_manager.GetPlayer)
+		//protected.GET("/get_user/:userId", game_manager.GetUser)
+		//protected.GET("/get_player/:playerId", game_manager.GetPlayer)
 		//protected.GET("/get_game/:gameId", game_manager.GetGame)
 		//protected.GET("/get_floor/:floorId", game_manager.GetFloor)
 		//protected.GET("/get_enemy/:enemyId", game_manager.GetEnemy)

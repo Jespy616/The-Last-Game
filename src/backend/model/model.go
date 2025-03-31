@@ -169,11 +169,11 @@ type Player struct {
 	//UserID uint
 	//User	User
 	Health	int
-	PrimaryWeaponID uint
-	PrimaryWeapon Weapon
-	SecondaryWeaponID uint
-	SecondaryWeapon Weapon
-	SpriteID int
+	PrimaryWeaponID *uint
+	PrimaryWeapon *Weapon
+	SecondaryWeaponID *uint
+	SecondaryWeapon *Weapon
+	Sprite     	 string	 `gorm:"type:text"`
 	PosX	int
 	PosY	int
 }
@@ -186,7 +186,6 @@ type Game struct {
 	PlayerSpecifications	string
 	PlayerID uint
 	Player	Player
-	StoryText	string
 }
 
 type Floor struct {
@@ -195,6 +194,7 @@ type Floor struct {
     PlayerInID uint `gorm:"default:null"`
 	FloorMap   string `gorm:"type:text"` // Store floor layout as JSON
 	Adjacency  string `gorm:"type:text"` // Store adjacency matrix as JSON
+	StoryText  string
 }
 
 type Room struct {
@@ -221,7 +221,7 @@ type Enemy struct {
     Health       int
     WeaponID     *uint   `gorm:"default:null"`
     Weapon       *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"`
-    SpriteID     int
+    Sprite     	 string	 `gorm:"type:text"`
     RoomID       uint   `gorm:"index"`
     PosX         int
     PosY         int
@@ -230,7 +230,7 @@ type Enemy struct {
 type Weapon struct {
 	gorm.Model
 	AttackDamage	int
-	SpriteID	int
+	Sprite     	 string	 `gorm:"type:text"`
 	Type	int
 }
 
