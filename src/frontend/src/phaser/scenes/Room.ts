@@ -1,5 +1,5 @@
 import { Direction, GridEngine } from 'grid-engine';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 import type { GameObject, PlayerObject, RoomObject } from '../backend/types';
@@ -9,13 +9,13 @@ import { playerAttack, handleEnemyTurns } from '../util/Combat';
 import { EnemyHealthBar } from '../ui/EnemyHealthBar';
 
 export class Room extends Scene {
-    camera: Phaser.Cameras.Scene2D.Camera;
-    private room: RoomObject;
-    private player: PlayerObject;
-    private gameData: GameObject;
-    private startX: number;
-    private startY: number;
-    private startFrame: number;
+    camera!: Phaser.Cameras.Scene2D.Camera;
+    private room!: RoomObject;
+    private player!: PlayerObject;
+    private gameData!: GameObject;
+    private startX!: number;
+    private startY!: number;
+    private startFrame!: number;
     private gridEngine!: GridEngine;
     private inputEnabled: boolean = true;
     private observers: Subscription[] = [];
@@ -206,11 +206,13 @@ export class Room extends Scene {
             }
         });
 
-        const posFinish = this.gridEngine.positionChangeFinished().subscribe(({ charId }) => {
+        const posFinish = this.gridEngine.positionChangeFinished().subscribe(async ({ charId }) => {
             // Player reaches new tile: Handle enemy turns
             if (charId === 'player') {
                 this.player.currentHealth = Math.min(this.player.currentHealth + 1, this.player.maxHealth);
-                handleEnemyTurns(this.player, this.room.enemies);
+                await handleEnemyTurns(this.player, this.room.enemies).then(() => {
+                    this.inputEnabled = true;
+                });
             }
         });
 
@@ -226,15 +228,19 @@ export class Room extends Scene {
 
     checkRoomChange(x: number, y: number) {
         if (x === 0 && y === 4 && this.gridEngine.getFacingDirection('player') === Direction.LEFT && this.room.left) {
+            this.inputEnabled = true;
             this.changeRoom('right')
         }
         else if (x === 14 && y === 4 && this.gridEngine.getFacingDirection('player') === Direction.RIGHT && this.room.right) {
+            this.inputEnabled = true;
             this.changeRoom('left')
         }
         else if (x === 7 && y === 0 && this.gridEngine.getFacingDirection('player') === Direction.UP && this.room.top) {
+            this.inputEnabled = true;
             this.changeRoom('bottom')
         }
         else if (x === 7 && y === 8 && this.gridEngine.getFacingDirection('player') === Direction.DOWN && this.room.bottom) {
+            this.inputEnabled = true;
             this.changeRoom('top')
         }
     }
@@ -305,11 +311,14 @@ export class Room extends Scene {
 
         if (this.gridEngine.isMoving('player')) {
             await new Promise(resolve => {
-                this.gridEngine.positionChangeFinished().subscribe(() => resolve(true));
+                this.gridEngine.positionChangeFinished()
+                    .pipe(take(1))
+                    .subscribe(() => resolve(true));
             });
         }
-
-        this.inputEnabled = true;
+        else {
+            this.inputEnabled = true;
+        }
     }
 
     update() {

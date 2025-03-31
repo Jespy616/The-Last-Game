@@ -1,22 +1,22 @@
 import type { GameObject } from "./types";
 import type { StoryResponse } from "./types";
+const API_URL = 'http://localhost:8080/api';
 
 export async function getGame(difficultyLevel: number, theme: string): Promise<GameObject | null> {
-    // try {
-    //     const response = await fetch('/api/GetGame', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify({ difficultyLevel, theme })
-    //     });
+    try {
+        const response = await fetch(`${API_URL}/GetGame`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ difficultyLevel, theme })
+        });
 
-    //     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
-    //     const gameData: GameObject = await response.json();
-    //     return gameData;
-    // } catch (error) {
-    //     console.error('Error loading floor:', error);
-    //     return null;
-    // }
+        const gameData: GameObject = await response.json();
+        return gameData;
+    } catch (error) {
+        console.error('Error loading floor:', error);
+    }
 
     const game: GameObject = { // COMMENT OUT FOR BACKEND INTEGRATION
         player: {
@@ -67,7 +67,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 12,
                                 posY: 3,
                                 damage: 5,
-                                spriteName: 'Mushroom',
+                                spriteName: 'Werewolf',
                                 level: 1
                             },
                             {
@@ -77,7 +77,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 2,
                                 posY: 2,
                                 damage: 15,
-                                spriteName: 'Mushroom',
+                                spriteName: 'Dog',
                                 level: 2
                             },
                             {
@@ -87,7 +87,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 posX: 7,
                                 posY: 7,
                                 damage: 20,
-                                spriteName: 'Mushroom',
+                                spriteName: 'GoldKnight',
                                 level: 3
                             }
                         ]
@@ -110,7 +110,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                         top: 3,
                         enemies: [
                             {
-                                id: 1,
+                                id: 4,
                                 maxHealth: 10,
                                 currentHealth: 10,
                                 posX: 12,
@@ -120,7 +120,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 level: 1
                             },
                             {
-                                id: 2,
+                                id: 5,
                                 maxHealth: 15,
                                 currentHealth: 15,
                                 posX: 2,
@@ -130,7 +130,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 level: 2
                             },
                             {
-                                id: 3,
+                                id: 6,
                                 maxHealth: 20,
                                 currentHealth: 20,
                                 posX: 7,
@@ -158,7 +158,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                         bottom: 2,
                         enemies: [
                             {
-                                id: 1,
+                                id: 7,
                                 maxHealth: 10,
                                 currentHealth: 10,
                                 posX: 12,
@@ -168,7 +168,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 level: 1
                             },
                             {
-                                id: 2,
+                                id: 8,
                                 maxHealth: 15,
                                 currentHealth: 15,
                                 posX: 2,
@@ -178,7 +178,7 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
                                 level: 2
                             },
                             {
-                                id: 3,
+                                id: 9,
                                 maxHealth: 20,
                                 currentHealth: 20,
                                 posX: 7,

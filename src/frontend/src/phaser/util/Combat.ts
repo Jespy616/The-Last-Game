@@ -1,5 +1,5 @@
 import type { EnemyObject, PlayerObject } from "../backend/types";
-const TURN_DELAY: number = 1000;
+const TURN_DELAY: number = 500;
 
 function enemyIsInRange(enemy: EnemyObject, player: PlayerObject): boolean {
         return (Math.abs(player.posX - enemy.posX) <= 1 && Math.abs(player.posY - enemy.posY) === 0) || (Math.abs(player.posY - enemy.posY) <= 1 && Math.abs(player.posX - enemy.posX) === 0);
