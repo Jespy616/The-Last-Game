@@ -166,8 +166,6 @@ type User struct {
 
 type Player struct {
 	gorm.Model
-	//UserID uint
-	//User	User
 	Health	int
 	PrimaryWeaponID *uint
 	PrimaryWeapon *Weapon
@@ -186,6 +184,7 @@ type Game struct {
 	PlayerSpecifications	string
 	PlayerID uint
 	Player	Player
+	UserID uint
 }
 
 type Floor struct {

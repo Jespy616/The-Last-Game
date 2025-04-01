@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"strconv"
+
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -48,9 +50,6 @@ type RoomNeighbors struct {
 	Left   *int
 	Right  *int
 }
-
-
-
 
 func getRoomNeighbors(floorMap [][]int) map[int]RoomNeighbors {
 	neighbors := make(map[int]RoomNeighbors)
@@ -274,6 +273,7 @@ func CreateFloor(c *gin.Context) {
 }
 
 func CreateGame(c *gin.Context) {
+	userID := c.MustGet("userID").(uint)
 	apiKey := loadAPIKey()
 	args1 := []string{"castle", "cave", "forest"}
 	enemies := []string{"goblin", "bat", "knight"}
@@ -314,6 +314,7 @@ func CreateGame(c *gin.Context) {
 		PlayerSpecifications: "Cool Game",
 		PlayerID:             player.ID,
 		Player:               player,
+		UserID:				  userID,
 	}
 	if err := model.DB.Create(&game).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -323,7 +324,7 @@ func CreateGame(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Game created successfully", "game": game})
 }
 
-func SaveFullGame(c *gin.Context) {
+func SaveGame(c *gin.Context) {
 	var game model.Game
 
 	// Bind incoming JSON to game model
@@ -377,4 +378,286 @@ func SaveFullGame(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Game saved successfully", "game": game})
+}
+
+func GetUser(c *gin.Context) {
+	userID := c.Param("userId")
+
+	var user model.User
+	result := model.DB.First(&user, "ID = ?", userID)
+
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+func GetPlayer(c *gin.Context) {
+	playerID := c.Param("playerId")
+
+	var player model.Player
+	result := model.DB.First(&player, "playerId = ?", playerID)
+
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, player)
+}
+
+func GetEnemy(c *gin.Context) {
+	enemyID := c.Param("enemyId")
+
+	var enemy model.Enemy
+	result := model.DB.First(&enemy, "enemyId = ?", enemyID)
+
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Enemy not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, enemy)
+}
+
+
+func SetEnemyHealthHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { Health int `json:"health"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Enemy{}).Where("id = ?", id).Update("health", body.Health).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "health updated"})
+}
+
+func SetEnemyWeaponHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { WeaponID uint `json:"weapon_id"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Enemy{}).Where("id = ?", id).Update("weapon_id", body.WeaponID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "weapon update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "weapon updated"})
+}
+
+func DeleteEnemyHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := model.DB.Delete(&model.Enemy{}, id).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "delete failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "enemy deleted"})
+}
+
+func GetRoomHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var room model.Room
+	if err := model.DB.Preload("Enemies").Preload("Chest").First(&room, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "room not found"})
+		return
+	}
+	c.JSON(http.StatusOK, room)
+}
+
+func SetRoomClearedHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { Cleared bool `json:"cleared"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Room{}).Where("id = ?", id).Update("cleared", body.Cleared).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "room cleared updated"})
+}
+
+func SetRoomChestHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { ChestID uint `json:"chest_id"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Room{}).Where("id = ?", id).Update("chest_id", body.ChestID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "chest update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "room chest updated"})
+}
+
+func DeleteRoomHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := model.DB.Delete(&model.Room{}, id).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "delete failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "room deleted"})
+}
+
+func GetChestHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var chest model.Chest
+	if err := model.DB.Preload("Weapon").First(&chest, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "chest not found"})
+		return
+	}
+	c.JSON(http.StatusOK, chest)
+}
+
+func SetChestWeaponHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { WeaponID uint `json:"weapon_id"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Chest{}).Where("id = ?", id).Update("weapon_id", body.WeaponID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "weapon update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "chest weapon updated"})
+}
+
+func RemoveChestWeaponHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := model.DB.Model(&model.Chest{}).Where("id = ?", id).Update("weapon_id", nil).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "weapon remove failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "chest weapon removed"})
+}
+
+func DeleteChestHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := model.DB.Delete(&model.Chest{}, id).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "delete failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "chest deleted"})
+}
+
+func GetWeaponHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var weapon model.Weapon
+	if err := model.DB.First(&weapon, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "weapon not found"})
+		return
+	}
+	c.JSON(http.StatusOK, weapon)
+}
+
+func SetWeaponDamageHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { Damage int `json:"attack_damage"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Weapon{}).Where("id = ?", id).Update("attack_damage", body.Damage).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "weapon damage updated"})
+}
+
+func DeleteWeaponHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := model.DB.Delete(&model.Weapon{}, id).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "delete failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "weapon deleted"})
+}
+
+func GetFloorHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var floor model.Floor
+	if err := model.DB.Preload("Rooms").First(&floor, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "floor not found"})
+		return
+	}
+	c.JSON(http.StatusOK, floor)
+}
+
+func SetFloorPlayerInHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { PlayerID *uint `json:"player_id"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Floor{}).Where("id = ?", id).Update("player_in_id", body.PlayerID).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "floor player updated"})
+}
+
+func DeleteFloorHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := model.DB.Delete(&model.Floor{}, id).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "delete failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "floor deleted"})
+}
+
+func GetGameHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var game model.Game
+	if err := model.DB.Preload("Player").Preload("Floor").First(&game, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "game not found"})
+		return
+	}
+	c.JSON(http.StatusOK, game)
+}
+
+func SetGameLevelHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { Level int `json:"level"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Game{}).Where("id = ?", id).Update("level", body.Level).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "game level updated"})
+}
+
+func SetFloorStoryTextHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var body struct { Text string `json:"story_text"` }
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+	if err := model.DB.Model(&model.Floor{}).Where("id = ?", id).Update("StoryText", body.Text).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "update failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "game story text updated"})
+}
+
+func DeleteGameHandler(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := model.DB.Delete(&model.Game{}, id).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "delete failed"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "game deleted"})
 }
