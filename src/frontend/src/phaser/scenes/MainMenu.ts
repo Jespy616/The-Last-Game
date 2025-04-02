@@ -16,11 +16,11 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.background = this.add.image(512, 384, 'background');
+        const { width, height } = this.scale;
 
         // this.logo = this.add.image(512, 300, 'logo').setDepth(100);
 
-        const startGame = this.title = this.add.text(512, 460, 'Start Game', {
+        const startGame = this.title = this.add.text(width / 2, height / 2, 'Start Game', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'

@@ -1,6 +1,13 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import type { UserConfig } from 'vite';
 
-export default defineConfig({
-	plugins: [sveltekit()]
-});
+const config: UserConfig = {
+  plugins: [sveltekit()],
+  server: {
+    proxy: {
+      '/api': 'http://localhost:8080' // wherever your Go backend is running
+    }
+  }
+};
+
+export default config;

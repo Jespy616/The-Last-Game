@@ -1,0 +1,18 @@
+# Use official Python image
+FROM python:latest
+
+# Set working directory
+WORKDIR /app
+
+# Copy the requirements file and install dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the code
+COPY . .
+
+# Expose port if the AI service runs as an API
+EXPOSE 5000
+
+# Run the AI script
+CMD ["python", "./ai_agent.py"]

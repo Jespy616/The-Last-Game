@@ -188,6 +188,13 @@ p {
   margin: clamp(4px, .5vw, 24px);
 }
 
+.errors li {
+  color: var(--secondary-color);
+  font-size: clamp(0.8rem, 2vw, 2rem);
+  text-transform: uppercase;
+  margin: clamp(4px, 1.5vw, 16px);
+}
+
 .dark-label {
   display: flex;
   align-items: center;
