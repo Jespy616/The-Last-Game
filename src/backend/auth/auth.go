@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	// "fmt"
 
 	"log"
 	"net/http"
@@ -117,26 +116,40 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error encrypting email"})
 		return
 	}
-	log.Print(hashedPassword)
-	log.Print(encryptedEmail)
+	
+	var existingUser model.User
+	usernameExists := model.DB.Where("username = ?", req.Username).First(&existingUser).Error == nil
+	emailExists := model.DB.Where("email = ?", encryptedEmail).First(&existingUser).Error == nil
 
-// TODO: NEED LOGIC TO MAKE SURE THE SAME PERSON ISNT GETTING CREATED TWICE
+	// Return specific errors if either exists
+	if usernameExists && emailExists {
+		c.JSON(http.StatusConflict, gin.H{"error": "Both Username and Email are already in use."})
+		return
+	} else if usernameExists {
+		c.JSON(http.StatusConflict, gin.H{"error": "Username is already in use."})
+		return
+	// TODO: Email is getting encrypted differently and isn't catching when using the encrypted email
+	// NEED to add decrypt to check if email is in use
+	} else if emailExists {
+		c.JSON(http.StatusConflict, gin.H{"error": "Email is already in use."})
+		return
+	}
 
 	user := model.User{
 		Username: req.Username,
-		Email:    encryptedEmail, // Store encrypted email
+		Email:    encryptedEmail, 
 		Password: hashedPassword,
 	}
 
 	// Save user to database
 	if err := model.DB.Create(&user).Error; err != nil {
 		log.Println("Database error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a unique user. Username, Password, or Email is already in use."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a unique user. Username or Email is already in use."})
 		return
 	}
 
 	token, err := GenerateTokens(user.ID)
-	// token, err := GenerateTokens(1)
+	
 	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
