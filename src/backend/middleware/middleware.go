@@ -8,9 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-
 )
-
 
 func verifyToken(tokenString string) (*jwt.Token, error) {
 	// Parse the token with the secret key
@@ -32,15 +30,13 @@ func verifyToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
-
-
 func AuthenticateMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Retrieve the token from the cookie
 		tokenString, err := c.Cookie("token")
 		if err != nil {
 			log.Println("Token missing in cookie")
-			c.Redirect(http.StatusSeeOther, "/login")
+			c.Redirect(http.StatusSeeOther, "/api/login")
 			c.Abort()
 			return
 		}
@@ -49,7 +45,7 @@ func AuthenticateMiddleware() gin.HandlerFunc {
 		token, err := verifyToken(tokenString)
 		if err != nil {
 			log.Printf("Token verification failed: %v\\n", err)
-			c.Redirect(http.StatusSeeOther, "/login")
+			c.Redirect(http.StatusSeeOther, "/api/login")
 			c.Abort()
 			return
 		}
@@ -77,5 +73,3 @@ func AuthenticateMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
-
