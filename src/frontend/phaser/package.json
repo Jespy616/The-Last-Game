@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "grid-engine": "^2.46.2",
-    "phaser": "^3.87.0"
-  },
-  "devDependencies": {
-    "@types/node": "^22.13.8"
-  }
-}
