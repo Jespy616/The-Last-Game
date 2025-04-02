@@ -24,10 +24,10 @@ export class Gui extends Scene {
         this.add.text(10, this.cameras.main.height - 40, 'Health:', { fontSize: '16px', color: '#ffffff' });
 
         // Create health bar
-        this.playerHealthBar = new PlayerHealthBar(this, 100, this.cameras.main.height - 45, this.player.currentHealth, this.player.maxHealth);
+        this.playerHealthBar = new PlayerHealthBar(this, 100, this.cameras.main.height - 45, this.player.CurrentHealth, this.player.MaxHealth);
     }
 
     update(): void {
-        this.playerHealthBar.updateHealth(this.player.currentHealth);
+        this.playerHealthBar.updateHealth(this.player.CurrentHealth);
     }
 }

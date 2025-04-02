@@ -2,8 +2,8 @@ const tileProperties: { [key: number]: boolean } = {
         0: true, // Inner top-left wall
         1: true, // Top branch wall
         2: false, // Stairs
-        3: false, // Cracked floor
-        4: false, // Slightly cracked floor
+        3: false, // Cracked Floor
+        4: false, // Slightly cracked Floor
         5: true, // Inner top-right wall
         6: true, // + wall
         7: true, // Top-left corner wall
@@ -81,8 +81,9 @@ const generateTileIDs = (charMatrix: string[][]): number[][] => {
     return convertedTilemap;
 }
 
-export const createTilemap = (scene: Phaser.Scene, tiles: string[][], tilesetKey: string): Phaser.Tilemaps.Tilemap => {
-    const tileIDs = generateTileIDs(tiles);
+export const createTilemap = (scene: Phaser.Scene, tiles: string, tilesetKey: string): Phaser.Tilemaps.Tilemap => {
+    const tileMatrix = convertToMatrix(tiles);
+    const tileIDs = generateTileIDs(tileMatrix);
     const map = scene.make.tilemap({
         data: tileIDs,
         tileWidth: 16,
@@ -111,4 +112,17 @@ const assignCollisions = (map: Phaser.Tilemaps.Tilemap) => {
             }
         });
     });
+}
+
+const convertToMatrix = (charString: string): string[][] => {
+    const rows = Math.ceil(charString.length / 13);
+    const matrix: string[][] = [];
+
+    for (let i = 0; i < rows; i++) {
+        const start = i * 13;
+        const end = start + 13;
+        matrix.push(charString.slice(start, end).split(''));
+    }
+
+    return matrix;
 }

@@ -2,17 +2,17 @@ export abstract class HealthBarBase {
     protected bar: Phaser.GameObjects.Graphics;
     protected x: number;
     protected y: number;
-    protected maxHealth: number;
-    protected currentHealth: number;
+    protected MaxHealth: number;
+    protected CurrentHealth: number;
     protected scene: Phaser.Scene;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, currentHealth: number, maxHealth: number) {
+    constructor(scene: Phaser.Scene, x: number, y: number, CurrentHealth: number, MaxHealth: number) {
         this.scene = scene;
         this.bar = new Phaser.GameObjects.Graphics(scene);
         this.x = x;
         this.y = y;
-        this.currentHealth = currentHealth;
-        this.maxHealth = maxHealth;
+        this.CurrentHealth = CurrentHealth;
+        this.MaxHealth = MaxHealth;
         scene.add.existing(this.bar);
     }
 
@@ -20,8 +20,8 @@ export abstract class HealthBarBase {
 
     public updateHealth(newHealth: number): void {
         if (newHealth <= 0) { return this.destroy(); }
-        const healthChange = newHealth - this.currentHealth;
-        this.currentHealth = newHealth;
+        const healthChange = newHealth - this.CurrentHealth;
+        this.CurrentHealth = newHealth;
         this.draw();
         if (healthChange !== 0) {
             this.showHealthChange(healthChange);

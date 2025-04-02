@@ -2,12 +2,12 @@ import type { GameObject } from "./types";
 import type { StoryResponse } from "./types";
 const API_URL = 'http://localhost:8080/api';
 
-export async function getGame(difficultyLevel: number, theme: string): Promise<GameObject | null> {
+export async function getGame(difficultyLevel: number, Theme: string): Promise<GameObject | null> {
     try {
         const response = await fetch(`${API_URL}/GetGame`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ difficultyLevel, theme })
+            body: JSON.stringify({ difficultyLevel, Theme })
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -15,177 +15,147 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
         const gameData: GameObject = await response.json();
         return gameData;
     } catch (error) {
-        console.error('Error loading floor:', error);
+        console.error('Error loading Floor:', error);
     }
 
     const game: GameObject = { // COMMENT OUT FOR BACKEND INTEGRATION
-        player: {
+        Player: {
             id: 1,
-            maxHealth: 100,
-            currentHealth: 100,
-            posX: 4,
-            posY: 4,
-            spriteName: 'Knight',
-            primaryWeapon: {
+            MaxHealth: 100,
+            CurrentHealth: 100,
+            PosX: 4,
+            PosY: 4,
+            SpriteName: 'Knight',
+            PrimaryWeapon: {
                 id: 1,
-                name: 'Sword',
-                damage: 10,
-                type: 0
+                Name: 'Sword',
+                Damage: 10,
+                Type: 0
             },
-            secondaryWeapon: {
+            SecondaryWeapon: {
                 id: 2,
-                name: 'Bow',
-                damage: 5,
-                type: 1
+                Name: 'Bow',
+                Damage: 5,
+                Type: 1
             }
         },
-        floor: {
-            theme: theme,
-            level: 1,
-            rooms: [
+        Floor: {
+            Theme: Theme,
+            Level: 1,
+            Rooms: [
                 [
                     {
                         id: 1,
-                        type: 0,
-                        tiles: [
-                            ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
-                            ['w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', '.', '.', '.', 'w', 'w', '.', '.', 'w', 'w', '.', '.', '.', '.', 'w'],
-                            ['.', '.', '.', '.', 'w', '.', '.', '.', '.', 'w', '.', '.', '.', '.', 'w'],
-                            ['w', '.', '.', '.', 'w', '.', '.', '.', '.', 'w', '.', '.', '.', '.', 'w'],
-                            ['w', '.', '.', '.', 'w', 'w', 'w', 'w', 'w', 'w', '.', '.', '.', '.', 'w'],
-                            ['w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w']
-                        ],
-                        left: 2,
-                        enemies: [
+                        Type: 0,
+                        Tiles: 'wwwwwwwwwwwwww...........ww...........ww...........w............ww...........ww...........ww...........wwwwwwwwwwwwww',
+                        Left: 2,
+                        Enemies: [
                             {
                                 id: 1,
-                                maxHealth: 10,
-                                currentHealth: 10,
-                                posX: 12,
-                                posY: 3,
-                                damage: 5,
-                                spriteName: 'Werewolf',
-                                level: 1
+                                MaxHealth: 10,
+                                CurrentHealth: 10,
+                                PosX: 10,
+                                PosY: 3,
+                                Damage: 5,
+                                SpriteName: 'Werewolf',
+                                Level: 1
                             },
                             {
                                 id: 2,
-                                maxHealth: 15,
-                                currentHealth: 15,
-                                posX: 2,
-                                posY: 2,
-                                damage: 15,
-                                spriteName: 'Dog',
-                                level: 2
+                                MaxHealth: 15,
+                                CurrentHealth: 15,
+                                PosX: 2,
+                                PosY: 2,
+                                Damage: 15,
+                                SpriteName: 'Dog',
+                                Level: 2
                             },
                             {
                                 id: 3,
-                                maxHealth: 20,
-                                currentHealth: 20,
-                                posX: 7,
-                                posY: 7,
-                                damage: 20,
-                                spriteName: 'GoldKnight',
-                                level: 3
+                                MaxHealth: 20,
+                                CurrentHealth: 20,
+                                PosX: 7,
+                                PosY: 7,
+                                Damage: 20,
+                                SpriteName: 'GoldKnight',
+                                Level: 3
                             }
                         ]
                     },
                     {
                         id: 2,
-                        type: 0,
-                        tiles: [
-                            ['w', 'w', 'w', 'w', 'w', 'w', 'w', '.', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
-                            ['w', '.', 'w', '.', '.', '.', 'w', '.', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', '.', 'w', 'w', '.', '.', 'w', '.', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w', '.', '.', 'w'],
-                            ['w', '.', '.', 'w', '.', '.', '.', '.', '.', '.', '.', 'w', '.', '.', '.'],
-                            ['w', '.', 'w', 'w', 'w', '.', '.', '.', '.', '.', 'w', 'w', 'w', '.', 'w'],
-                            ['w', '.', '.', 'w', '.', '.', 'w', 'w', '.', '.', 'w', '.', 'w', '.', 'w'],
-                            ['w', '.', '.', '.', '.', '.', '.', 'w', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w']
-                        ],
-                        right: 1,
-                        top: 3,
-                        enemies: [
+                        Type: 0,
+                        Tiles: 'wwwwww.wwwwwww...........ww...........ww...........ww............w...........ww...........ww...........wwwwwwwwwwwwww',
+                        Right: 1,
+                        Top: 3,
+                        Enemies: [
                             {
                                 id: 4,
-                                maxHealth: 10,
-                                currentHealth: 10,
-                                posX: 12,
-                                posY: 3,
-                                damage: 5,
-                                spriteName: 'Mushroom',
-                                level: 1
+                                MaxHealth: 10,
+                                CurrentHealth: 10,
+                                PosX: 10,
+                                PosY: 3,
+                                Damage: 5,
+                                SpriteName: 'Mushroom',
+                                Level: 1
                             },
                             {
                                 id: 5,
-                                maxHealth: 15,
-                                currentHealth: 15,
-                                posX: 2,
-                                posY: 2,
-                                damage: 15,
-                                spriteName: 'Mushroom',
-                                level: 2
+                                MaxHealth: 15,
+                                CurrentHealth: 15,
+                                PosX: 2,
+                                PosY: 2,
+                                Damage: 15,
+                                SpriteName: 'Mushroom',
+                                Level: 2
                             },
                             {
                                 id: 6,
-                                maxHealth: 20,
-                                currentHealth: 20,
-                                posX: 7,
-                                posY: 7,
-                                damage: 20,
-                                spriteName: 'Mushroom',
-                                level: 3
+                                MaxHealth: 20,
+                                CurrentHealth: 20,
+                                PosX: 7,
+                                PosY: 7,
+                                Damage: 20,
+                                SpriteName: 'Mushroom',
+                                Level: 3
                             }
                         ]
                     },
                     {
                         id: 3,
-                        type: 0,
-                        tiles: [
-                            ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
-                            ['w', '.', 'w', '.', '.', '.', '.', 'w', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', '.', 'w', 'w', '.', '.', 'w', 'w', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w', '.', '.', 'w'],
-                            ['w', '.', 'w', 'w', '.', '.', '.', '.', '.', '.', '.', 'w', 'w', '.', 'w'],
-                            ['w', '.', 'w', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w', '.', 'w'],
-                            ['w', '.', '.', '.', '.', '.', 'w', 'w', 'w', '.', '.', '.', 'w', '.', 'w'],
-                            ['w', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'w'],
-                            ['w', 'w', 'w', 'w', 'w', 'w', 'w', '.', 'w', 'w', 'w', 'w', 'w', 'w', 'w']
-                        ],
-                        bottom: 2,
-                        enemies: [
+                        Type: 0,
+                        Tiles: 'wwwwwwwwwwwwww...........ww...........ww...........ww...........ww...........ww...........ww...........wwwwwww.wwwwww',
+                        Bottom: 2,
+                        Enemies: [
                             {
                                 id: 7,
-                                maxHealth: 10,
-                                currentHealth: 10,
-                                posX: 12,
-                                posY: 3,
-                                damage: 5,
-                                spriteName: 'Mushroom',
-                                level: 1
+                                MaxHealth: 10,
+                                CurrentHealth: 10,
+                                PosX: 10,
+                                PosY: 3,
+                                Damage: 5,
+                                SpriteName: 'Mushroom',
+                                Level: 1
                             },
                             {
                                 id: 8,
-                                maxHealth: 15,
-                                currentHealth: 15,
-                                posX: 2,
-                                posY: 2,
-                                damage: 15,
-                                spriteName: 'Mushroom',
-                                level: 2
+                                MaxHealth: 15,
+                                CurrentHealth: 15,
+                                PosX: 2,
+                                PosY: 2,
+                                Damage: 15,
+                                SpriteName: 'Mushroom',
+                                Level: 2
                             },
                             {
                                 id: 9,
-                                maxHealth: 20,
-                                currentHealth: 20,
-                                posX: 7,
-                                posY: 7,
-                                damage: 20,
-                                spriteName: 'Mushroom',
-                                level: 3
+                                MaxHealth: 20,
+                                CurrentHealth: 20,
+                                PosX: 7,
+                                PosY: 7,
+                                Damage: 20,
+                                SpriteName: 'Mushroom',
+                                Level: 3
                             }
                         ]
                     }
@@ -196,12 +166,12 @@ export async function getGame(difficultyLevel: number, theme: string): Promise<G
     return game;
 }
 
-export async function saveGame(floorData: Partial<GameObject>): Promise<void> {
+export async function saveGame(FloorData: Partial<GameObject>): Promise<void> {
     try {
         const response = await fetch('/api/Save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(floorData)
+            body: JSON.stringify(FloorData)
         });
 
         if (!response.ok) throw new Error('Failed to save game');
@@ -218,7 +188,7 @@ export async function fetchStoryText(): Promise<string> {
         if (!response.ok) throw new Error('Failed to fetch story');
         
         const story: StoryResponse = await response.json();
-        return story.text;
+        return story.Text;
     } catch (error) {
         console.error('Error fetching story:', error);
         return 'Story unavailable...';

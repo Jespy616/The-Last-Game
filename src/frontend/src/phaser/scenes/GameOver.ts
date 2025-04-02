@@ -1,15 +1,20 @@
+import type { GameObject } from '../backend/types';
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 
 export class GameOver extends Scene
 {
-    camera: Phaser.Cameras.Scene2D.Camera;
-    background: Phaser.GameObjects.Image;
-    gameOverText : Phaser.GameObjects.Text;
+    camera!: Phaser.Cameras.Scene2D.Camera;
+    background!: Phaser.GameObjects.Image;
+    gameOverText! : Phaser.GameObjects.Text;
 
     constructor ()
     {
         super('GameOver');
+    }
+
+    init (data: {gameData: GameObject}) {
+        // Initialize any data needed from the gameData
     }
 
     create ()
@@ -22,6 +27,8 @@ export class GameOver extends Scene
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
+        
+        // TODO: Display stats using gameData
         
         EventBus.emit('current-scene-ready', this);
     }
