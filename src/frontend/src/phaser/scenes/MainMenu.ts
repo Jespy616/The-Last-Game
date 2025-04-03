@@ -4,10 +4,10 @@ import { EventBus } from '../EventBus';
 
 export class MainMenu extends Scene
 {
-    background: GameObjects.Image;
-    logo: GameObjects.Image;
-    title: GameObjects.Text;
-    logoTween: Phaser.Tweens.Tween | null;
+    background!: GameObjects.Image;
+    logo!: GameObjects.Image;
+    title!: GameObjects.Text;
+    logoTween!: Phaser.Tweens.Tween | null;
 
     constructor ()
     {
@@ -31,14 +31,9 @@ export class MainMenu extends Scene
         startGame.on('pointerout', () => startGame.setColor('#ffffff'));
 
         startGame.on('pointerdown', () => {
-            this.scene.start('ThemeSelection');
+            this.scene.launch('Transition', { prevSceneKey: 'MainMenu', nextSceneKey: 'ThemeSelection', nextSceneData: {} }); // Use prevSceneKey
         });
 
         EventBus.emit('current-scene-ready', this);
-    }
-    
-    changeScene ()
-    {
-        this.scene.start('ThemeSelection');
     }
 }

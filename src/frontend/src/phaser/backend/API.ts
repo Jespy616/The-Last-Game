@@ -17,7 +17,7 @@ export async function getGame(difficultyLevel: number, Theme: string): Promise<G
     } catch (error) {
         console.error('Error loading Floor:', error);
     }
-
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Simulate delay
     const game: GameObject = { // COMMENT OUT FOR BACKEND INTEGRATION
         Player: {
             id: 1,

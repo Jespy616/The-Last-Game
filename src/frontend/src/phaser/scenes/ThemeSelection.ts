@@ -36,6 +36,6 @@ export class ThemeSelection extends Phaser.Scene {
     }
 
     startGame(theme: string) {
-        this.scene.start('DifficultySelection', { theme });
+        this.scene.launch('Transition', { prevSceneKey: 'ThemeSelection', nextSceneKey: 'DifficultySelection', nextSceneData: { theme } }); // Use prevSceneKey
     }
 }

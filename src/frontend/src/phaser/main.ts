@@ -10,6 +10,7 @@ import { ThemeSelection } from './scenes/ThemeSelection';
 import { DifficultySelection } from './scenes/DifficultySelection';
 import { StoryText } from './scenes/StoryText';
 import { Loader } from './scenes/Loader';
+import { Transition } from './scenes/Transition';
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
@@ -29,7 +30,8 @@ const config: Phaser.Types.Core.GameConfig = {
         ThemeSelection,
         DifficultySelection,
         StoryText,
-        Loader
+        Loader,
+        Transition
     ],
     plugins: {
         scene: [

@@ -46,11 +46,8 @@ export class DifficultySelection extends Phaser.Scene {
         const storyText: string | null = await getStoryText();
 
         if (storyText) {
-            // Start StoryText scene with the fetched story text
-            this.scene.start('StoryText', { storyText });
-
-            // Start loader scene to handle game loading and transition
-            this.scene.launch('Loader', { difficulty, theme: this.theme });
+            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'StoryText', nextSceneData: { storyText } }); // Use prevSceneKey
+            this.scene.launch('Loader', { difficulty, theme: this.theme }); // Launch Loader in parallel
         } else {
             console.error('Failed to fetch story text');
         }

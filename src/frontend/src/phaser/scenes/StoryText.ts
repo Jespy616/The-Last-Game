@@ -36,7 +36,7 @@ export class StoryText extends Phaser.Scene {
             wordWrap: { width: width - 50 },
         }).setOrigin(0.5);
 
-        this.textTexture.draw(text, width / 2, height + text.height); 
+        this.textTexture.draw(text, width / 2, height); 
         text.destroy(); // Remove text since it's now on texture
 
         // Register the shader pipeline
@@ -53,9 +53,6 @@ export class StoryText extends Phaser.Scene {
             scale: 0,
             duration: 20000,
             ease: 'Linear',
-            onComplete: () => {
-                this.scene.stop();
-            }
         });
     }
 }
