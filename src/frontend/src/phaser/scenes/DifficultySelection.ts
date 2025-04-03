@@ -1,13 +1,12 @@
 import Phaser, { Game } from 'phaser';
-import type { GameObject } from '../backend/types';
-import { getGame } from '../backend/API';
+import { getStoryText } from '../backend/API';
 
 export class DifficultySelection extends Phaser.Scene {
     constructor() {
         super({ key: 'DifficultySelection' });
     }
 
-    theme: string;
+    theme!: string;
 
     init(data: { theme: string }) {
         // Get the theme from the previous scene
@@ -43,14 +42,17 @@ export class DifficultySelection extends Phaser.Scene {
     }
 
     async startGame(difficulty: number) {
-        // Fetch game data from backend
-        const gameData: (GameObject | null) = await getGame(difficulty, this.theme);
+        // Fetch story text from backend
+        const storyText: string | null = await getStoryText();
 
-        // Start first room scene
-        if (gameData) {
-            this.scene.start('Room', { roomId: 1, gameData, pos: "center" });
+        if (storyText) {
+            // Start StoryText scene with the fetched story text
+            this.scene.start('StoryText', { storyText });
+
+            // Start loader scene to handle game loading and transition
+            this.scene.launch('Loader', { difficulty, theme: this.theme });
         } else {
-            console.error('Failed to create game data');
+            console.error('Failed to fetch story text');
         }
     }
 }

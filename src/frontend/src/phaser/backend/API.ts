@@ -182,7 +182,7 @@ export async function saveGame(FloorData: Partial<GameObject>): Promise<void> {
     }
 }
 
-export async function fetchStoryText(): Promise<string> {
+export async function getStoryText(): Promise<string> {
     try {
         const response = await fetch('/api/GetText');
         if (!response.ok) throw new Error('Failed to fetch story');
@@ -191,6 +191,6 @@ export async function fetchStoryText(): Promise<string> {
         return story.Text;
     } catch (error) {
         console.error('Error fetching story:', error);
-        return 'Story unavailable...';
+        return 'Once upon a time, in a land far away...\n\nLuke Skywalker has returned to his home planet of Tatooine in an attempt to rescue his friend Han Solo from the clutches of the vile gangster Jabba the Hutt. Little does Luke know that the GALACTIC EMPIRE has secretly begun construction on a new armored space station even more powerful than the first dreaded Death Star. When completed, this ultimate weapon will spell certain doom for the small band of rebels struggling to restore freedom to the galaxy...';
     }
 }

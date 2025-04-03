@@ -8,11 +8,13 @@ import { Preloader } from './scenes/Preloader';
 import { GridEngine } from 'grid-engine';
 import { ThemeSelection } from './scenes/ThemeSelection';
 import { DifficultySelection } from './scenes/DifficultySelection';
+import { StoryText } from './scenes/StoryText';
+import { Loader } from './scenes/Loader';
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config: Phaser.Types.Core.GameConfig = {
-    type: AUTO,
+    type: Phaser.WEBGL,
     width: 1024,
     height: 768,
     parent: 'game-container',
@@ -25,7 +27,9 @@ const config: Phaser.Types.Core.GameConfig = {
         Gui,
         GameOver,
         ThemeSelection,
-        DifficultySelection
+        DifficultySelection,
+        StoryText,
+        Loader
     ],
     plugins: {
         scene: [
