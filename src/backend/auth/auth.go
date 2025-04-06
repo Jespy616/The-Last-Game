@@ -2,9 +2,6 @@ package auth
 
 import (
 	"backend/model"
-	"crypto/rand"
-	"encoding/base64"
-	"errors"
 
 	"log"
 	"net/http"
@@ -14,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/crypto/chacha20poly1305"
 )
 
 
@@ -38,30 +34,6 @@ func hashString(str string) (string, error) {
 	return string(hashed), err
 }
 
-// 🔹 Encrypt email using ChaCha20-Poly1305
-func encryptEmail(email string) (string, error) {
-
-	key := []byte(os.Getenv("EMAIL_ENCRYPTION_KEY"))
-
-	if len(key) != chacha20poly1305.KeySize {
-		return "", errors.New("errInvalidKeySize") // Pretty sure this is incorrect but need more research
-	}
-
-	aead, err := chacha20poly1305.NewX(key) // Use XChaCha20-Poly1305 for larger nonces
-	if err != nil {
-		return "", err
-	}
-
-	nonce := make([]byte, chacha20poly1305.NonceSizeX) // 24-byte nonce
-	if _, err := rand.Read(nonce); err != nil {
-		return "", err
-	}
-
-	ciphertext := aead.Seal(nil, nonce, []byte(email), nil) // Encrypt email
-	encryptedData := append(nonce, ciphertext...)           // Store nonce + ciphertext
-
-	return base64.StdEncoding.EncodeToString(encryptedData), nil // Encode to base64
-}
 
 // GenerateTokens creates an access token (short-lived) and a refresh token (long-lived)
 func GenerateTokens(userID uint) (*TokenPair, error) {
@@ -111,46 +83,38 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	encryptedEmail, err := encryptEmail(req.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error encrypting email"})
+	var existingUser model.User
+
+	usernameExists := model.DB.Where("username = ?", req.Username).First(&existingUser).Error == nil
+	emailExists := model.DB.Where("email = ?", req.Email).First(&existingUser).Error == nil
+
+
+
+	// Return specific errors if username already exists
+	if usernameExists {
+		c.JSON(http.StatusConflict, gin.H{"error": "Failed to create user. Username is already in use."})
 		return
 	}
-	
-	var existingUser model.User
-	usernameExists := model.DB.Where("username = ?", req.Username).First(&existingUser).Error == nil
-	emailExists := model.DB.Where("email = ?", encryptedEmail).First(&existingUser).Error == nil
 
-	// Return specific errors if either exists
-	if usernameExists && emailExists {
-		c.JSON(http.StatusConflict, gin.H{"error": "Both Username and Email are already in use."})
-		return
-	} else if usernameExists {
-		c.JSON(http.StatusConflict, gin.H{"error": "Username is already in use."})
-		return
-	// TODO: Email is getting encrypted differently and isn't catching when using the encrypted email
-	// NEED to add decrypt to check if email is in use
-	} else if emailExists {
-		c.JSON(http.StatusConflict, gin.H{"error": "Email is already in use."})
+	if emailExists {
+		c.JSON(http.StatusConflict, gin.H{"error": "Failed to create user. Email is already in use."})
 		return
 	}
 
 	user := model.User{
 		Username: req.Username,
-		Email:    encryptedEmail, 
+		Email:    req.Email, 
 		Password: hashedPassword,
 	}
 
 	// Save user to database
 	if err := model.DB.Create(&user).Error; err != nil {
 		log.Println("Database error:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a unique user. Username or Email is already in use."})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create unique user."})
 		return
 	}
 
 	token, err := GenerateTokens(user.ID)
-	
-	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
@@ -174,9 +138,6 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	log.Print(req)
-	log.Print(c)
-
 	var user model.User
 
 	if err := model.DB.Where("username = ?", req.Username).First(&user).Error; err != nil {
@@ -188,6 +149,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
 	}
+
 
 	token, err := GenerateTokens(user.ID)
 	if err != nil {
