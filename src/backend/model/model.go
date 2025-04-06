@@ -159,7 +159,7 @@ type User struct {
 	gorm.Model
 	Username	string `gorm:"unique"`
 	Email	string `gorm:"unique"`
-	Password	string `gorm:"unique"`
+	Password	string 
 	SubscriptionLevel	int
 	StripeID	int
 }

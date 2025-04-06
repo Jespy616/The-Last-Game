@@ -1,7 +1,7 @@
 # **Docker Setup and Usage Guide**
 
 ## **Introduction**
-This guide provides step-by-step instructions for installing, configuring, and running Docker for our project. It includes details on using Docker via command line, Docker Desktop, and VS Code.
+This guide provides step-by-step instructions for installing, configuring, and running Docker for our project. It includes details on using Docker via command line and Docker Desktop.
 
 ---
 
@@ -19,40 +19,57 @@ This guide provides step-by-step instructions for installing, configuring, and r
    Docker version 24.0.2, build cb74dfc
    ```
 
-### **Linux** (Chat made ths part, needs Verification)
-1. Install Docker:
-   ```sh
-   sudo apt update
-   sudo apt install docker.io -y
-   ```
-2. Start Docker and enable it on boot:
+### **Linux** 
+1.  Update your system and install Docker Compose (if needed):
+      ```sh
+      sudo apt update
+      sudo apt install docker-compose
+      ```
+      Note: This installs Docker Compose, but Docker Engine should already be installed or installed separately. If Docker is not installed, install it using your distro's package manager or via Docker's official repository.
+   
+2. Start Docker and enable it to launch on boot:
    ```sh
    sudo systemctl start docker
    sudo systemctl enable docker
    ```
-3. Verify installation:
-   ```sh
-   docker --version
-   ```
+3.  (Optional) Add your user to the Docker group (to run Docker without sudo):
 
-4. **(Optional)** Add your user to the `docker` group to avoid using `sudo`:
-   ```sh
-   sudo usermod -aG docker $USER
-   ```
-   Restart your terminal for changes to take effect.
+      a. Check if the docker group exists:
+      ```sh
+      getent group docker
+      ```
+      b. Add your user to the Docker group:
 
+      ```sh
+      sudo usermod G docker -a $USER
+      ```
+      c. Apply the group change without logging out:
+      ```sh
+      newgrp docker
+      ```
+      d. Verify the change:
+      ```sh
+      groups
+      ```
+      ⚠️ You may need to restart your terminal session or log out and back in for the group change to take full effect.
+
+4. Verify Docker installation:
+      ```sh
+      docker --version
+      docker compose version  # optional, to verify Docker Compose
+      ```
 ---
 
 ## **2. Running and Managing Containers via Command Line**
-1. Create or ensure you have a **`.env` file** in the project root (in the same folder as the docker-compose.yml file) with necessary environment variables. The way I currently have it, docker uses one central `.env` file for secret keys and passwords. This file will not be added in the image or on git, so you will need to make and keep your own on your machine. Text Ethan for what needs to go into the file. 
+1. Create or ensure you have a **`.env` file** in the project root (in the same folder as the docker-compose.yml file) with necessary environment variables. Docker uses one central `.env` file for secret keys and passwords. This file will not be provided in the image or on git, so you will need to create the `.env` file locally. Contact Team NaN for more information.
 3. Build and start Docker services:
    ```sh
-   docker-compose up --build -d
+   docker-compose up --build 
    ```
    - `--build`: Rebuilds the images if changes were made.
-   - `-d`: Runs in detached mode (in the background).
+
    
-    This will start the three containers in this Docker project, namely backend, frontend, and game_db (database). **You do not need to install anything like Go, Postgres, Svelte, or any other software to run your code** with the other portions written by the rest of us. Docker will do all that for you. 
+    This will start the three containers in this Docker project, namely backend, frontend, and game_db (database). **You do not need to install anything like Go, Postgres, Svelte, or any other software to run the code.** Docker will do all that for you. 
 4. Check running containers:
    ```sh
    docker ps
@@ -102,7 +119,7 @@ Opens a shell session inside the `backend` container.
 ---
 
 
-## **6. Cleaning Up Docker**
+## **5. Cleaning Up Docker**
 ### **Remove Unused Containers & Images**
 ```sh
 docker system prune -a
@@ -112,5 +129,5 @@ This removes all unused containers, images, and networks to free up space.
 
 
 ## **Conclusion**
-Following these steps will ensure a smooth Docker setup for our project. If you run into any issues, feel free to ask for help in the team chat. 🚀
+Following these steps will ensure a smooth Docker setup for our project. If you run into any issues, feel free to ask Team NaN for help. 🚀
 
