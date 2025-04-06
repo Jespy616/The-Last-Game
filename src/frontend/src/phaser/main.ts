@@ -3,6 +3,7 @@ import { GameOver } from './scenes/GameOver';
 import { Room } from './scenes/Room';
 import { Gui } from './scenes/Gui';
 import { MainMenu } from './scenes/MainMenu';
+import { Overview } from './scenes/Overview';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
 import { GridEngine } from 'grid-engine';
@@ -25,6 +26,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Boot,
         Preloader,
         MainMenu,
+        Overview,
         Room,
         Gui,
         GameOver,

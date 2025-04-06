@@ -20,21 +20,21 @@ export class DifficultySelection extends Phaser.Scene {
     create() {
         const { width, height } = this.scale;
 
-        const easyButton = this.add.text(width / 2 - 150, height / 2, 'Easy', { fontSize: '32px', color: '#fff' })
+        const easyButton = this.add.text(width / 2 - 300, height / 2, 'Easy', { fontFamily: 'cc-pixel-arcade-display', fontSize: '48px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => easyButton.setColor('#f00'))
             .on('pointerout', () => easyButton.setColor('#fff'))
             .on('pointerdown', () => this.startGame(0));
 
-        const mediumButton = this.add.text(width / 2, height / 2, 'Medium', { fontSize: '32px', color: '#fff' })
+        const mediumButton = this.add.text(width / 2, height / 2, 'Medium', { fontFamily: 'cc-pixel-arcade-display', fontSize: '48px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => mediumButton.setColor('#f00'))
             .on('pointerout', () => mediumButton.setColor('#fff'))
             .on('pointerdown', () => this.startGame(1));
 
-        const hardButton = this.add.text(width / 2 + 160, height / 2, 'Hard', { fontSize: '32px', color: '#fff' })
+        const hardButton = this.add.text(width / 2 + 300, height / 2, 'Hard', { fontFamily: 'cc-pixel-arcade-display', fontSize: '48px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => hardButton.setColor('#f00'))
