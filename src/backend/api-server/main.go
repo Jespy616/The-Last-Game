@@ -30,7 +30,7 @@ func main() {
 
 	// Initialize DB
 	model.ConnectDB()
-	//model.MigrateDB() //Uncomment this line when you run main.go for the first time
+	model.MigrateDB() //Uncomment this line when you run main.go for the first time
 
 	// Public Routes (No authentication required)
 	public := r.Group("/api")
