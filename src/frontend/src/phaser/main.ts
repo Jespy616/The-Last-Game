@@ -3,8 +3,8 @@ import { GameOver } from './scenes/GameOver';
 import { Room } from './scenes/Room';
 import { Gui } from './scenes/Gui';
 import { MainMenu } from './scenes/MainMenu';
-import { AUTO, Game } from 'phaser';
-import { Preloader } from './scenes/Preloader';
+import { Game } from 'phaser';
+import { SettingsOverlay } from './scenes/SettingsOverlay';
 import { GridEngine } from 'grid-engine';
 import { ThemeSelection } from './scenes/ThemeSelection';
 import { DifficultySelection } from './scenes/DifficultySelection';
@@ -16,15 +16,15 @@ import { Transition } from './scenes/Transition';
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.WEBGL,
-    width: 1024,
-    height: 768,
+    width: window.innerWidth,
+    height: window.innerHeight,
     parent: 'game-container',
     backgroundColor: '#000000',
     scene: [
         Boot,
-        Preloader,
         MainMenu,
         Room,
+        SettingsOverlay,
         Gui,
         GameOver,
         ThemeSelection,
@@ -43,6 +43,7 @@ const config: Phaser.Types.Core.GameConfig = {
         ],
     },
     scale: {
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,

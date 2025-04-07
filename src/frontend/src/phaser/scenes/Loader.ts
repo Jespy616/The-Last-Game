@@ -1,42 +1,31 @@
 import Phaser from 'phaser';
-import { getGame } from '../backend/API';
 import type { GameObject } from '../backend/types';
+import { getGame } from '../backend/API';
 
 export class Loader extends Phaser.Scene {
     constructor() {
         super({ key: 'Loader' });
     }
 
-    init(data: { difficulty: number; theme: string }) {
-        this.difficulty = data.difficulty;
-        this.theme = data.theme;
+    async init(data: { theme: string; difficulty: string; }) {
+        const gameData: GameObject | null = await getGame(data.difficulty, data.theme);
+        if (!gameData) {
+            this.scene.start('MainMenu');
+            console.error('Failed to fetch story text');
+            return;
+        }
+        console.log('Game Data:\n', gameData);
+        this.scene.launch('Transition', { prevSceneKey: 'Loader', nextSceneKey: 'StoryText', nextSceneData: {gameData: gameData} });
     }
 
-    difficulty!: number;
-    theme!: string;
-    gameData: GameObject | null = null;
-
-    async create() {
+    create() {
         const { width, height } = this.scale;
-        // Fetch game data
-        this.gameData = await getGame(this.difficulty, this.theme);
-
-        if (this.gameData) {
-            const proceedButton = this.add.text(width - 100, height - 50, 'Skip', {
-                fontSize: '24px',
-                color: '#fff',
-                backgroundColor: '#000',
-                padding: { x: 10, y: 5 }
-            }).setOrigin(0.5)
-                .setInteractive({ useHandCursor: true })
-                .on('pointerdown', () => {
-                    this.scene.stop('StoryText');
-                    this.scene.launch('Transition', { prevSceneKey: 'Loader', nextSceneKey: 'Room', nextSceneData: { roomId: 1, gameData: this.gameData, pos: 'center' } }); // Use prevSceneKey
-                })
-                .on('pointerover', () => proceedButton.setColor('#f00'))
-                .on('pointerout', () => proceedButton.setColor('#fff'));
-        } else {
-            console.error('Failed to create game data');
-        }
+        
+        this.add.text(width - 100, height - 50, 'Loading...', {
+            fontSize: '24px',
+            color: '#fff',
+            backgroundColor: '#000',
+            padding: { x: 10, y: 5 }
+        }).setOrigin(0.5)
     }
 }

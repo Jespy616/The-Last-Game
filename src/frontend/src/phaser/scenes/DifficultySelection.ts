@@ -1,5 +1,6 @@
 import Phaser, { Game } from 'phaser';
-import { getStoryText } from '../backend/API';
+import { getGame } from '../backend/API';
+import type { GameObject } from '../backend/types';
 
 export class DifficultySelection extends Phaser.Scene {
     constructor() {
@@ -24,32 +25,34 @@ export class DifficultySelection extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => easyButton.setColor('#f00'))
             .on('pointerout', () => easyButton.setColor('#fff'))
-            .on('pointerdown', () => this.startGame(0));
+            .on('pointerdown', () => {
+                this.startGame("easy");
+                easyButton.setColor('#fff');
+            });
 
         const mediumButton = this.add.text(width / 2, height / 2, 'Medium', { fontSize: '32px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => mediumButton.setColor('#f00'))
             .on('pointerout', () => mediumButton.setColor('#fff'))
-            .on('pointerdown', () => this.startGame(1));
+            .on('pointerdown', () => {
+                this.startGame("medium")
+                mediumButton.setColor('#fff');
+            });
 
         const hardButton = this.add.text(width / 2 + 160, height / 2, 'Hard', { fontSize: '32px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => hardButton.setColor('#f00'))
             .on('pointerout', () => hardButton.setColor('#fff'))
-            .on('pointerdown', () => this.startGame(2));
+            .on('pointerdown', () => {
+                this.startGame("hard")
+                hardButton.setColor('#fff');
+            });
     }
 
-    async startGame(difficulty: number) {
-        // Fetch story text from backend
-        const storyText: string | null = await getStoryText();
-
-        if (storyText) {
-            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'StoryText', nextSceneData: { storyText } }); // Use prevSceneKey
-            this.scene.launch('Loader', { difficulty, theme: this.theme }); // Launch Loader in parallel
-        } else {
-            console.error('Failed to fetch story text');
-        }
+    async startGame(difficulty: string) {
+        this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { theme: this.theme, difficulty: difficulty } }); // Use prevSceneKey
+        
     }
 }

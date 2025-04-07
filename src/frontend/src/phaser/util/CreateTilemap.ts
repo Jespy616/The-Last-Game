@@ -1,3 +1,5 @@
+import type { RoomObject } from "../backend/types";
+
 const tileProperties: { [key: number]: boolean } = {
         0: true, // Inner top-left wall
         1: true, // Top branch wall
@@ -81,8 +83,20 @@ const generateTileIDs = (charMatrix: string[][]): number[][] => {
     return convertedTilemap;
 }
 
-export const createTilemap = (scene: Phaser.Scene, tiles: string, tilesetKey: string): Phaser.Tilemaps.Tilemap => {
+export const createTilemap = (scene: Phaser.Scene, tiles: string, tilesetKey: string, room: RoomObject): Phaser.Tilemaps.Tilemap => {
     const tileMatrix = convertToMatrix(tiles);
+    if (room.TopID) {
+        tileMatrix[0][6] = '.';
+    }
+    if (room.BottomID) {
+        tileMatrix[8][6] = '.';
+    }
+    if (room.LeftID) {
+        tileMatrix[4][0] = '.';
+    }
+    if (room.RightID) {
+        tileMatrix[4][12] = '.';
+    }
     const tileIDs = generateTileIDs(tileMatrix);
     const map = scene.make.tilemap({
         data: tileIDs,
