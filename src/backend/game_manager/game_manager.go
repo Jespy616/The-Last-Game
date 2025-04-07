@@ -372,7 +372,7 @@ func CreateGame(c *gin.Context) {
 	}
 
 
-	//userID := c.MustGet("userID").(uint)  // DELETE comment this out to make it work w/o logging in
+	userID := c.MustGet("userID").(uint)  // DELETE comment this out to make it work w/o logging in
 	apiKey := loadAPIKey()
 	args1 := []string{"castle", "cave", "forest"}
 	enemies := []string{"goblin", "bat", "knight"}
@@ -419,12 +419,25 @@ func CreateGame(c *gin.Context) {
 		return
 	}
 
+	start_room := floor.Rooms[0]
+	startX := 6
+	startY := 4
+
+	if start_room.Tiles[24] == 'w' {
+		for i := len(start_room.Tiles) - 1; i >= 0; i-- {
+			if start_room.Tiles[i] == '.' {
+				startX = i / 13
+				startY = i % 9
+			}
+		}
+	}
+
 	player := model.Player{
 		MaxHealth: 45,
 		CurrentHealth: 45,
 		SpriteName: "Knight",
-		PosX: 6,
-		PosY: 4,
+		PosX: startX,
+		PosY: startY,
 		PrimaryWeaponID: &primary_weapon.ID,
 		PrimaryWeapon: &primary_weapon,
 	}
@@ -440,7 +453,7 @@ func CreateGame(c *gin.Context) {
 		PlayerSpecifications: "Cool Game",
 		PlayerID:             player.ID,
 		Player:               player,
-		UserID:				  1, //DELETE turn this too a 1
+		UserID:				  userID, //DELETE turn this too a 1
 	}
 	if err := model.DB.Create(&game).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

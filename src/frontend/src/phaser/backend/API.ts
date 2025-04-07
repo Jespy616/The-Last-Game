@@ -1,12 +1,17 @@
 import type { FloorObject, FloorResponse, GameObject, GameResponse } from './types';
-const API_URL = 'https://centres-ratios-nominations-compliance.trycloudflare.com/api/protected';
+import { authStore } from '../../lib/stores/authStore';
+const API_URL = 'http://127.0.0.1:8080/api/protected';
 
 export async function getGame(difficultyLevel: string, Theme: string): Promise<GameObject | null> {
     try {
+        let token;
+        authStore.subscribe((value) => {
+            token = value.token;
+        })();
         console.log(`Making request: ${JSON.stringify({ difficulty: difficultyLevel, theme: Theme })}`)
         const response = await fetch(`${API_URL}/create_game`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDQwMDU3NzEsImlhdCI6MTc0NDAwNDg3MSwibmJmIjoxNzQ0MDA0ODcxLCJzdWIiOiIxIn0.-yppLS22jIDWdoeHjjeoUyfjuMaetFthwEIz6sQpsEU' },
+            headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` },
             body: JSON.stringify({ difficulty: difficultyLevel, theme: Theme })
         });
 
@@ -363,7 +368,7 @@ export async function saveGame(FloorData: Partial<GameObject>): Promise<void> {
         });
 
         if (!response.ok) throw new Error('Failed to save game');
-        
+
         console.log('Game saved successfully');
     } catch (error) {
         await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate delay
