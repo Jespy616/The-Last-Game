@@ -1,5 +1,5 @@
 import type { EnemyObject, PlayerObject } from "../backend/types";
-const TURN_DELAY: number = 500;
+const TURN_DELAY: number = 1000;
 
 function enemyIsInRange(enemy: EnemyObject, player: PlayerObject): boolean {
         return (Math.abs(player.posX - enemy.posX) <= 1 && Math.abs(player.posY - enemy.posY) === 0) || (Math.abs(player.posY - enemy.posY) <= 1 && Math.abs(player.posX - enemy.posX) === 0);
@@ -19,9 +19,20 @@ export async function handleEnemyTurns(player: PlayerObject, enemies: EnemyObjec
 async function enemyAttack(enemy: EnemyObject, player: PlayerObject) {
     return new Promise(resolve => {
         const damage = enemy.damage;
-
         enemy.spriteObject!.anims.play(`${enemy.spriteObject!.texture.key}-attack`);
         player.currentHealth -= damage;
+        const swingSound = enemy.spriteObject!.scene.sound.add("swing");
+        swingSound.play();
+        swingSound.once("complete", () => {
+            if (player.currentHealth > 0) {
+                const hitSound = player.spriteObject!.scene.sound.add("hit", {volume: 0.3});
+                hitSound.play();
+            }
+            else {
+                const deathSound = player.spriteObject!.scene.sound.add("death", {volume: 0.25});
+                deathSound.play();
+            }
+        });
         console.log(`${enemy.spriteObject!.texture.key} attacks player for ${damage} damage`);
         setTimeout(() => resolve(true), TURN_DELAY); // Wait for attack animation to finish
     }).then(() => {
@@ -40,7 +51,18 @@ export async function playerAttack(enemy: EnemyObject, player: PlayerObject) {
         
         console.log(`Player attacks ${enemy.spriteObject!.texture.key} for ${damage} damage`);
         enemy.currentHealth -= damage;
-        
+        const swingSound = player.spriteObject!.scene.sound.add("swing");
+        swingSound.play();
+        swingSound.once("complete", () => {
+            if (enemy.currentHealth > 0) {
+                const hitSound = player.spriteObject!.scene.sound.add("hit", {volume: 0.3});
+                hitSound.play();
+            }
+            else {
+                const deathSound = player.spriteObject!.scene.sound.add("death", {volume: 0.25});
+                deathSound.play();
+            }
+        });
         setTimeout(() => resolve(true), TURN_DELAY); // Wait for attack animation to finish
     }); 
 }
