@@ -45,7 +45,7 @@
   <div class="container">
     <div class="menu-background">
       <div class="page-header">
-        <span class="back-arrow title page-title"><a href="/" class="link">&lt;</a></span> 
+        <span class="back-arrow title page-title"><a href="/game" class="link">&lt;</a></span> 
         <h1 class="title page-title">SETTINGS</h1>
       </div>
       

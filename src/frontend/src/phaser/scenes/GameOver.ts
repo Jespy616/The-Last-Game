@@ -16,7 +16,8 @@ export class GameOver extends Scene
 
     init (data: {gameData: GameObject}) {
         // Initialize any data needed from the gameData
-        this.level = data.gameData.Floor.Level;
+        console.log('GameOver scene initialized with data:', data);
+        this.level = data.gameData.Level;
     }
 
     preload () {
@@ -39,7 +40,8 @@ export class GameOver extends Scene
 
         this.add.text(this.scale.width / 2, .5 * this.scale.height, `Floor Reached:\n${this.level}`, {
             fontFamily: 'Arial Black', fontSize: 32, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8
+            stroke: '#000000', strokeThickness: 8,
+            align: 'center'
         }).setOrigin(0.5)
 
         const mainMenuButton = this.add.text(this.scale.width / 2, .6 * this.scale.height, 'Main Menu', {
@@ -55,6 +57,6 @@ export class GameOver extends Scene
 
     changeScene ()
     {
-        this.scene.start('MainMenu');
+        this.scene.launch('Transition', { prevSceneKey: 'GameOver', nextSceneKey: 'MainMenu' });
     }
 }

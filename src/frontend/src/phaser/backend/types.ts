@@ -65,6 +65,7 @@ export interface ChestObject {
 export interface GameObject {
     Player: PlayerObject;
     Floor: FloorObject;
+    Level: number;
 }
 
 export interface GameResponse {

@@ -5,6 +5,7 @@ import { Gui } from './scenes/Gui';
 import { MainMenu } from './scenes/MainMenu';
 import { Game } from 'phaser';
 import { SettingsOverlay } from './scenes/SettingsOverlay';
+import { Overview } from './scenes/Overview';
 import { GridEngine } from 'grid-engine';
 import { ThemeSelection } from './scenes/ThemeSelection';
 import { DifficultySelection } from './scenes/DifficultySelection';
@@ -23,6 +24,7 @@ const config: Phaser.Types.Core.GameConfig = {
     scene: [
         Boot,
         MainMenu,
+        Overview,
         Room,
         SettingsOverlay,
         Gui,
