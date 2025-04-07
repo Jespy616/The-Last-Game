@@ -20,13 +20,7 @@ func main() {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	r.Use(cors.New(cors.Config{
-        AllowAllOrigins:  true,
-        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-        AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-        ExposeHeaders:    []string{"Content-Length"},
-        AllowCredentials: true,
-    }))
+	r.Use(cors.Default())
 
 	// Initialize DB
 	model.ConnectDB()
@@ -43,11 +37,11 @@ func main() {
 
 	// Protected Routes (Require JWT)
 	protected := r.Group("/api/protected")
-	protected.Use(middleware.AuthenticateMiddleware()) // Protect with JWT Authentication, encypt
+	protected.Use(middleware.AuthenticateMiddleware()) // Protect with JWT Authentication, encypt //DELETE middleware.Auth... to access without logging in
 	{
 		// game stuff
-		protected.GET("/create_game", game_manager.CreateGame)
-		protected.GET("/create_floor", game_manager.CreateFloor)
+		protected.POST("/create_game", game_manager.CreateGame)
+		protected.POST("/create_floor", game_manager.CreateFloor)
 		protected.POST("/save_game", game_manager.SaveGame)
 		//protected.POST("/subscribe", auth.Subscribe)
 		//protected.POST("/unsubscribe", game_manager.Unsubscribe)
