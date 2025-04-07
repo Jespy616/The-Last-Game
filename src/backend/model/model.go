@@ -159,19 +159,20 @@ type User struct {
 	gorm.Model
 	Username	string `gorm:"unique"`
 	Email	string `gorm:"unique"`
-	Password	string 
+	Password	string
 	SubscriptionLevel	int
 	StripeID	int
 }
 
 type Player struct {
 	gorm.Model
-	Health	int
+	MaxHealth	int
+	CurrentHealth int
 	PrimaryWeaponID *uint
 	PrimaryWeapon *Weapon
 	SecondaryWeaponID *uint
 	SecondaryWeapon *Weapon
-	Sprite     	 string	 `gorm:"type:text"`
+	SpriteName     	 string	 `gorm:"type:text"`
 	PosX	int
 	PosY	int
 }
@@ -194,6 +195,7 @@ type Floor struct {
 	FloorMap   string `gorm:"type:text"` // Store floor layout as JSON
 	Adjacency  string `gorm:"type:text"` // Store adjacency matrix as JSON
 	StoryText  string
+	Theme      string
 }
 
 type Room struct {
@@ -209,26 +211,29 @@ type Room struct {
     RightID      *uint  `gorm:"constraint:OnDelete:SET NULL;"`
     Cleared      bool
     Tiles        string `gorm:"type:text"`
-    XPos         uint
-    YPos         uint
+	Type     	*int
+	StairX       *int
+	StairY       *int
+	X            int
+	Y            int
 }
 
 
 type Enemy struct {
     gorm.Model
-    AttackLevel  int
-    Health       int
-    WeaponID     *uint   `gorm:"default:null"`
-    Weapon       *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"`
-    Sprite     	 string	 `gorm:"type:text"`
+    Damage  float32
+	Level   int
+	CurrentHealth float32
+    MaxHealth       float32
     RoomID       uint   `gorm:"index"`
     PosX         int
     PosY         int
+	Sprite     	 string	 `gorm:"type:text"`
 }
 
 type Weapon struct {
 	gorm.Model
-	AttackDamage	int
+	Damage	float32
 	Sprite     	 string	 `gorm:"type:text"`
 	Type	int
 }
@@ -238,5 +243,7 @@ type Chest struct {
     RoomInID  *uint   `gorm:"default:null"` // Nullable Room reference
     WeaponID  *uint   `gorm:"default:null"` // ✅ Keep as a pointer to allow NULL
     Weapon    *Weapon `gorm:"foreignKey:WeaponID;constraint:OnDelete:SET NULL;"` // Remove weapon reference if deleted
+	PosX      int
+	PosY      int
 }
 

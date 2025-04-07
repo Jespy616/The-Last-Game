@@ -26,13 +26,13 @@ type Floors struct {
 }
 
 type Enemy struct {
-	Attack int    `json:"attack"`
-	Health int    `json:"health"`
+	Attack float32    `json:"attack"`
+	Health float32    `json:"health"`
 	Sprite string `json:"sprite"`
 }
 
 type Weapon struct {
-	Attack int    `json:"attack"`
+	Attack float32    `json:"attack"`
 	Type   int    `json:"type"`
 	Sprite string `json:"sprite"`
 }
@@ -49,6 +49,17 @@ type RoomNeighbors struct {
 	Bottom *int
 	Left   *int
 	Right  *int
+}
+
+type GameConfig struct {
+	Theme     string `json:"theme" binding:"required"`
+	Difficulty string `json:"difficulty" binding:"required"`
+}
+
+type FloorConfig struct {
+	Theme     string `json:"theme" binding:"required"`
+	Difficulty string `json:"difficulty" binding:"required"`
+	Level int `json:"level" binding:"required"`
 }
 
 func getRoomNeighbors(floorMap [][]int) map[int]RoomNeighbors {
@@ -109,7 +120,7 @@ func runPythonAI(apiKey string, args1, enemies, weapons []string) ([]byte, error
 	cmd := exec.Command(
 		"python3.11", "../ai/ai_agent.py",
 		"-k", apiKey,
-		"-f", "4", "cave",
+		"-f", "7", "cave",
 		string(args1JSON), string(args1JSON),
 		"-e", "4", string(enemiesJSON),
 		"-w", "4", string(weaponsJSON),
@@ -125,12 +136,13 @@ func parseAIResponse(output []byte) (FloorData, error) {
 	return floorData, err
 }
 
-func buildAndSaveFloor(floorData FloorData, c *gin.Context) (model.Floor, error) {
+func buildAndSaveFloor(floorData FloorData, level float32, difficulty float32, theme string, c *gin.Context) (model.Floor, error) {
 	floor := model.Floor{
 		FloorMap:  toJSONString(floorData.Floors.FloorMap),
 		Adjacency: toJSONString(floorData.Floors.AdjacencyMatrix),
 		Rooms:     []model.Room{},
 		StoryText: floorData.Story,
+		Theme: theme,
 	}
 
 	if err := model.DB.Create(&floor).Error; err != nil {
@@ -139,11 +151,17 @@ func buildAndSaveFloor(floorData FloorData, c *gin.Context) (model.Floor, error)
 	}
 
 	roomIndex := 0
+
+	var multiplier = float32(0.1)
 	for y, row := range floorData.Floors.FloorMap {
 		for x, roomID := range row {
 			if roomID == 0 {
 				continue
 			}
+
+			normalRoom := 0
+			chestRoom := 1
+			stairRoom := 2
 
 			roomName := fmt.Sprintf("room%d", roomIndex+1)
 			roomTiles := convertTilesToString(floorData.Floors.Rooms[roomName])
@@ -151,7 +169,7 @@ func buildAndSaveFloor(floorData FloorData, c *gin.Context) (model.Floor, error)
 
 			weaponData := floorData.Weapons[rand.Intn(len(floorData.Weapons))]
 			weapon := model.Weapon{
-				AttackDamage: weaponData.Attack,
+				Damage: weaponData.Attack * (float32(1) + level * multiplier) * (float32(1) + level * multiplier) * difficulty,
 				Sprite:       strings.Trim(weaponData.Sprite, "\""),
 				Type:         weaponData.Type,
 			}
@@ -163,10 +181,11 @@ func buildAndSaveFloor(floorData FloorData, c *gin.Context) (model.Floor, error)
 			room := model.Room{
 				FloorID: &floor.ID,
 				Tiles:   roomTiles,
-				XPos:    uint(x),
-				YPos:    uint(y),
 				Enemies: []model.Enemy{},
+				X: x,
+				Y: y,
 			}
+
 
 			if err := model.DB.Create(&room).Error; err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -174,9 +193,26 @@ func buildAndSaveFloor(floorData FloorData, c *gin.Context) (model.Floor, error)
 			}
 
 			if rand.Intn(4) == 1 {
+				chestX := rand.Intn(6) + 2
+				chestY := rand.Intn(10) + 2
+
+				chest_loc := roomTiles[chestX * chestY]
+
+				if chest_loc != '.' {
+					for i, char := range roomTiles {
+						if char == '.' {
+							chestX = i / 13
+							chestY = i % 9
+						}
+					}
+				}
+
+
 				chest := model.Chest{
 					WeaponID: &weapon.ID,
 					Weapon:   &weapon,
+					PosX: chestX,
+					PosY: chestY,
 				}
 				if err := model.DB.Create(&chest).Error; err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -184,20 +220,55 @@ func buildAndSaveFloor(floorData FloorData, c *gin.Context) (model.Floor, error)
 				}
 				room.Chest = &chest
 				room.ChestID = &chest.ID
+				room.Type = &chestRoom
 			}
+
+			if roomIndex == 6 {
+				room.Type = &stairRoom
+				stairX := rand.Intn(6) + 2
+				stairY := rand.Intn(10) + 2
+
+				stair_loc := roomTiles[stairX * stairY]
+
+				if stair_loc == '.' {
+					room.StairX = &stairX
+					room.StairY = &stairY
+				} else {
+					for i := len(roomTiles) - 1; i >= 0; i-- {
+						if roomTiles[i] == '.' {
+							stairX = i / 13
+							stairY = i % 9
+						}
+					}
+					room.StairX = &stairX
+					room.StairY = &stairY
+				}
+			} else {
+				room.Type = &normalRoom
+			}
+
+
+
+			var Enemies = []Enemy{
+				{Attack: 5, Health: 5, Sprite: "1"},
+				{Attack: 7.5, Health: 7.5, Sprite: "1"},
+				{Attack: 10, Health: 10, Sprite: "1"},
+			}
+
 
 			enemyCount := rand.Intn(4)
 			for i := 0; i < enemyCount; i++ {
-				enemyData := floorData.Enemies[rand.Intn(len(floorData.Enemies))]
+				enemy_num := rand.Intn(len(Enemies))
+				enemyData := Enemies[enemy_num]
 				enemy := model.Enemy{
-					AttackLevel: enemyData.Attack,
-					Health:      enemyData.Health,
-					WeaponID:    &weapon.ID,
-					Weapon:      &weapon,
-					Sprite:      strings.Trim(enemyData.Sprite, "\""),
-					PosX:        5,
-					PosY:        5,
+					Damage: enemyData.Attack * (float32(1) + level * multiplier) * difficulty,
+					Level: enemy_num + 1,
+					MaxHealth:      enemyData.Health * (float32(1) + level * multiplier) * (float32(1) + level * multiplier) * difficulty,
+					CurrentHealth: enemyData.Health * (float32(1) + level * multiplier) * (float32(1) + level * multiplier) * difficulty,
+					PosX: rand.Intn(11) + 1,
+					PosY: rand.Intn(7) + 1,
 					RoomID:      room.ID,
+					Sprite: theme,
 				}
 				if err := model.DB.Create(&enemy).Error; err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -247,6 +318,13 @@ func buildAndSaveFloor(floorData FloorData, c *gin.Context) (model.Floor, error)
 }
 
 func CreateFloor(c *gin.Context) {
+	var config FloorConfig
+
+	if err := c.ShouldBindJSON(&config); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	apiKey := loadAPIKey()
 	args1 := []string{"castle", "cave", "forest"}
 	enemies := []string{"goblin", "bat", "knight"}
@@ -264,7 +342,20 @@ func CreateFloor(c *gin.Context) {
 		return
 	}
 
-	floor, err := buildAndSaveFloor(floorData, c)
+	var difficultyMultiplier float32
+
+	switch config.Difficulty {
+	case "easy":
+		difficultyMultiplier = 1.0
+	case "medium":
+		difficultyMultiplier = 1.5
+	case "hard":
+		difficultyMultiplier = 2.0
+	default:
+		difficultyMultiplier = 1.0 // fallback if unknown
+	}
+
+	floor, err := buildAndSaveFloor(floorData, float32(config.Level), difficultyMultiplier, config.Theme, c)
 	if err != nil {
 		return
 	}
@@ -273,7 +364,15 @@ func CreateFloor(c *gin.Context) {
 }
 
 func CreateGame(c *gin.Context) {
-	userID := c.MustGet("userID").(uint)
+	var config GameConfig
+
+	if err := c.ShouldBindJSON(&config); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+
+	//userID := c.MustGet("userID").(uint)  // DELETE comment this out to make it work w/o logging in
 	apiKey := loadAPIKey()
 	args1 := []string{"castle", "cave", "forest"}
 	enemies := []string{"goblin", "bat", "knight"}
@@ -291,16 +390,43 @@ func CreateGame(c *gin.Context) {
 		return
 	}
 
-	floor, err := buildAndSaveFloor(floorData, c)
+	var difficultyMultiplier float32
+
+	switch config.Difficulty {
+	case "easy":
+		difficultyMultiplier = 1.0
+	case "medium":
+		difficultyMultiplier = 1.5
+	case "hard":
+		difficultyMultiplier = 2.0
+	default:
+		difficultyMultiplier = 1.0 // fallback if unknown
+	}
+
+	floor, err := buildAndSaveFloor(floorData, float32(1), difficultyMultiplier, config.Theme, c)
 	if err != nil {
 		return
 	}
 
+	primary_weapon := model.Weapon{
+		Damage: 10,
+		Sprite: "Primary",
+		Type: 1,
+	}
+
+	if err := model.DB.Create(&primary_weapon).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	player := model.Player{
-		Health: 10,
-		Sprite: "main",
-		PosX:   1,
-		PosY:   1,
+		MaxHealth: 45,
+		CurrentHealth: 45,
+		SpriteName: "Knight",
+		PosX: 6,
+		PosY: 4,
+		PrimaryWeaponID: &primary_weapon.ID,
+		PrimaryWeapon: &primary_weapon,
 	}
 	if err := model.DB.Create(&player).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -314,7 +440,7 @@ func CreateGame(c *gin.Context) {
 		PlayerSpecifications: "Cool Game",
 		PlayerID:             player.ID,
 		Player:               player,
-		UserID:				  userID,
+		UserID:				  1, //DELETE turn this too a 1
 	}
 	if err := model.DB.Create(&game).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
