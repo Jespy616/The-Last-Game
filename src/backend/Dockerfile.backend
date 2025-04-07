@@ -24,4 +24,3 @@ EXPOSE 8080
 
 # Run the app using the virtual environment
 CMD ["/app/build/api-server"]
-

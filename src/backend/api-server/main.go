@@ -13,12 +13,12 @@ import (
 )
 
 func main() {
-	// Initialize Gin Router
 	r := gin.Default()
 
-	// Middleware
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	// Register authentication routes
+	r.POST("/register", auth.Register)
+	r.POST("/login", auth.Login)
+	r.POST("/refresh", auth.RefreshToken)
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"}, 

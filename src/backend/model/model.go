@@ -198,12 +198,13 @@ type Floor struct {
 	Theme      string
 }
 
+
 type Room struct {
     gorm.Model
-	FloorID      *uint  `gorm:"default:null"`
+    FloorID      *uint  `gorm:"default:null"`
     Floor        *Floor  `gorm:"constraint:OnDelete:CASCADE;"`
     Enemies      []Enemy `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
-    ChestID      *uint   `gorm:"default:null"`
+    ChestID      *uint   `gorm:"default:null"` 
     Chest        *Chest   `gorm:"constraint:OnDelete:SET NULL;"`
     TopID        *uint  `gorm:"constraint:OnDelete:SET NULL;"`
     BottomID     *uint  `gorm:"constraint:OnDelete:SET NULL;"`
@@ -226,6 +227,7 @@ type Enemy struct {
 	CurrentHealth float32
     MaxHealth       float32
     RoomID       uint   `gorm:"index"`
+    Room         Room   `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
     PosX         int
     PosY         int
 	Sprite     	 string	 `gorm:"type:text"`
@@ -246,4 +248,3 @@ type Chest struct {
 	PosX      int
 	PosY      int
 }
-
