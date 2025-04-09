@@ -22,7 +22,6 @@ export const createEnemyAnimation = (
 ): void => {
     let startFrame = 0;
     let endFrame = 0;
-    let frameRate = 10;
     let repeat = -1;
     let yoyo = false;
 
@@ -30,7 +29,6 @@ export const createEnemyAnimation = (
         case 'attack':
             startFrame = 4;
             endFrame = 6;
-            frameRate = 5;
             repeat = 0;
             yoyo = true;
             break;
@@ -49,7 +47,7 @@ export const createEnemyAnimation = (
             start: startFrame,
             end: endFrame,
         }),
-        frameRate: frameRate,
+        frameRate: 10,
         repeat: repeat,
         yoyo: yoyo,
     });

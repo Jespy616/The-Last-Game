@@ -2,6 +2,10 @@ package auth
 
 import (
 	"backend/model"
+	"crypto/rand"
+	"encoding/base64"
+	"errors"
+	"fmt"
 
 	"log"
 	"net/http"
@@ -14,9 +18,14 @@ import (
 )
 
 
-type AccountRequest struct {
+type RegisterAccountRequest struct {
 	Username string `json:"username" binding:"required"`
 	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginAccountRequest struct {
+	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -38,38 +47,54 @@ func hashString(str string) (string, error) {
 // GenerateTokens creates an access token (short-lived) and a refresh token (long-lived)
 func GenerateTokens(userID uint) (*TokenPair, error) {
 	tokenPair := &TokenPair{}
+	accessSecret := os.Getenv("ACCESS_TOKEN_SECRET")
+	refreshSecret := os.Getenv("REFRESH_TOKEN_SECRET")
 
-	// 🔹 Access Token (Valid for 15 minutes)
+	if accessSecret == "" || refreshSecret == "" {
+		return nil, errors.New("access or refresh secret is missing in environment variables")
+	}
+
+	// Stringify user ID for sub
+	sub := fmt.Sprintf("%d", userID)
+	now := time.Now()
+
+	// 🔹 Access Token (valid for 15 minutes)
 	accessClaims := jwt.MapClaims{
-		"user_id": userID,                                  // Stores user ID in the token
-		"exp":     time.Now().Add(15 * time.Minute).Unix(), // Expiration time
+		"sub": sub,
+		"iat": now.Unix(),
+		"nbf": now.Unix(),
+		"exp": now.Add(15 * time.Minute).Unix(),
 	}
 
 	accessTokenObj := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
-	accessToken, err := accessTokenObj.SignedString([]byte(os.Getenv("ACCESS_TOKEN_SECRET")))
+	accessToken, err := accessTokenObj.SignedString([]byte(accessSecret))
 	if err != nil {
-		return nil, err // If token creation fails, return an error
+		return nil, err
 	}
 	tokenPair.AccessToken = accessToken
 
-	// 🔹 Refresh Token (Valid for 7 days)
+	// 🔹 Refresh Token (valid for 7 days)
 	refreshClaims := jwt.MapClaims{
-		"user_id": userID,                                    // Stores user ID in the token
-		"exp":     time.Now().Add(7 * 24 * time.Hour).Unix(), // Expiration time
+		"sub": sub,
+		"iat": now.Unix(),
+		"nbf": now.Unix(),
+		"exp": now.Add(7 * 24 * time.Hour).Unix(),
 	}
+
 	refreshTokenObj := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
-	refreshToken, err := refreshTokenObj.SignedString([]byte(os.Getenv("REFRESH_TOKEN_SECRET")))
+	refreshToken, err := refreshTokenObj.SignedString([]byte(refreshSecret))
 	if err != nil {
-		return nil, err // If token creation fails, return an error
+		return nil, err
 	}
 	tokenPair.RefreshToken = refreshToken
 
 	return tokenPair, nil
 }
 
+
 func Register(c *gin.Context) {
 
-	var req AccountRequest
+	var req RegisterAccountRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -115,9 +140,9 @@ func Register(c *gin.Context) {
 	}
 
 	token, err := GenerateTokens(user.ID)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
-		return
 	}
 
 	// Send response with JWT token
@@ -125,12 +150,12 @@ func Register(c *gin.Context) {
 		"message":       "Account created successfully",
 		"access_token":  token.AccessToken,
 		"refresh_token": token.RefreshToken,
-		"user_ID": user.ID,
+		"user_id": user.ID,
 	})
 }
 
 func Login(c *gin.Context) {
-	var req AccountRequest
+	var req LoginAccountRequest
 
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -170,7 +195,7 @@ func Login(c *gin.Context) {
 func RefreshToken(c *gin.Context) {
 	var req RefreshInfo
 
-	
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
@@ -183,7 +208,7 @@ func RefreshToken(c *gin.Context) {
 		   }
 		   return []byte(os.Getenv("REFRESH_TOKEN_SECRET")), nil
 		  })
-		 
+
 
 		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
@@ -191,7 +216,7 @@ func RefreshToken(c *gin.Context) {
 		   }
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		userID := claims["user_id"].(float64)
+		userID := claims["sub"].(float64)
 
 		newTokens, err := GenerateTokens(uint(userID))
 		if err != nil {

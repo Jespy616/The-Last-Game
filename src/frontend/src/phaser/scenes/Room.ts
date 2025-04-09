@@ -1,5 +1,5 @@
 import { Direction, GridEngine } from 'grid-engine';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 import type { GameObject, PlayerObject, RoomObject } from '../backend/types';
@@ -9,13 +9,13 @@ import { playerAttack, handleEnemyTurns } from '../util/Combat';
 import { EnemyHealthBar } from '../ui/EnemyHealthBar';
 
 export class Room extends Scene {
-    camera: Phaser.Cameras.Scene2D.Camera;
-    private room: RoomObject;
-    private player: PlayerObject;
-    private gameData: GameObject;
-    private startX: number;
-    private startY: number;
-    private startFrame: number;
+    camera!: Phaser.Cameras.Scene2D.Camera;
+    private room!: RoomObject;
+    private player!: PlayerObject;
+    private gameData!: GameObject;
+    private startX!: number;
+    private startY!: number;
+    private startFrame!: number;
     private gridEngine!: GridEngine;
     private inputEnabled: boolean = true;
     private observers: Subscription[] = [];
@@ -27,11 +27,11 @@ export class Room extends Scene {
 
     init(data: { roomId: number, gameData: GameObject, pos: string }) {
         this.gameData = data.gameData;
-        this.room = this.gameData.floor.rooms.flat().find((room) => room.id === data.roomId)!;
-        this.player = this.gameData.player;
+        this.room = this.gameData.Floor.Rooms.flat().find((room) => room.ID === data.roomId)!;
+        this.player = this.gameData.Player;
         switch (data.pos) {
             case 'right':
-                this.startX = 14;
+                this.startX = 12;
                 this.startY = 4;
                 this.startFrame = 7;
                 break;
@@ -41,31 +41,36 @@ export class Room extends Scene {
                 this.startFrame = 11;
                 break;
             case 'top':
-                this.startX = 7;
+                this.startX = 6;
                 this.startY = 0;
                 this.startFrame = 3;
                 break;
             case 'bottom':
-                this.startX = 7;
+                this.startX = 6;
                 this.startY = 8;
                 this.startFrame = 15;
                 break;
             case 'center':
-                this.startX = 7;
+                this.startX = 6;
                 this.startY = 4;
                 this.startFrame = 3;
                 break;
         }
+        for (let room of this.gameData.Floor.Rooms.flat()) {
+            for (let enemy of room.Enemies) {
+                enemy.Sprite = `${this.gameData.Floor.Theme}`;
+            }
+        }
     }
 
     preload() {
-        this.load.image('tiles', `assets/tilesets/${this.gameData.floor.theme}-tileset.png`);
-        this.load.spritesheet('player', `assets/${this.gameData.player.spriteName}.png`, {
+        this.load.image('tiles', `assets/tilesets/${this.gameData.Floor.Theme}-tileset.png`);
+        this.load.spritesheet('player', `assets/${this.gameData.Player.SpriteName}.png`, {
             frameWidth: 24,
             frameHeight: 24,
         });
-        for (let enemy of this.room.enemies) {
-            this.load.spritesheet(`enemy${enemy.id}`, `assets/enemies/${enemy.spriteName}${enemy.level}.png`, {
+        for (let enemy of this.room.Enemies) {
+            this.load.spritesheet(`enemy${enemy.ID}`, `assets/enemies/${enemy.Sprite}${enemy.Level}.png`, {
                 frameWidth: 32,
                 frameHeight: 32,
             });
@@ -77,10 +82,10 @@ export class Room extends Scene {
         EventBus.emit('current-scene-ready', this);
 
         // Create Tilemap
-        const tilemap = createTilemap(this, this.room.tiles, 'tiles');
+        const tilemap = createTilemap(this, this.room.Tiles, 'tiles', this.room);
         
         // Create Player and Health Bar
-        this.player.spriteObject = this.add.sprite(0, 0, 'player'); 
+        this.player.SpriteObject = this.add.sprite(0, 0, 'player'); 
 
         // Start the GUI scene
         this.scene.launch('Gui', this.player);
@@ -92,56 +97,38 @@ export class Room extends Scene {
         createPlayerAnimation(this, 'player-interact-up', 14, 15);
 
         // Set Camera to Follow Player
-        this.cameras.main.startFollow(this.player.spriteObject, true);
+        this.cameras.main.startFollow(this.player.SpriteObject, true);
         this.cameras.main.setFollowOffset(
-            -this.player.spriteObject.width / 2,
-            -this.player.spriteObject.height / 2
+            -this.player.SpriteObject.width / 2,
+            -this.player.SpriteObject.height / 2
         );
-        this.cameras.main.setZoom(4);
+        this.cameras.main.setZoom(5);
         
         // Create Enemy Animations
-        for (let enemy of this.room.enemies) {
-            createEnemyAnimation(this, enemy.id, 'walk');
-            createEnemyAnimation(this, enemy.id, 'idle');
-            createEnemyAnimation(this, enemy.id, 'attack');
+        for (let enemy of this.room.Enemies) {
+            createEnemyAnimation(this, enemy.ID, 'walk');
+            createEnemyAnimation(this, enemy.ID, 'idle');
+            createEnemyAnimation(this, enemy.ID, 'attack');
         }
 
         // Create Enemies and Health Bars
-        for (let enemy of this.room.enemies) {
-            enemy.spriteObject = this.add.sprite(0, 0, `enemy${enemy.id}`);
-            enemy.spriteObject.anims.play(`enemy${enemy.id}-idle`);
-            enemy.healthBar = new EnemyHealthBar(this, 0, 0, enemy.currentHealth, enemy.maxHealth);
+        for (let enemy of this.room.Enemies) {
+            enemy.SpriteObject = this.add.sprite(0, 0, `enemy${enemy.ID}`);
+            enemy.SpriteObject.anims.play(`enemy${enemy.ID}-idle`);
+            enemy.healthBar = new EnemyHealthBar(this, 0, 0, enemy.CurrentHealth, enemy.MaxHealth);
         }
-        
-        this.events.on('update', () => {
-            // Check Player Death
-            if (this.player.spriteObject && this.player.currentHealth <= 0) {
-                this.gridEngine.removeCharacter(this.player.spriteObject!.texture.key);
-                this.player.spriteObject!.destroy();
-                this.changeScene();
-            }
-            // Update Enemy Health Bars
-            for (let enemy of this.room.enemies) {
-                if (enemy && enemy.healthBar && enemy.spriteObject) {
-                    enemy.healthBar.updatePosition(enemy.spriteObject.x + enemy.spriteObject.width / 2, enemy.spriteObject.y + enemy.spriteObject.height / 2);
-                    enemy.healthBar.updateHealth(enemy.currentHealth);
 
-                    // Check Enemy Death
-                    if (enemy.currentHealth <= 0) {
-                        this.gridEngine.removeCharacter(enemy.spriteObject!.texture.key);
-                        enemy.spriteObject!.destroy();
-                        this.room.enemies.splice(this.room.enemies.indexOf(enemy), 1);
-                    }
-                }
-            }
-        });
+        // Create Chest/Stair (If applicable)
+        if (this.room.Type === 1) {
+            const chest = this.add.sprite(6 * 16, 4 * 16, 'assets/chest.png');
+        }
         
         // Configure Grid Engine
         const gridEngineConfig = {
             characters: [
                 {
                     id: 'player',
-                    sprite: this.player.spriteObject,
+                    sprite: this.player.SpriteObject,
                     walkingAnimationMapping: {
                         down: { leftFoot: 0, standing: 1, rightFoot: 2 },
                         left: { leftFoot: 4, standing: 5, rightFoot: 6 },
@@ -152,10 +139,10 @@ export class Room extends Scene {
                     offsetY: -4,
                 },
                 // Enemies
-                ...this.room.enemies.map(enemy => ({
-                    id: `enemy${enemy.id}`,
-                    sprite: enemy.spriteObject,
-                    startPosition: { x: enemy.posX, y: enemy.posY },
+                ...this.room.Enemies.map(enemy => ({
+                    id: `enemy${enemy.ID}`,
+                    sprite: enemy.SpriteObject,
+                    startPosition: { x: enemy.PosX, y: enemy.PosY },
                     offsetY: -4,
                 })),
             ],
@@ -164,13 +151,13 @@ export class Room extends Scene {
         // Create Grid Engine
         this.gridEngine.create(tilemap, gridEngineConfig);
 
-        this.player.spriteObject.setFrame(this.startFrame);
+        this.player.SpriteObject.setFrame(this.startFrame);
         
         const moveStart = this.gridEngine.movementStarted().subscribe(({ direction, charId }) => {
             // Player Movement: Enemies follow
             if (charId === 'player') {
-                for (let enemy of this.room.enemies) {
-                    this.gridEngine.follow(enemy.spriteObject!.texture.key, 'player', 0, true);
+                for (let enemy of this.room.Enemies) {
+                    this.gridEngine.follow(enemy.SpriteObject!.texture.key, 'player', 0, true);
                 }
             }
             // Enemy Movement: Play walk animation
@@ -187,30 +174,32 @@ export class Room extends Scene {
         const moveStop = this.gridEngine.movementStopped().subscribe(({ charId }) => {
             // Player Stopped: Save position and check for room change
             if (charId === 'player') {
-                this.player.posX = this.gridEngine.getPosition('player').x;
-                this.player.posY = this.gridEngine.getPosition('player').y;
+                this.player.PosX = this.gridEngine.getPosition('player').x;
+                this.player.PosY = this.gridEngine.getPosition('player').y;
 
                 this.checkRoomChange(this.gridEngine.getPosition('player').x, this.gridEngine.getPosition('player').y);
             }
             // Enemy Stopped: Save position and play idle animation
             else {
-                const enemy = this.room.enemies.find(e => e.spriteObject!.texture.key === charId)!;
+                const enemy = this.room.Enemies.find(e => e.SpriteObject!.texture.key === charId)!;
                 if (enemy) {
-                    enemy.spriteObject!.anims.stop();
-                    enemy.spriteObject!.anims.play(`${charId}-idle`);
+                    enemy.SpriteObject!.anims.stop();
+                    enemy.SpriteObject!.anims.play(`${charId}-idle`);
 
-                    enemy.posX = this.gridEngine.getPosition(enemy.spriteObject!.texture.key).x;
-                    enemy.posY = this.gridEngine.getPosition(enemy.spriteObject!.texture.key).y;
+                    enemy.PosX = this.gridEngine.getPosition(enemy.SpriteObject!.texture.key).x;
+                    enemy.PosY = this.gridEngine.getPosition(enemy.SpriteObject!.texture.key).y;
                 }
 
             }
         });
 
-        const posFinish = this.gridEngine.positionChangeFinished().subscribe(({ charId }) => {
+        const posFinish = this.gridEngine.positionChangeFinished().subscribe(async ({ charId }) => {
             // Player reaches new tile: Handle enemy turns
             if (charId === 'player') {
-                this.player.currentHealth = Math.min(this.player.currentHealth + 1, this.player.maxHealth);
-                handleEnemyTurns(this.player, this.room.enemies);
+                this.player.CurrentHealth = Math.min(this.player.CurrentHealth + 1, this.player.MaxHealth);
+                await handleEnemyTurns(this.player, this.room.Enemies).then(() => {
+                    this.inputEnabled = true;
+                });
             }
         });
 
@@ -221,49 +210,77 @@ export class Room extends Scene {
             }
         });
 
+        this.events.on('update', () => {
+            // Check Player Death
+            if (this.player.SpriteObject && this.player.CurrentHealth <= 0) {
+                this.changeScene('GameOver');
+            }
+            // Update Enemy Health Bars
+            for (let enemy of this.room.Enemies) {
+                if (enemy && enemy.healthBar && enemy.SpriteObject) {
+                    enemy.healthBar.updatePosition(enemy.SpriteObject.x + enemy.SpriteObject.width / 2, enemy.SpriteObject.y + enemy.SpriteObject.height / 2);
+                    enemy.healthBar.updateHealth(enemy.CurrentHealth);
+
+                    // Check Enemy Death
+                    if (enemy.CurrentHealth <= 0) {
+                        this.gridEngine.removeCharacter(enemy.SpriteObject!.texture.key);
+                        enemy.SpriteObject!.destroy();
+                        this.room.Enemies.splice(this.room.Enemies.indexOf(enemy), 1);
+                        this.checkRoomCleared();
+                    }
+                }
+            }
+        });
+
         this.observers.push(moveStart, moveStop, posFinish, posStart);
     }
 
+    checkRoomCleared() {
+        if (this.room.Enemies.length === 0) {
+            this.room.Cleared = true;
+
+            if (this.room.Type === 1) {
+                
+            }
+
+            if (this.gameData.Floor.Rooms.flat().every(room => room.Cleared)) {
+                // TODO: Implement stair logic
+            }
+        }
+    }
+ 
     checkRoomChange(x: number, y: number) {
-        if (x === 0 && y === 4 && this.gridEngine.getFacingDirection('player') === Direction.LEFT && this.room.left) {
-            this.changeRoom('right')
+        if (x === 0 && y === 4 && this.gridEngine.getFacingDirection('player') === Direction.LEFT && this.room.LeftID) {
+            this.changeScene('Room', { roomId: this.room.LeftID, pos: 'right' });
         }
-        else if (x === 14 && y === 4 && this.gridEngine.getFacingDirection('player') === Direction.RIGHT && this.room.right) {
-            this.changeRoom('left')
+        else if (x === 12 && y === 4 && this.gridEngine.getFacingDirection('player') === Direction.RIGHT && this.room.RightID) {
+            this.changeScene('Room', { roomId: this.room.RightID, pos: 'left' });
         }
-        else if (x === 7 && y === 0 && this.gridEngine.getFacingDirection('player') === Direction.UP && this.room.top) {
-            this.changeRoom('bottom')
+        else if (x === 6 && y === 0 && this.gridEngine.getFacingDirection('player') === Direction.UP && this.room.TopID) {
+            this.changeScene('Room', { roomId: this.room.TopID, pos: 'bottom' });
         }
-        else if (x === 7 && y === 8 && this.gridEngine.getFacingDirection('player') === Direction.DOWN && this.room.bottom) {
-            this.changeRoom('top')
+        else if (x === 6 && y === 8 && this.gridEngine.getFacingDirection('player') === Direction.DOWN && this.room.BottomID) {
+            this.changeScene('Room', { roomId: this.room.BottomID, pos: 'top' });
         }
     }
 
-    changeRoom(pos: string) {
-        let roomId: number | undefined;
-        switch (pos) {
-            case 'left':
-                roomId = this.room.right;
-                break;
-            case 'right':
-                roomId = this.room.left;
-                break;
-            case 'bottom':
-                roomId = this.room.top;
-                break;
-            case 'top':
-                roomId = this.room.bottom;
-                break;
+    changeScene(sceneKey: string, data?: any) {
+        for (let observer of this.observers) {
+            observer.unsubscribe();
         }
-        if (roomId) {
-            for (let observer of this.observers) {
-                observer.unsubscribe();
-            }
-            destroyAnimations(this);
-            this.scene.start('Room', { roomId, gameData: this.gameData, pos});
+        destroyAnimations(this);
+        this.inputEnabled = true;
+        this.scene.pause()
+        this.scene.launch('Transition', { 
+            prevSceneKey: 'Room', 
+            nextSceneKey: sceneKey, 
+            nextSceneData: { ...data, gameData: this.gameData } 
+        });
+        if (sceneKey === 'GameOver') {
+            this.scene.stop('Gui');
         }
     }
-    
+
     async playerInteract(direction: Direction) {
         // Player interacts/attacks in the direction they are facing
         const playerSprite = this.gridEngine.getSprite('player');
@@ -275,9 +292,17 @@ export class Room extends Scene {
         const enemyID = this.gridEngine.getCharactersAt(targetPos).find(char => char.startsWith('enemy'));
         if (enemyID) {
             const enemyIdNumber = parseInt(enemyID.replace('enemy', ''));
-            const enemy = this.room.enemies.find(enemy => enemy.id === enemyIdNumber)!;
+            const enemy = this.room.Enemies.find(enemy => enemy.ID === enemyIdNumber)!;
             await playerAttack(enemy, this.player);
-            await handleEnemyTurns(this.player, this.room.enemies)
+            await handleEnemyTurns(this.player, this.room.Enemies)
+        }
+        else if (this.room.Type === 1) {
+            // Check if player is facing the chest
+            const chest = this.room.Chest;
+            if (chest) {
+                this.scene.pause();
+                this.scene.launch('ChestOverlay', {  });
+            }
         }
     }
 
@@ -298,23 +323,33 @@ export class Room extends Scene {
             case 'up':
                 this.gridEngine.move('player', Direction.UP);
                 break;
-            default:
+            case 'down':
                 this.gridEngine.move('player', Direction.DOWN);
+                break;
+            case 'esc':
+                this.scene.pause();
+                this.scene.launch('SettingsOverlay');
+                break;
+            default:
                 break;
         }
 
         if (this.gridEngine.isMoving('player')) {
             await new Promise(resolve => {
-                this.gridEngine.positionChangeFinished().subscribe(() => resolve(true));
+                this.gridEngine.positionChangeFinished()
+                    .pipe(take(1))
+                    .subscribe(() => resolve(true));
             });
         }
-
-        this.inputEnabled = true;
+        else {
+            this.inputEnabled = true;
+        }
     }
 
     update() {
         if (this.inputEnabled) {
             const cursors = this.input.keyboard?.createCursorKeys()!;
+            const esc = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
             if (cursors.left.isDown) {
                 this.handleInput('left');
             } else if (cursors.right.isDown) {
@@ -325,11 +360,10 @@ export class Room extends Scene {
                 this.handleInput('down');
             } else if (cursors.space.isDown) {
                 this.handleInput('space');
+            } else if (esc?.isDown) {
+                this .handleInput('esc');
             }
         }
     }
 
-    changeScene() {
-        this.scene.start('GameOver');
-    }
 }

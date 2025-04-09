@@ -1,3 +1,5 @@
+@import url('https://use.typekit.net/yzh7mgo.css');
+
 :root {
   --primary-color: #48ddd4;
   --primary-color-dark: #2bb4a9;
@@ -186,6 +188,13 @@ p {
   align-items: center; 
   width: 60%; 
   margin: clamp(4px, .5vw, 24px);
+}
+
+.errors li {
+  color: var(--secondary-color);
+  font-size: clamp(0.8rem, 2vw, 2rem);
+  text-transform: uppercase;
+  margin: clamp(4px, 1.5vw, 16px);
 }
 
 .dark-label {
