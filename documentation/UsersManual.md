@@ -10,8 +10,10 @@ Welcome to __The Last Game__, an AI-driven video game!
   - [Creating an account](#creating-an-account)
   - [Sign in](#sign-in)
   - [Starting a new game](#starting-a-new-game)
-  - [Playing the game](#playing-the-game)
+  - [Playing the Game](#playing-the-game)
+  - [Saving and Exiting the Game](#saving-and-exiting-the-game)
 - [For Moderators](#for-moderators)
+  - [Accessing the Docker logs](#accessing-the-docker-logs)
 - [Troubleshooting](#troubleshooting)
 - [FAQs](#faqs)
 - [Features and Functions](#features-and-functions)
@@ -67,11 +69,20 @@ You will then be given a couple of options for your game:
 After selecting your options, the AI will generate a story, floor, enemies, and weapons. While this process is usually quick, there are some cases where it may take a long time. See the [Troubleshooting](#troubleshooting) section for more details if you encounter this.
 
 
-## Playing the game
+## Playing the Game
 
-
+## Saving and Exiting the Game
+- Press `esc` to bring up the menu
+- Click on `Save Game` to save the game and continue playing (Option 1 in the picture below)
+- Click on `Exit and Save` to save the game and then quit (Option 2 in the picture below)
+![Save/exit](./assets/saveexit.png)
 
 # For Moderators
+
+## Accessing the Docker logs
+1. Navigate to the folder where the Last Game is in your terminal
+2. run `docker-compose logs -f backend` to view the logs for the backend
+    - Replace `backend` with either `frontend` or `db` to get the logs for those Docker containers
 
 
 
