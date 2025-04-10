@@ -88,43 +88,4 @@ export class MusicManager extends Scene {
         return this.music && this.music.isPlaying;
     }
 
-    // // Change from one track to another with crossfade
-    // crossFade(newTrack: string, duration: number = 1000) {
-    //     if (!this.music || !this.music.isPlaying) {
-    //         this.playMusic(newTrack);
-    //         return;
-    //     }
-
-    //     // Create the new track
-    //     const nextTrack = this.sound.add(newTrack, {
-    //         volume: 0,
-    //         loop: true
-    //     });
-        
-    //     // Start it silently
-    //     nextTrack.play();
-        
-    //     // Fade out current track
-    //     this.tweens.add({
-    //         targets: this.music,
-    //         volume: 0,
-    //         duration: duration,
-    //         onComplete: () => {
-    //             this.music?.stop();
-    //             this.music = nextTrack;
-                
-    //             // Apply mute state to new track
-    //             if (this.isMuted) {
-    //                 this.music.setMute(true);
-    //             }
-    //         }
-    //     });
-        
-    //     // Fade in new track
-    //     this.tweens.add({
-    //         targets: nextTrack,
-    //         volume: 0.5,
-    //         duration: duration
-    //     });
-    // }
 }
