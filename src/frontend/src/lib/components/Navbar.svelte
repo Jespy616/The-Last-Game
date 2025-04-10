@@ -4,11 +4,7 @@
 
 <nav class="navbar">
   <div class="nav-links">
-    <a href="/">Login</a>
-    <a href="/signup">Signup</a>
-    <a href="/subscription">Subscription</a>
-    <a href="/settings">Settings</a> 
-  </div>
+    <a href="/settings" style="font-size:16px" class="fa">&#xf013;</a>
 </nav>
 
 <style>
@@ -17,7 +13,7 @@
     background-color: var(--primary-color);
     padding: 10px 20px;
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
     width: 100%;
   }

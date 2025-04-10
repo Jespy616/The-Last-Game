@@ -1,5 +1,4 @@
 __pycache__/
-<<<<<<< Updated upstream
 
 # Node modules
 node_modules/
@@ -33,6 +32,4 @@ npm-debug.log*
 # Output files
 *.log
 
-=======
 .env
->>>>>>> Stashed changes

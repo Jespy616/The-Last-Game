@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import Navbar from "$lib/components/Navbar.svelte";
     import type { Scene } from "phaser";
     import PhaserGame, { type TPhaserRef } from "../../phaser/PhaserGame.svelte";
 
@@ -17,6 +18,7 @@
 </script>
 
 <div id="app">
+    <Navbar />
     {#if isClient}
         <PhaserGame bind:phaserRef={phaserRef} currentActiveScene={currentScene} />
     {/if}
@@ -25,7 +27,7 @@
 
 <style>
     #app {
-        width: 100%;
+        width: fit-content;
         height: 100vh;
         overflow: hidden;
         display: flex;
