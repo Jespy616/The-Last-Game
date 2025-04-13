@@ -1,10 +1,10 @@
 import type { ChestObject, PlayerObject } from "../backend/types";
 
-export function openChest(
+export async function openChest(
     scene: Phaser.Scene,
     chest: ChestObject,
     player: PlayerObject,
-): void {
+): Promise<void> {
     function launchChestOverlay() {
         scene.scene.pause();
         scene.scene.launch('ChestOverlay', { 
@@ -22,10 +22,12 @@ export function openChest(
                 scene.scene.resume();
             }
         });
+
+        return;
     }
+
     if (chest.Opened) {
         launchChestOverlay();
-        return;
     }
     else {
         chest.SpriteObject!.anims.play('chest-open').on('animationcomplete', () => {;

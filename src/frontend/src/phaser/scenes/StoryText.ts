@@ -47,7 +47,7 @@ export class StoryText extends Phaser.Scene {
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', () => {
                 this.scene.stop('StoryText');
-                const roomID = Math.min(...(this.gameData.Floor.Rooms.flat().map(room => room.ID)));
+                const roomID = Math.min(...(this.gameData.Floor.Rooms.map(room => room.ID)));
                 console.log('Starting Room ID:', roomID);
                 this.scene.launch('Transition', { prevSceneKey: 'Loader', nextSceneKey: 'Room', nextSceneData: { roomId: roomID, gameData: this.gameData, pos: 'center' } }); // Use prevSceneKey
             })

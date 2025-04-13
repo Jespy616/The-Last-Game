@@ -50,7 +50,6 @@ export interface RoomObject {
 
 export interface FloorObject {
     ID: number;
-    Theme: string;
     Level: number;
     Rooms: RoomObject[];
     StoryText: string;
@@ -70,6 +69,7 @@ export interface GameObject {
     ID: number;
     Player: PlayerObject;
     Floor: FloorObject;
+    Theme: string;
 }
 
 export interface GameResponse {

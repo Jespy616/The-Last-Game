@@ -18,7 +18,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const gameResponse: GameResponse = await response.json();
-        gameResponse.game.Floor.Theme = Theme;
+        gameResponse.game.Theme = Theme;
         gameResponse.game.Player.PrimaryWeapon = {
             ID: 0,
             Name: 'Sword',
@@ -38,6 +38,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
     const game: GameResponse = {
         game: {
             ID: 6,
+            Theme: 'castle',
             Floor: {
                 Level: 1,
                 ID: 6,
@@ -256,7 +257,6 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                     }
                 ],
                 StoryText: 'As you exit the castle, you notice a sense of unease in the air. The once bustling courtyard is now empty and silent, with only the sound of distant wind whispers echoing off the stone walls. Youve been tasked with investigating a mysterious energy emanating from a nearby cave, rumored to be the source of the kingdoms recent troubles. With a deep breath, you begin your journey, leaving the castles grandeur behind. The path ahead winds through a dense forest, the trees growing taller and closer together as you venture further away from the castle. The canopy above blocks out most of the sunlight, casting the forest floor in a dim, emerald green hue. As you walk, the trees thin out, and you catch glimpses of a dark opening in the distance - the cave awaits, its entrance a gaping mouth in the side of a hill, beckoning you to explore its depths.',
-                Theme: 'castle'
             },
             Player: {
                 ID: 6,
@@ -300,12 +300,16 @@ export async function saveGame(FloorData: Partial<GameObject>): Promise<void> {
     }
 }
 
-export async function getFloor(difficultyLevel: string, Theme: string, Level: number): Promise<FloorObject | null> {
+export async function getFloor(difficulty: string, theme: string, level: number): Promise<FloorObject | null> {
     try {
+        let token;
+        authStore.subscribe((value) => {
+            token = value.token;
+        })();
         const response = await fetch(`${API_URL}/create_floor`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDQwMDU3NzEsImlhdCI6MTc0NDAwNDg3MSwibmJmIjoxNzQ0MDA0ODcxLCJzdWIiOiIxIn0.-yppLS22jIDWdoeHjjeoUyfjuMaetFthwEIz6sQpsEU' },
-            body: JSON.stringify({ difficulty: difficultyLevel, theme: Theme, level: Level })
+            headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` },
+            body: JSON.stringify({ difficulty: difficulty, theme: theme, level: level })
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -314,6 +318,49 @@ export async function getFloor(difficultyLevel: string, Theme: string, Level: nu
         return floorResponse.floor;
     } catch (error) {
         console.error('Error loading Floor: ', error);
-        return null;
     }
+    return {
+        Level: 2,
+        ID: 2,
+        Rooms: [
+            {
+                ID: 101,
+                Enemies: [
+                    {
+                        ID: 201,
+                        Damage: 15,
+                        Level: 2,
+                        CurrentHealth: 30,
+                        MaxHealth: 30,
+                        PosX: 2,
+                        PosY: 3,
+                        Sprite: 'forest'
+                    }
+                ],
+                Chest: {
+                    ID: 301,
+                    RoomInID: 101,
+                    Weapon: {
+                        ID: 401,
+                        Name: 'Axe',
+                        Damage: 20,
+                        Type: 1
+                    },
+                    PosX: 4,
+                    PosY: 5,
+                    Opened: false
+                },
+                TopID: null,
+                BottomID: 102,
+                LeftID: null,
+                RightID: null,
+                Cleared: false,
+                Tiles: 'wwwwwwwwwwwwww...........ww.wwwwwwww..ww...........ww.w.........ww...........ww.w.........ww...........wwwwwwwwwwwwww',
+                Type: 0,
+                StairX: null,
+                StairY: null,
+            }
+        ],
+        StoryText: 'You find yourself in a dense forest, the air thick with the scent of pine and damp earth. The path ahead is unclear, but you sense danger lurking in the shadows.'
+    };
 }

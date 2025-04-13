@@ -2,7 +2,7 @@ import { Direction, GridEngine } from 'grid-engine';
 import { Subscription, take } from 'rxjs';
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
-import type { GameObject, PlayerObject, RoomObject } from '../backend/types';
+import type { FloorObject, GameObject, PlayerObject, RoomObject } from '../backend/types';
 import { createTilemap } from '../util/CreateTilemap';
 import { createPlayerAnimation, createEnemyAnimation, createChestAnimation, destroyAnimations } from '../util/Animations';
 import { playerAttack, handleEnemyTurns } from '../util/Combat';
@@ -57,17 +57,17 @@ export class Room extends Scene {
                 this.startFrame = 3;
                 break;
         }
-        for (let room of this.gameData.Floor.Rooms.flat()) {
+        for (let room of this.gameData.Floor.Rooms) {
             for (let enemy of room.Enemies) {
-                enemy.Sprite = `${this.gameData.Floor.Theme}`;
+                enemy.Sprite = `${this.gameData.Theme}`;
             }
         }
     }
 
     preload() {
         this.load.audio("YWWWS", 'assets/audio/YWWWS.ogg');
-        this.load.image('tiles', `assets/tilesets/${this.gameData.Floor.Theme}-tileset.png`);
-        this.load.spritesheet('player', `assets/${this.gameData.Player.SpriteName}.png`, {
+        this.load.image('tiles', `assets/tilesets/${this.gameData.Theme}-tileset.png`);
+        this.load.spritesheet('player', `assets/${this.player.SpriteName}.png`, {
             frameWidth: 24,
             frameHeight: 24,
         });
@@ -191,6 +191,7 @@ export class Room extends Scene {
         }
 
         this.checkRoomCleared(); // If a Chest room and no enemies, set Chest position
+        this.inputEnabled = true;
         
         const moveStart = this.gridEngine.movementStarted().subscribe(({ direction, charId }) => {
             // Player Movement: Enemies follow
@@ -217,6 +218,7 @@ export class Room extends Scene {
                 this.player.PosY = this.gridEngine.getPosition('player').y;
 
                 this.checkRoomChange(this.gridEngine.getPosition('player').x, this.gridEngine.getPosition('player').y);
+                this.checkFloorChange();
             }
             // Enemy Stopped: Save position and play idle animation
             else if (charId.startsWith('enemy')) {
@@ -287,6 +289,12 @@ export class Room extends Scene {
             }
         }
     }
+
+    checkFloorChange() {
+        if (this.room.Type === 2 && this.gridEngine.getPosition('player').x === this.room.StairX && this.gridEngine.getPosition('player').y === this.room.StairY) {
+            this.changeScene('DifficultySelection', { gameData: this.gameData });
+        }
+    }
  
     checkRoomChange(x: number, y: number) {
         if (x === 0 && y === 4 && this.gridEngine.getFacingDirection('player') === Direction.LEFT && this.room.LeftID) {
@@ -342,15 +350,7 @@ export class Room extends Scene {
                 await handleEnemyTurns(this, this.player, this.room.Enemies)
             }
             else if (interactingObject === 'chest') {
-                openChest(this, this.room.Chest!, this.player);
-            }
-        }
-        else if (this.room.Type === 1) {
-            // Check if player is facing the chest
-            const chest = this.room.Chest;
-            if (chest) {
-                this.scene.pause();
-                this.scene.launch('ChestOverlay', {  });
+                await openChest(this, this.room.Chest!, this.player);
             }
         }
     }
@@ -396,7 +396,9 @@ export class Room extends Scene {
     }
 
     update() {
+        console.log('Update Room');
         if (this.inputEnabled) {
+            console.log('Input enabled');
             const cursors = this.input.keyboard?.createCursorKeys()!;
             const esc = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
             if (cursors.left.isDown) {
