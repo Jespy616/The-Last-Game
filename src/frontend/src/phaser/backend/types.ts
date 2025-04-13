@@ -38,24 +38,28 @@ export interface RoomObject {
     Type: 0 | 1 | 2; // 0: Normal, 1: Chest, 2: Stair
     Tiles: string;
     Enemies: EnemyObject[];
-    TopID?: number;
-    BottomID?: number;
-    LeftID?: number;
-    RightID?: number;
+    TopID: number | null;
+    BottomID: number | null;
+    LeftID: number | null;
+    RightID: number | null;
     Cleared: boolean;
-    Chest?: number;
+    Chest: ChestObject | null;
+    StairX: number | null;
+    StairY: number | null;
 }
 
 export interface FloorObject {
+    ID: number;
     Theme: string;
     Level: number;
-    Rooms: RoomObject[][];
+    Rooms: RoomObject[];
     StoryText: string;
 }
 
 export interface ChestObject {
+    ID: number;
     RoomInID: number;
-    WeaponID: number;
+    Weapon: WeaponObject;
     Opened: boolean;
     PosX: number;
     PosY: number;
@@ -63,9 +67,9 @@ export interface ChestObject {
 }
 
 export interface GameObject {
+    ID: number;
     Player: PlayerObject;
     Floor: FloorObject;
-    Level: number;
 }
 
 export interface GameResponse {

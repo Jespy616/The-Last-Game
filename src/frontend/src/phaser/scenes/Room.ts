@@ -210,7 +210,7 @@ export class Room extends Scene {
             // Player reaches new tile: Handle enemy turns
             if (charId === 'player') {
                 this.player.CurrentHealth = Math.min(this.player.CurrentHealth + 1, this.player.MaxHealth);
-                await handleEnemyTurns(this.player, this.room.Enemies).then(() => {
+                await handleEnemyTurns(this, this.player, this.room.Enemies).then(() => {
                     this.inputEnabled = true;
                 });
             }
@@ -282,12 +282,10 @@ export class Room extends Scene {
             observer.unsubscribe();
         }
         this.sound.play("transition", { volume: 0.6 });  
-        if (roomId) {
-            for (let observer of this.observers) {
-                observer.unsubscribe();
-            }
-        }
 
+        for (let observer of this.observers) {
+            observer.unsubscribe();
+        }
         destroyAnimations(this);
         this.inputEnabled = true;
         this.scene.pause()
@@ -313,8 +311,8 @@ export class Room extends Scene {
         if (enemyID) {
             const enemyIdNumber = parseInt(enemyID.replace('enemy', ''));
             const enemy = this.room.Enemies.find(enemy => enemy.ID === enemyIdNumber)!;
-            await playerAttack(enemy, this.player);
-            await handleEnemyTurns(this.player, this.room.Enemies)
+            await playerAttack(this, enemy, this.player);
+            await handleEnemyTurns(this, this.player, this.room.Enemies)
         }
         else if (this.room.Type === 1) {
             // Check if player is facing the chest

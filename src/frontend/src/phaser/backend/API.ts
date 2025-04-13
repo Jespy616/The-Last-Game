@@ -38,56 +38,44 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
     const game: GameResponse = {
         game: {
             ID: 6,
-            Level: 1,
-            FloorID: 6,
             Floor: {
+                Level: 1,
                 ID: 6,
-                DeletedAt: null,
                 Rooms: [
                     {
                         ID: 36,
-                        DeletedAt: null,
-                        FloorID: 6,
-                        Floor: null,
                         Enemies: [
                             {
                                 ID: 55,
-                                DeletedAt: null,
                                 Damage: 16.5,
                                 Level: 2,
                                 CurrentHealth: 18.15,
                                 MaxHealth: 18.15,
-                                RoomID: 36,
                                 PosX: 6,
                                 PosY: 1,
                                 Sprite: 'castle'
                             },
                             {
                                 ID: 56,
-                                DeletedAt: null,
                                 Damage: 16.5,
                                 Level: 2,
                                 CurrentHealth: 18.15,
                                 MaxHealth: 18.15,
-                                RoomID: 36,
                                 PosX: 1,
                                 PosY: 2,
                                 Sprite: 'castle'
                             },
                             {
                                 ID: 57,
-                                DeletedAt: null,
                                 Damage: 16.5,
                                 Level: 2,
                                 CurrentHealth: 18.15,
                                 MaxHealth: 18.15,
-                                RoomID: 36,
                                 PosX: 1,
                                 PosY: 2,
                                 Sprite: 'castle'
                             }
                         ],
-                        ChestID: null,
                         Chest: null,
                         TopID: null,
                         BottomID: 39,
@@ -98,16 +86,10 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Type: 0,
                         StairX: null,
                         StairY: null,
-                        X: 3,
-                        Y: 1
                     },
                     {
                         ID: 37,
-                        DeletedAt: null,
-                        FloorID: 6,
-                        Floor: null,
                         Enemies: [],
-                        ChestID: null,
                         Chest: null,
                         TopID: null,
                         BottomID: null,
@@ -118,53 +100,44 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Type: 0,
                         StairX: null,
                         StairY: null,
-                        X: 0,
-                        Y: 2
                     },
                     {
                         ID: 38,
-                        DeletedAt: null,
-                        FloorID: 6,
-                        Floor: null,
                         Enemies: [
                             {
                                 ID: 58,
-                                DeletedAt: null,
+                                
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
                                 MaxHealth: 24.2,
-                                RoomID: 38,
                                 PosX: 5,
                                 PosY: 8,
                                 Sprite: 'castle'
                             },
                             {
                                 ID: 59,
-                                DeletedAt: null,
+                                
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
                                 MaxHealth: 24.2,
-                                RoomID: 38,
                                 PosX: 5,
                                 PosY: 7,
                                 Sprite: 'castle'
                             },
                             {
                                 ID: 60,
-                                DeletedAt: null,
+                                
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
                                 MaxHealth: 24.2,
-                                RoomID: 38,
                                 PosX: 5,
                                 PosY: 2,
                                 Sprite: 'castle'
                             }
                         ],
-                        ChestID: null,
                         Chest: null,
                         TopID: 42,
                         BottomID: null,
@@ -175,29 +148,23 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Type: 0,
                         StairX: null,
                         StairY: null,
-                        X: 1,
-                        Y: 2
                     },
                     {
                         ID: 39,
-                        DeletedAt: null,
-                        FloorID: 6,
-                        Floor: null,
+                        
                         Enemies: [
                             {
                                 ID: 61,
-                                DeletedAt: null,
+                                
                                 Damage: 11,
                                 Level: 1,
                                 CurrentHealth: 12.1,
                                 MaxHealth: 12.1,
-                                RoomID: 39,
                                 PosX: 4,
                                 PosY: 5,
                                 Sprite: 'castle'
                             }
                         ],
-                        ChestID: null,
                         Chest: null,
                         TopID: 36,
                         BottomID: null,
@@ -208,29 +175,22 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Type: 0,
                         StairX: null,
                         StairY: null,
-                        X: 2,
-                        Y: 2
                     },
                     {
                         ID: 40,
-                        DeletedAt: null,
-                        FloorID: 6,
-                        Floor: null,
                         Enemies: [
                             {
                                 ID: 62,
-                                DeletedAt: null,
+                                
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
                                 MaxHealth: 24.2,
-                                RoomID: 40,
                                 PosX: 3,
                                 PosY: 11,
                                 Sprite: 'castle'
                             }
                         ],
-                        ChestID: null,
                         Chest: null,
                         TopID: null,
                         BottomID: 41,
@@ -241,43 +201,34 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Type: 0,
                         StairX: null,
                         StairY: null,
-                        X: 3,
-                        Y: 2
                     },
                     {
                         ID: 41,
-                        DeletedAt: null,
-                        FloorID: 6,
-                        Floor: null,
                         Enemies: [
                             {
                                 ID: 63,
-                                DeletedAt: null,
+                                
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
                                 MaxHealth: 24.2,
-                                RoomID: 41,
                                 PosX: 6,
                                 PosY: 10,
                                 Sprite: 'castle'
                             }
                         ],
-                        ChestID: 10,
                         Chest: {
                             ID: 10,
-                            DeletedAt: null,
-                            RoomInID: null,
-                            WeaponID: 41,
+                            RoomInID: 41,
                             Weapon: {
                                 ID: 41,
-                                DeletedAt: null,
+                                Name: 'bow',
                                 Damage: 19.36,
-                                Sprite: 'bow',
                                 Type: 2
                             },
                             PosX: 7,
-                            PosY: 3
+                            PosY: 3,
+                            Opened: false
                         },
                         TopID: 40,
                         BottomID: null,
@@ -288,29 +239,22 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Type: 2,
                         StairX: 1,
                         StairY: 5,
-                        X: 0,
-                        Y: 3
                     },
                     {
                         ID: 42,
-                        DeletedAt: null,
-                        FloorID: 6,
-                        Floor: null,
                         Enemies: [
                             {
                                 ID: 64,
-                                DeletedAt: null,
+                                
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
                                 MaxHealth: 24.2,
-                                RoomID: 42,
                                 PosX: 1,
                                 PosY: 5,
                                 Sprite: 'castle'
                             }
                         ],
-                        ChestID: null,
                         Chest: null,
                         TopID: null,
                         BottomID: 38,
@@ -321,21 +265,15 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Type: 0,
                         StairX: null,
                         StairY: null,
-                        X: 1,
-                        Y: 3
                     }
                 ],
-                PlayerInID: 0,
-                FloorMap: [[0,0,0,0],[0,0,0,5],[1,7,2,6],[4,3,0,0]],
                 StoryText: 'As you exit the castle, you notice a sense of unease in the air. The once bustling courtyard is now empty and silent, with only the sound of distant wind whispers echoing off the stone walls. Youve been tasked with investigating a mysterious energy emanating from a nearby cave, rumored to be the source of the kingdoms recent troubles. With a deep breath, you begin your journey, leaving the castles grandeur behind. The path ahead winds through a dense forest, the trees growing taller and closer together as you venture further away from the castle. The canopy above blocks out most of the sunlight, casting the forest floor in a dim, emerald green hue. As you walk, the trees thin out, and you catch glimpses of a dark opening in the distance - the cave awaits, its entrance a gaping mouth in the side of a hill, beckoning you to explore its depths.',
                 Theme: 'castle'
             },
-            PlayerSpecifications: 'Cool Game',
-            PlayerID: 6,
             Player: {
                 ID: 6,
-                MaxHealth: 10,
-                CurrentHealth: 10,
+                MaxHealth: 100,
+                CurrentHealth: 100,
                 PrimaryWeapon: {
                     ID: 0,
                     Name: 'Sword',
@@ -352,11 +290,9 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                 PosX: 6,
                 PosY: 4
             },
-            UserID: 1
         },
     }
     return game.game;
-    return null
 }
 
 export async function saveGame(FloorData: Partial<GameObject>): Promise<void> {
