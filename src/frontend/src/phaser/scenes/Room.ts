@@ -64,6 +64,7 @@ export class Room extends Scene {
     }
 
     preload() {
+        this.load.audio("YWWWS", 'assets/audio/YWWWS.ogg');
         this.load.image('tiles', `assets/tilesets/${this.gameData.Floor.Theme}-tileset.png`);
         this.load.spritesheet('player', `assets/${this.gameData.Player.SpriteName}.png`, {
             frameWidth: 24,
@@ -80,6 +81,18 @@ export class Room extends Scene {
     create() {
         this.camera = this.cameras.main;
         EventBus.emit('current-scene-ready', this);
+
+        if (!this.scene.isActive('MusicManager')) {
+            // First time initialization
+            this.scene.launch('MusicManager');
+            this.scene.get('MusicManager').events.emit('playMusic', 'YWWWS');
+        } else {
+            // Scene exists but music might not be playing
+            const musicManager = this.scene.get('MusicManager');
+            if (!musicManager.isPlaying()) {
+                musicManager.events.emit('playMusic', 'YWWWS');
+            }
+        }
 
         // Create Tilemap
         const tilemap = createTilemap(this, this.room.Tiles, 'tiles', this.room);
@@ -268,6 +281,13 @@ export class Room extends Scene {
         for (let observer of this.observers) {
             observer.unsubscribe();
         }
+        this.sound.play("transition", { volume: 0.6 });  
+        if (roomId) {
+            for (let observer of this.observers) {
+                observer.unsubscribe();
+            }
+        }
+
         destroyAnimations(this);
         this.inputEnabled = true;
         this.scene.pause()

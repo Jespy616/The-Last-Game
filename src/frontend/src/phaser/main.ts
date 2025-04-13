@@ -9,6 +9,7 @@ import { Overview } from './scenes/Overview';
 import { GridEngine } from 'grid-engine';
 import { ThemeSelection } from './scenes/ThemeSelection';
 import { DifficultySelection } from './scenes/DifficultySelection';
+import { MusicManager } from './scenes/MusicManager';
 import { StoryText } from './scenes/StoryText';
 import { Loader } from './scenes/Loader';
 import { Transition } from './scenes/Transition';
@@ -31,6 +32,7 @@ const config: Phaser.Types.Core.GameConfig = {
         GameOver,
         ThemeSelection,
         DifficultySelection,
+        MusicManager,
         StoryText,
         Loader,
         Transition
