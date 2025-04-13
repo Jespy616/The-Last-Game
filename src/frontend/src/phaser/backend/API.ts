@@ -79,7 +79,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Chest: null,
                         TopID: null,
                         BottomID: 39,
-                        LeftID: null,
+                        LeftID: 41,
                         RightID: 42,
                         Cleared: false,
                         Tiles: 'wwwwwwwwwwwwww...........ww.ww.www.ww.ww...........ww.w.........ww...........ww.w...w.....ww...........wwwwwwwwwwwwww',
@@ -204,19 +204,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                     },
                     {
                         ID: 41,
-                        Enemies: [
-                            {
-                                ID: 63,
-                                
-                                Damage: 22,
-                                Level: 3,
-                                CurrentHealth: 24.2,
-                                MaxHealth: 24.2,
-                                PosX: 6,
-                                PosY: 10,
-                                Sprite: 'castle'
-                            }
-                        ],
+                        Enemies: [],
                         Chest: {
                             ID: 10,
                             RoomInID: 41,
@@ -233,7 +221,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         TopID: 40,
                         BottomID: null,
                         LeftID: 37,
-                        RightID: null,
+                        RightID: 36,
                         Cleared: false,
                         Tiles: 'wwwwwwwwwwwwww...........ww.www.wwww..ww.w.........ww.w.w.www...ww.w.........ww.w.w.www...ww.w.........wwwwwwwwwwwwww',
                         Type: 2,

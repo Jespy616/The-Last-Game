@@ -4,9 +4,10 @@ import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 import type { GameObject, PlayerObject, RoomObject } from '../backend/types';
 import { createTilemap } from '../util/CreateTilemap';
-import { createPlayerAnimation, createEnemyAnimation, destroyAnimations } from '../util/Animations';
+import { createPlayerAnimation, createEnemyAnimation, createChestAnimation, destroyAnimations } from '../util/Animations';
 import { playerAttack, handleEnemyTurns } from '../util/Combat';
 import { EnemyHealthBar } from '../ui/EnemyHealthBar';
+import { openChest } from '../util/Chests';
 
 export class Room extends Scene {
     camera!: Phaser.Cameras.Scene2D.Camera;
@@ -27,7 +28,7 @@ export class Room extends Scene {
 
     init(data: { roomId: number, gameData: GameObject, pos: string }) {
         this.gameData = data.gameData;
-        this.room = this.gameData.Floor.Rooms.flat().find((room) => room.ID === data.roomId)!;
+        this.room = this.gameData.Floor.Rooms.find((room) => room.ID === data.roomId)!;
         this.player = this.gameData.Player;
         switch (data.pos) {
             case 'right':
@@ -74,6 +75,12 @@ export class Room extends Scene {
             this.load.spritesheet(`enemy${enemy.ID}`, `assets/enemies/${enemy.Sprite}${enemy.Level}.png`, {
                 frameWidth: 32,
                 frameHeight: 32,
+            });
+        }
+        if (this.room.Chest != null) {
+            this.load.spritesheet('chest', `assets/chest.png`, {
+                frameWidth: 16,
+                frameHeight: 16,
             });
         }
     }
@@ -131,9 +138,10 @@ export class Room extends Scene {
             enemy.healthBar = new EnemyHealthBar(this, 0, 0, enemy.CurrentHealth, enemy.MaxHealth);
         }
 
-        // Create Chest/Stair (If applicable)
-        if (this.room.Type === 1) {
-            const chest = this.add.sprite(6 * 16, 4 * 16, 'assets/chest.png');
+        // Create Chest (If applicable)
+        if (this.room.Chest != null) {
+            this.room.Chest.SpriteObject = this.add.sprite(0, 0, 'chest');
+            createChestAnimation(this);
         }
         
         // Configure Grid Engine
@@ -151,6 +159,13 @@ export class Room extends Scene {
                     startPosition: { x: this.startX, y: this.startY },
                     offsetY: -4,
                 },
+                // Chest
+                ...(this.room.Chest ? [{
+                    id: 'chest',
+                    sprite: this.room.Chest.SpriteObject,
+                    startPosition: { x: -100, y: -100 }, // Set to off-screen initially
+                    offsetY: -4,
+                }] : []),
                 // Enemies
                 ...this.room.Enemies.map(enemy => ({
                     id: `enemy${enemy.ID}`,
@@ -165,6 +180,17 @@ export class Room extends Scene {
         this.gridEngine.create(tilemap, gridEngineConfig);
 
         this.player.SpriteObject.setFrame(this.startFrame);
+
+        if (this.room.Chest != null) {
+            if (this.room.Chest.Opened) {
+                this.room.Chest.SpriteObject!.setFrame(3);
+            }
+            else {
+                this.room.Chest.SpriteObject!.setFrame(0);
+            }
+        }
+
+        this.checkRoomCleared(); // If a Chest room and no enemies, set Chest position
         
         const moveStart = this.gridEngine.movementStarted().subscribe(({ direction, charId }) => {
             // Player Movement: Enemies follow
@@ -174,7 +200,7 @@ export class Room extends Scene {
                 }
             }
             // Enemy Movement: Play walk animation
-            else {
+            else if (charId.startsWith('enemy')) {
                 const enemySprite = this.gridEngine.getSprite(charId);
                 if (enemySprite) {
                     enemySprite.anims.stop();
@@ -193,7 +219,7 @@ export class Room extends Scene {
                 this.checkRoomChange(this.gridEngine.getPosition('player').x, this.gridEngine.getPosition('player').y);
             }
             // Enemy Stopped: Save position and play idle animation
-            else {
+            else if (charId.startsWith('enemy')) {
                 const enemy = this.room.Enemies.find(e => e.SpriteObject!.texture.key === charId)!;
                 if (enemy) {
                     enemy.SpriteObject!.anims.stop();
@@ -256,12 +282,8 @@ export class Room extends Scene {
         if (this.room.Enemies.length === 0) {
             this.room.Cleared = true;
 
-            if (this.room.Type === 1) {
-                
-            }
-
-            if (this.gameData.Floor.Rooms.flat().every(room => room.Cleared)) {
-                // TODO: Implement stair logic
+            if (this.room.Chest != null) {
+                this.gridEngine.setPosition('chest', {x: this.room.Chest.PosX, y: this.room.Chest.PosY});
             }
         }
     }
@@ -311,12 +333,17 @@ export class Room extends Scene {
         const targetPos = this.gridEngine.getFacingPosition('player');
 
         // Check if there is an enemy at the target position
-        const enemyID = this.gridEngine.getCharactersAt(targetPos).find(char => char.startsWith('enemy'));
-        if (enemyID) {
-            const enemyIdNumber = parseInt(enemyID.replace('enemy', ''));
-            const enemy = this.room.Enemies.find(enemy => enemy.ID === enemyIdNumber)!;
-            await playerAttack(this, enemy, this.player);
-            await handleEnemyTurns(this, this.player, this.room.Enemies)
+        const interactingObject = this.gridEngine.getCharactersAt(targetPos).pop() 
+        if (interactingObject) {
+            if (interactingObject.startsWith('enemy')) {
+                const enemyIdNumber = parseInt(interactingObject.replace('enemy', ''));
+                const enemy = this.room.Enemies.find(enemy => enemy.ID === enemyIdNumber)!;
+                await playerAttack(this, enemy, this.player);
+                await handleEnemyTurns(this, this.player, this.room.Enemies)
+            }
+            else if (interactingObject === 'chest') {
+                openChest(this, this.room.Chest!, this.player);
+            }
         }
         else if (this.room.Type === 1) {
             // Check if player is facing the chest
