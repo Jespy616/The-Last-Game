@@ -246,6 +246,10 @@ export class Room extends Scene {
         });
 
         this.observers.push(moveStart, moveStop, posFinish, posStart);
+
+        EventBus.on('change-scene', ({ sceneKey }: { sceneKey: string }) => {
+            this.changeScene(sceneKey);
+        });
     }
 
     checkRoomCleared() {
@@ -294,7 +298,7 @@ export class Room extends Scene {
             nextSceneKey: sceneKey, 
             nextSceneData: { ...data, gameData: this.gameData } 
         });
-        if (sceneKey === 'GameOver') {
+        if (sceneKey === 'GameOver' || sceneKey === 'MainMenu') {
             this.scene.stop('Gui');
         }
     }
@@ -379,7 +383,7 @@ export class Room extends Scene {
             } else if (cursors.space.isDown) {
                 this.handleInput('space');
             } else if (esc?.isDown) {
-                this .handleInput('esc');
+                this.handleInput('esc');
             }
         }
     }
