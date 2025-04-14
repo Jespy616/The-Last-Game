@@ -1,5 +1,20 @@
 let anims: string[] = []
 
+export const createChestAnimation = (
+    scene: Phaser.Scene,
+): void => {
+    scene.anims.create({
+        key: `chest-open`,
+        frames: scene.anims.generateFrameNumbers('chest', {
+            start: 0,
+            end: 3
+        }),
+        frameRate: 5,
+        repeat: 0,
+    });
+    anims.push(`chest-open`);
+}
+
 export const createPlayerAnimation = (
     scene: Phaser.Scene,
     name: string,

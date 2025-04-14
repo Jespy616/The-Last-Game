@@ -67,14 +67,12 @@ function createAudioStore() {
     // If we're in the intro section
     if (!isInLoop && introMarker && audioElement.currentTime >= introMarker.end) {
       // Intro finished, jump to loop start
-      console.log(`Intro ended at ${audioElement.currentTime}, jumping to loop start at ${loopMarker?.start}`);
       audioElement.currentTime = loopMarker!.start;
       isInLoop = true;
     }
     // If we're in the loop section and reached the end
     else if (isInLoop && loopMarker && audioElement.currentTime >= loopMarker.end - 0.1) {
       // Loop back to start (with a small buffer)
-      console.log(`Loop ended at ${audioElement.currentTime}, jumping back to ${loopMarker.start}`);
       audioElement.currentTime = loopMarker.start;
     }
   }
@@ -93,15 +91,13 @@ function createAudioStore() {
       loopCheckInterval = null;
     }
 
-    console.log(`Setting up loop points for track: ${trackKey}`);
 
     // Define loop points based on track
     if (trackKey === "NoMoreGames") {
       introMarker = { start: 0, end: 2.81 };
-      loopMarker = { start: 2.81, end: 151.5 }; // End timestamp
+      loopMarker = { start: 2.81, end: 151.333 }; // End timestamp
       isInLoop = false;
       
-      console.log(`Loop points for ${trackKey}: intro=${introMarker.start}-${introMarker.end}, loop=${loopMarker.start}-${loopMarker.end}`);
       
       // Start precise loop checking
       startPreciseLoopChecking(audioElement);
@@ -114,7 +110,6 @@ function createAudioStore() {
       introMarker = null;
       loopMarker = null;
       isInLoop = false;
-      console.log(`Using standard loop for ${trackKey}`);
     }
   }
   
@@ -132,7 +127,6 @@ function createAudioStore() {
         
         // Add error event listener
         audio.addEventListener('error', (e) => {
-          console.error('Audio error:', e);
           update(state => ({...state, error: `Error: ${e.type}`}));
         });
         
@@ -148,7 +142,6 @@ function createAudioStore() {
         });
         
       } catch (e) {
-        console.error('Failed to create audio element:', e);
         update(state => ({...state, error: `Init error: ${e}`}));
         return null;
       }
@@ -162,11 +155,9 @@ function createAudioStore() {
     play: (track: string) => {
       if (!browser) return;
       
-      console.log(`Attempting to play: ${track}`);
       
       const audioElement = getAudio();
       if (!audioElement) {
-        console.error('No audio element available');
         update(state => ({...state, error: 'No audio element'}));
         return;
       }
@@ -183,20 +174,16 @@ function createAudioStore() {
       update(state => {
         // Only change source if track changed
         if (state.currentTrack !== track) {
-          console.log(`Setting new track: ${track}`);
           audioElement.src = track;
           audioElement.currentTime = 0;
           
           // Extract track key from path
           const trackKey = track.split('/').pop()?.split('.')[0] || '';
-          console.log(`Track key identified as: ${trackKey}`);
           
           // Disable built-in loop if we're using custom loop points
           if (trackKey === 'NoMoreGames') {
-            console.log('Using custom loop points, disabling built-in loop');
             audioElement.loop = false;
           } else {
-            console.log('Using built-in loop');
             audioElement.loop = true;
           }
           
@@ -212,10 +199,8 @@ function createAudioStore() {
         
         if (playPromise !== undefined) {
           playPromise.then(() => {
-            console.log('Playback started successfully with volume:', audioElement.volume);
             update(s => ({...s, isPlaying: true, error: null}));
           }).catch(error => {
-            console.error('Autoplay prevented:', error);
             update(s => ({...s, error: `Autoplay prevented: ${error.message}`}));
           });
         }
@@ -231,7 +216,6 @@ function createAudioStore() {
       const audioElement = getAudio();
       if (!audioElement) return;
       
-      console.log(`Manually setting loop points: ${start}-${end}`);
       
       // Disable built-in loop
       audioElement.loop = false;
@@ -252,7 +236,6 @@ function createAudioStore() {
       timeUpdateListener = () => checkLoopPoints(audioElement);
       audioElement.addEventListener('timeupdate', timeUpdateListener);
       
-      console.log('Loop points and listeners set up');
     },
     
     // Reset to normal looping behavior
@@ -262,7 +245,6 @@ function createAudioStore() {
       const audioElement = getAudio();
       if (!audioElement) return;
       
-      console.log('Resetting to standard loop behavior');
       
       // Remove custom loop behavior
       if (timeUpdateListener) {
@@ -290,7 +272,6 @@ function createAudioStore() {
       
       const audioElement = getAudio();
       if (audioElement) {
-        console.log('Pausing audio');
         audioElement.pause();
       }
     },
@@ -300,12 +281,10 @@ function createAudioStore() {
       
       // Ensure volume is within valid range
       const safeVolume = Math.max(0, Math.min(1, volume));
-      console.log(`Setting volume to ${safeVolume}`);
       
       const audioElement = getAudio();
       if (audioElement) {
         audioElement.volume = safeVolume;
-        console.log(`Audio element volume set to: ${audioElement.volume}`);
       }
       
       update(state => {
@@ -322,7 +301,6 @@ function createAudioStore() {
       return update(state => {
         // If currently has volume (not muted)
         const newVolume = state.volume > 0 ? 0 : DEFAULT_VOLUME;
-        console.log(`Toggling mute: ${state.volume} -> ${newVolume}`);
         
         if (audioElement) {
           audioElement.volume = newVolume;
@@ -371,7 +349,6 @@ function createAudioStore() {
       
       update(state => {
         if (state.currentTrack) {
-          console.log(`Force playing ${state.currentTrack}`);
           audioElement.src = state.currentTrack;
           
           // Extract track key for loop points
@@ -383,10 +360,7 @@ function createAudioStore() {
           // Reset loop state
           isInLoop = false;
           
-          // IMPORTANT: Actually PLAY the audio (this was missing)
-          audioElement.play()
-            .then(() => console.log('Force play successful'))
-            .catch(e => console.error('Force play failed:', e));
+          audioElement.play();
         }
         return state;
       });
@@ -399,7 +373,6 @@ function createAudioStore() {
       const audioElement = getAudio();
       if (!audioElement || !loopMarker) return;
       
-      console.log(`Jumping to loop section at ${loopMarker.start}`);
       audioElement.currentTime = loopMarker.start;
       isInLoop = true;
     },
@@ -407,7 +380,6 @@ function createAudioStore() {
     destroy: () => {
       if (!browser) return;
       
-      console.log('Destroying audio store');
       
       // Clear interval
       if (loopCheckInterval) {

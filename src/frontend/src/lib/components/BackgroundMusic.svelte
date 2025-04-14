@@ -18,7 +18,6 @@
   function attemptPlayback() {
     if (!browser || isGamePage) return;
 
-    console.log('Attempting playback with all strategies');
     
     // Strategy 1: Direct play
     audioStore.play(menuTrack);
@@ -32,7 +31,6 @@
   onMount(() => {
     if (!browser) return;
     
-    console.log('Component mounted');
     
     // Check initial route immediately
     const currentPath = window.location.pathname;
@@ -41,7 +39,6 @@
     // Strategy 3: Wait a moment after mount before trying to play
     setTimeout(() => {
       if (!isGamePage && !hasAttemptedInitialPlay) {
-        console.log('Delayed initial play attempt');
         audioStore.play(menuTrack);
         hasAttemptedInitialPlay = true;
       }
@@ -54,13 +51,10 @@
       // Update current state
       isGamePage = $page.url.pathname === '/game' || $page.url.pathname.startsWith('/game/');
       
-      console.log('Route changed:', $page.url.pathname, 'isGamePage:', isGamePage, 'wasGamePage:', wasGamePage);
       
       if (isGamePage) {
-        console.log('Pausing music - on game page');
         audioStore.pause();
       } else {
-        console.log('Playing music - on menu page');
         // If we're coming from a game page or this is initial load, try harder to play
         if (wasGamePage || !hasAttemptedInitialPlay) {
           attemptPlayback();
@@ -73,7 +67,6 @@
     
     // Strategy 4: Use any user interaction to enable audio
     const handleInteraction = () => {
-      console.log('User interaction detected');
       if (!isGamePage) {
         audioStore.play(menuTrack);
         hasAttemptedInitialPlay = true;
@@ -87,7 +80,6 @@
     
     // Also try immediate play
     if (!isGamePage) {
-      console.log('Initial play attempt on mount');
       audioStore.play(menuTrack);
       hasAttemptedInitialPlay = true;
     }
@@ -96,7 +88,6 @@
   // Try again after any update
   afterUpdate(() => {
     if (browser && !isGamePage && !hasAttemptedInitialPlay) {
-      console.log('Attempting play after update');
       audioStore.play(menuTrack);
       hasAttemptedInitialPlay = true;
     }
