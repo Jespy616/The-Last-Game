@@ -396,9 +396,7 @@ export class Room extends Scene {
     }
 
     update() {
-        console.log('Update Room');
         if (this.inputEnabled) {
-            console.log('Input enabled');
             const cursors = this.input.keyboard?.createCursorKeys()!;
             const esc = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
             if (cursors.left.isDown) {

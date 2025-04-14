@@ -17,7 +17,7 @@ export class GameOver extends Scene
     init (data: {gameData: GameObject}) {
         // Initialize any data needed from the gameData
         console.log('GameOver scene initialized with data:', data);
-        this.level = data.gameData.Floor.Level;
+        this.level = data.gameData.Level;
     }
 
     preload () {

@@ -13,7 +13,8 @@ export class Loader extends Phaser.Scene {
             gameData = await getGame(data.difficulty, data.theme);
         }
         else if (data.gameData) {
-            const newFloor = await getFloor(data.difficulty, data.gameData.Theme, data.gameData.Floor.Level + 1);
+            data.gameData.Level = data.gameData.Level + 1;
+            const newFloor = await getFloor(data.difficulty, data.gameData.Theme, data.gameData.Level);
             if (!newFloor) {
                 this.scene.start('MainMenu');
                 console.error('Failed to fetch new floor');

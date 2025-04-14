@@ -39,7 +39,7 @@ export class ChestOverlay extends Phaser.Scene {
         }).setOrigin(0.5));
 
         // Display chest weapon stats
-        const chestWeaponText = this.add.text(0, -0.20 * height, `Chest Weapon: ${this.chestWeapon.Name}`, { fontSize: '24px', color: '#ffffff' })
+        const chestWeaponText = this.add.text(0, -0.20 * height, `Chest Weapon: ${this.chestWeapon.Sprite}`, { fontSize: '24px', color: '#ffffff' })
             .setOrigin(0.5);
         overlay.add(chestWeaponText);
 
@@ -48,7 +48,7 @@ export class ChestOverlay extends Phaser.Scene {
         overlay.add(chestDamageText);
 
         // Display player weapon stats
-        const playerWeaponText = this.add.text(0, -0.05 * height, `Your Weapon: ${this.playerWeapon.Name}`, { fontSize: '24px', color: '#ffffff' })
+        const playerWeaponText = this.add.text(0, -0.05 * height, `Your Weapon: ${this.playerWeapon.Sprite}`, { fontSize: '24px', color: '#ffffff' })
             .setOrigin(0.5);
         overlay.add(playerWeaponText);
 
