@@ -7,6 +7,10 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
 - [Table of Contents](#table-of-contents)
 - [Overview of the Software](#overview-of-the-software)
 - [Getting Started](#getting-started)
+- [Troubleshooting](#troubleshooting)
+  - [The game is taking a long time to load](#the-game-is-taking-a-long-time-to-load)
+- [FAQs](#faqs)
+- [Features and Functions](#features-and-functions)
 - [For Players](#for-players)
   - [Creating an account](#creating-an-account)
   - [Sign in](#sign-in)
@@ -20,10 +24,6 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
   - [Saving and Exiting the Game](#saving-and-exiting-the-game)
 - [For Moderators](#for-moderators)
   - [Accessing the Docker logs](#accessing-the-docker-logs)
-- [Troubleshooting](#troubleshooting)
-  - [The game is taking a long time to load](#the-game-is-taking-a-long-time-to-load)
-- [FAQs](#faqs)
-- [Features and Functions](#features-and-functions)
 - [Installation Instructions](#installation-instructions)
 - [Contact Information](#contact-information)
 
@@ -44,13 +44,27 @@ This approach ensures a fresh and engaging experience every time a player starts
 If you are running __The Last Game__ locally, start with [Installation instructions](#installation-instructions) before continuing.
 
 
+# Troubleshooting
+## The game is taking a long time to load
+- _Wait 2-3 minutes_
+- _Refresh page if saved recently - resets to last save_
+- _Save game automatically on floor change?_
+
+
+# FAQs 
+
+
+# Features and Functions 
+
 # For Players 
 First, navigate to [http://localhost:3000](http://localhost:3000) to access the game. To play, you will need to either [create an account](#creating-an-account) or [sign in](#sign-in).
 
 ## Creating an account
 From the login screen, click the `create account` button at the bottom of the screen.
 
-<img src="./assets/login.png" alt="Create account button" width="60%">
+<img src="./assets/login.png" alt="Create account button" width="50%">
+
+[_Login page_]
 
 Fill out the following fields:
 - `Username`
@@ -84,14 +98,16 @@ After selecting your options, the AI will generate a story, floor, enemies, and 
 The goal of __The Last Game__ is to reach the highest floor that you can without loosing all of your health. To do this you will need to fight enemies, upgrade your weapons, and locate the stairs to progress.
 
 ### Controls
-<img src="./assets/controls.png" alt="Controls Diagram" width="70%">
+<img src="./assets/controls.png" alt="Controls Diagram" width="50%">
+
+[_Controls_]
 
 - Use the **Arrow keys** to move your character.
 - Press **Space** when facing an enemy to attack. This only works if the enemy is within range of your current weapon.
 - Press **Escape** to bring up the menu.
 
 ### Combat
-<img src="./assets/attackRange.png" alt="Combat Range" width="25%">
+<img src="./assets/attackRange.png" alt="Combat Range" width="20%">
 
 [_Combat range_]
 
@@ -110,7 +126,7 @@ To change weapons, you first need to find a chest that contains a weapon.
 
 - Press `Space bar` to open the chest. You will then be presented with a menu that looks like the following:
 
-<img src="./assets/chest.png" alt="Chest Menu" width="50%">
+<img src="./assets/chest.png" alt="Chest Menu" width="40%">
 
 [_Chest Menu_]
 
@@ -133,7 +149,7 @@ Stepping on a stair tile will allow you to move to the next room. **Note** that 
 - Click on `Save Game` to save the game and continue playing (Option 1 in the picture below)
 - Click on `Exit and Save` to save the game and then quit (Option 2 in the picture below)
 
-<img src="./assets/saveexit.png" alt="Save & Exit" width="40%">
+<img src="./assets/saveexit.png" alt="Save & Exit" width="30%">
 
 
 # For Moderators
@@ -142,19 +158,7 @@ Stepping on a stair tile will allow you to move to the next room. **Note** that 
 1. Navigate to the folder where the Last Game is in your terminal
 2. run `docker-compose logs -f backend` to view the logs for the backend
     - Replace `backend` with either `frontend` or `db` to get the logs for those Docker containers
-
-
-# Troubleshooting
-## The game is taking a long time to load
-- _Wait 2-3 minutes_
-- _Refresh page if saved recently - resets to last save_
-- _Save game automatically on floor change?_
-
-
-# FAQs 
-
-
-# Features and Functions 
+3. Press `Ctrl + c` to stop viewing the logs for the container.
 
 
 # Installation Instructions 
@@ -162,3 +166,9 @@ See the[DOCKER_README](../DOCKER_README.md) for instructions on how to install a
 
 
 # Contact Information 
+- Jacob Bartholomew
+- Ethan Bates
+- Jaxton Esplin
+- Gabe Freeman
+- Kelson Gardner
+- Kevin Shaffer
