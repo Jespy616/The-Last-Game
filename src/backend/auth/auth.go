@@ -2,8 +2,6 @@ package auth
 
 import (
 	"backend/model"
-	"crypto/rand"
-	"encoding/base64"
 	"errors"
 	"fmt"
 
