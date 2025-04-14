@@ -1,5 +1,4 @@
 __pycache__/
-.env
 
 # Node modules
 node_modules/
@@ -33,4 +32,4 @@ npm-debug.log*
 # Output files
 *.log
 
-.gitignore
+.env

@@ -1,14 +1,27 @@
 import Phaser from 'phaser';
 import type { GameObject } from '../backend/types';
-import { getGame } from '../backend/API';
+import { getFloor, getGame } from '../backend/API';
 
 export class Loader extends Phaser.Scene {
     constructor() {
         super({ key: 'Loader' });
     }
 
-    async init(data: { theme: string; difficulty: string; }) {
-        const gameData: GameObject | null = await getGame(data.difficulty, data.theme);
+    async init(data: { theme?: string; difficulty: string; gameData?: GameObject }) {
+        let gameData: GameObject | null = null;
+        if (data.theme) {
+            gameData = await getGame(data.difficulty, data.theme);
+        }
+        else if (data.gameData) {
+            const newFloor = await getFloor(data.difficulty, data.gameData.Theme, data.gameData.Floor.Level + 1);
+            if (!newFloor) {
+                this.scene.start('MainMenu');
+                console.error('Failed to fetch new floor');
+                return;
+            }
+            data.gameData.Floor = newFloor;
+            gameData = data.gameData;
+        }
         if (!gameData) {
             this.scene.start('MainMenu');
             console.error('Failed to fetch story text');

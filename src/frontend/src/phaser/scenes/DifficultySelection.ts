@@ -7,11 +7,13 @@ export class DifficultySelection extends Phaser.Scene {
         super({ key: 'DifficultySelection' });
     }
 
-    theme!: string;
+    theme?: string;
+    gameData?: GameObject;
 
-    init(data: { theme: string }) {
+    init(data: { theme?: string, gameData?: GameObject }) {
         // Get the theme from the previous scene
         this.theme = data.theme;
+        this.gameData = data.gameData;
     }
 
     preload() {
@@ -52,7 +54,11 @@ export class DifficultySelection extends Phaser.Scene {
     }
 
     async startGame(difficulty: string) {
-        this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { theme: this.theme, difficulty: difficulty } }); // Use prevSceneKey
-        
+        if (this.theme) { // New Game
+            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { theme: this.theme, difficulty: difficulty } });
+        }
+        else { // New Floor
+            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { gameData: this.gameData, difficulty: difficulty } });
+        }
     }
 }

@@ -85,6 +85,7 @@ const generateTileIDs = (charMatrix: string[][]): number[][] => {
 
 export const createTilemap = (scene: Phaser.Scene, tiles: string, tilesetKey: string, room: RoomObject): Phaser.Tilemaps.Tilemap => {
     const tileMatrix = convertToMatrix(tiles);
+    // Create pathways for other rooms
     if (room.TopID) {
         tileMatrix[0][6] = '.';
     }
@@ -98,6 +99,11 @@ export const createTilemap = (scene: Phaser.Scene, tiles: string, tilesetKey: st
         tileMatrix[4][12] = '.';
     }
     const tileIDs = generateTileIDs(tileMatrix);
+    // Add stairs (if any)
+    if (room.Type == 2) {
+        tileIDs[room.StairY!][room.StairX!] = 2; // Stairs
+    }
+
     const map = scene.make.tilemap({
         data: tileIDs,
         tileWidth: 16,
