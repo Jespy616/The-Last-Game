@@ -1,6 +1,6 @@
 import type { FloorObject, FloorResponse, GameObject, GameResponse } from './types';
 import { authStore } from '../../lib/stores/authStore';
-const API_URL = 'http://localhost:8080/api/protected';
+const API_URL = 'http://127.0.0.1:8080/api/protected';
 
 export async function getGame(difficultyLevel: string, Theme: string): Promise<GameObject | null> {
     try {
