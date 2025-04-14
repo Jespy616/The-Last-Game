@@ -1,6 +1,7 @@
 # The Last Game
 Welcome to __The Last Game__, an AI-driven video game!
 
+
 # Table of Contents
 - [The Last Game](#the-last-game)
 - [Table of Contents](#table-of-contents)
@@ -11,10 +12,12 @@ Welcome to __The Last Game__, an AI-driven video game!
   - [Sign in](#sign-in)
   - [Starting a new game](#starting-a-new-game)
   - [Playing the Game](#playing-the-game)
+    - [Controls](#controls)
   - [Saving and Exiting the Game](#saving-and-exiting-the-game)
 - [For Moderators](#for-moderators)
   - [Accessing the Docker logs](#accessing-the-docker-logs)
 - [Troubleshooting](#troubleshooting)
+  - [The game is taking a long time to load](#the-game-is-taking-a-long-time-to-load)
 - [FAQs](#faqs)
 - [Features and Functions](#features-and-functions)
 - [Installation Instructions](#installation-instructions)
@@ -30,10 +33,12 @@ Our AI-driven video game leverages procedural generation and AI-controlled decis
 
 This approach ensures a fresh and engaging experience every time a player starts a new session, increasing replayability and engagement.
 
+
 # Getting Started
 **NOTE** Due to time constraints, we were unable to deploy __The Last Game__, so use the instructions for running it locally!
 
 If you are running __The Last Game__ locally, start with [Installation instructions](#installation-instructions) before continuing.
+
 
 # For Players 
 First, navigate to [http://localhost:3000](http://localhost:3000) to access the game. To play, you will need to either [sign in](#sign-in) or [create an account](#creating-an-account).
@@ -71,11 +76,19 @@ After selecting your options, the AI will generate a story, floor, enemies, and 
 
 ## Playing the Game
 
+### Controls
+![Controls Diagram](./assets/controls.png)
+
+- Use the **Arrow keys** to move your character.
+- Press **Space** when facing an enemy to attack. This only works if the enemy is within range of your current weapon.
+- Press **Escape** to bring up the menu.
+
 ## Saving and Exiting the Game
 - Press `esc` to bring up the menu
 - Click on `Save Game` to save the game and continue playing (Option 1 in the picture below)
 - Click on `Exit and Save` to save the game and then quit (Option 2 in the picture below)
 ![Save/exit](./assets/saveexit.png)
+
 
 # For Moderators
 
@@ -85,14 +98,23 @@ After selecting your options, the AI will generate a story, floor, enemies, and 
     - Replace `backend` with either `frontend` or `db` to get the logs for those Docker containers
 
 
-
 # Troubleshooting
+## The game is taking a long time to load
+_Wait 2-3 minutes_
+
+_Refresh page if saved recently - resets to last save_
+
+  _Save game automatically on floor change?_
+
 
 # FAQs 
 
+
 # Features and Functions 
+
 
 # Installation Instructions 
 See the[DOCKER_README](../DOCKER_README.md) for instructions on how to install and run the game.
+
 
 # Contact Information 
