@@ -94,8 +94,8 @@ function createAudioStore() {
 
     // Define loop points based on track
     if (trackKey === "NoMoreGames") {
-      introMarker = { start: 0, end: 2.81 };
-      loopMarker = { start: 2.81, end: 151.333 }; // End timestamp
+      introMarker = { start: 0, end: 2.25 };
+      loopMarker = { start: 2.65, end: 151.7 }; // End timestamp
       isInLoop = false;
       
       

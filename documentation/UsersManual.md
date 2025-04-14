@@ -1,5 +1,5 @@
 # The Last Game
-Welcome to __The Last Game__, an AI-driven video game!
+Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
 
 
 # Table of Contents
@@ -12,7 +12,11 @@ Welcome to __The Last Game__, an AI-driven video game!
   - [Sign in](#sign-in)
   - [Starting a new game](#starting-a-new-game)
   - [Playing the Game](#playing-the-game)
+    - [Objective](#objective)
     - [Controls](#controls)
+    - [Combat](#combat)
+    - [Changing weapons](#changing-weapons)
+    - [Stairs](#stairs)
   - [Saving and Exiting the Game](#saving-and-exiting-the-game)
 - [For Moderators](#for-moderators)
   - [Accessing the Docker logs](#accessing-the-docker-logs)
@@ -35,18 +39,18 @@ This approach ensures a fresh and engaging experience every time a player starts
 
 
 # Getting Started
-**NOTE** Due to time constraints, we were unable to deploy __The Last Game__, so use the instructions for running it locally!
+**NOTE:** Due to time constraints, we were unable to deploy __The Last Game__, so use the instructions for running it locally!
 
 If you are running __The Last Game__ locally, start with [Installation instructions](#installation-instructions) before continuing.
 
 
 # For Players 
-First, navigate to [http://localhost:3000](http://localhost:3000) to access the game. To play, you will need to either [sign in](#sign-in) or [create an account](#creating-an-account).
+First, navigate to [http://localhost:3000](http://localhost:3000) to access the game. To play, you will need to either [create an account](#creating-an-account) or [sign in](#sign-in).
 
 ## Creating an account
 From the login screen, click the `create account` button at the bottom of the screen.
 
-![Create account button](./assets/login.png)
+<img src="./assets/login.png" alt="Create account button" width="60%">
 
 Fill out the following fields:
 - `Username`
@@ -76,18 +80,60 @@ After selecting your options, the AI will generate a story, floor, enemies, and 
 
 ## Playing the Game
 
+### Objective
+The goal of __The Last Game__ is to reach the highest floor that you can without loosing all of your health. To do this you will need to fight enemies, upgrade your weapons, and locate the stairs to progress.
+
 ### Controls
-![Controls Diagram](./assets/controls.png)
+<img src="./assets/controls.png" alt="Controls Diagram" width="70%">
 
 - Use the **Arrow keys** to move your character.
 - Press **Space** when facing an enemy to attack. This only works if the enemy is within range of your current weapon.
 - Press **Escape** to bring up the menu.
 
+### Combat
+<img src="./assets/attackRange.png" alt="Combat Range" width="25%">
+
+[_Combat range_]
+
+- Press `space` to attack in the direction you are facing
+  - Attacking enemies reduces their health by the attack value associated with your current weapon
+- You can only attack directly to the side, above, or below your current position
+- If your health reaches 0, it is game over
+
+### Changing weapons
+<img src="./assets/chest1.png" alt="Chest" width="25%">
+
+[_Example Chest_]
+
+To change weapons, you first need to find a chest that contains a weapon. 
+**Chests only appear if the room has been cleared of enemies.**
+
+- Press `Space bar` to open the chest. You will then be presented with a menu that looks like the following:
+
+<img src="./assets/chest.png" alt="Chest Menu" width="50%">
+
+[_Chest Menu_]
+
+You will see the weapon in the chest as well as your current weapon. You will be able to see the damage of each weapon as well. Do one of the following:
+
+- Click `Swap Weapons` (Option 1) to change your current weapon
+- Click `Leave Weapon` (Option 2) to keep your current weapon
+
+### Stairs
+
+Stepping on a stair tile will allow you to move to the next room. **Note** that once you move to the next floor via the stairs you will not be able to return and the game will become more difficult.
+
+<img src="./assets/stair.png" alt="Stair Tile" width="20%">
+
+[_Stair Tile_]
+
+
 ## Saving and Exiting the Game
 - Press `esc` to bring up the menu
 - Click on `Save Game` to save the game and continue playing (Option 1 in the picture below)
 - Click on `Exit and Save` to save the game and then quit (Option 2 in the picture below)
-![Save/exit](./assets/saveexit.png)
+
+<img src="./assets/saveexit.png" alt="Save & Exit" width="40%">
 
 
 # For Moderators
@@ -100,11 +146,9 @@ After selecting your options, the AI will generate a story, floor, enemies, and 
 
 # Troubleshooting
 ## The game is taking a long time to load
-_Wait 2-3 minutes_
-
-_Refresh page if saved recently - resets to last save_
-
-  _Save game automatically on floor change?_
+- _Wait 2-3 minutes_
+- _Refresh page if saved recently - resets to last save_
+- _Save game automatically on floor change?_
 
 
 # FAQs 

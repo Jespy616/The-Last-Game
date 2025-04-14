@@ -315,7 +315,7 @@ export class Room extends Scene {
         for (let observer of this.observers) {
             observer.unsubscribe();
         }
-        this.sound.play("transition", { volume: 0.6 });  
+        this.sound.play("transition", { volume: 0.4 });  
 
         for (let observer of this.observers) {
             observer.unsubscribe();
