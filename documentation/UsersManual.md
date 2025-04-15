@@ -9,21 +9,23 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
 - [Getting Started](#getting-started)
 - [Troubleshooting](#troubleshooting)
   - [The game is taking a long time to load](#the-game-is-taking-a-long-time-to-load)
+  - [The game has stopped responding](#the-game-has-stopped-responding)
 - [FAQs](#faqs)
 - [Features and Functions](#features-and-functions)
-- [For Players](#for-players)
-  - [Creating an account](#creating-an-account)
-  - [Sign in](#sign-in)
-  - [Starting a new game](#starting-a-new-game)
-  - [Playing the Game](#playing-the-game)
-    - [Objective](#objective)
-    - [Controls](#controls)
-    - [Combat](#combat)
-    - [Changing weapons](#changing-weapons)
-    - [Stairs](#stairs)
-  - [Saving and Exiting the Game](#saving-and-exiting-the-game)
-- [For Moderators](#for-moderators)
-  - [Accessing the Docker logs](#accessing-the-docker-logs)
+  - [For Players](#for-players)
+    - [Creating an account](#creating-an-account)
+    - [Sign in](#sign-in)
+    - [Starting a new game](#starting-a-new-game)
+    - [Playing the Game](#playing-the-game)
+      - [Objective](#objective)
+      - [Controls](#controls)
+      - [Combat](#combat)
+      - [Changing weapons](#changing-weapons)
+      - [Changing floors](#changing-floors)
+    - [Saving and Exiting the Game](#saving-and-exiting-the-game)
+    - [Changing Menu Theme](#changing-menu-theme)
+  - [For Moderators](#for-moderators)
+    - [Accessing the Docker logs](#accessing-the-docker-logs)
 - [Installation Instructions](#installation-instructions)
 - [Contact Information](#contact-information)
 
@@ -46,20 +48,23 @@ If you are running __The Last Game__ locally, start with [Installation instructi
 
 # Troubleshooting
 ## The game is taking a long time to load
-- _Wait 2-3 minutes_
-- _Refresh page if saved recently - resets to last save_
-- _Save game automatically on floor change?_
+- Wait 2-3 minutes. If that doesn't work:
+- Go back to [http://localhost:3000](http://localhost:3000)
+- [Sign in](#sign-in) to your account again and either load a game or start a new game
 
+## The game has stopped responding
+- Go back to [http://localhost:3000](http://localhost:3000)
+- [Sign in](#sign-in) to your account again and either load a game or start a new game
 
 # FAQs 
 
 
 # Features and Functions 
 
-# For Players 
+## For Players 
 First, navigate to [http://localhost:3000](http://localhost:3000) to access the game. To play, you will need to either [create an account](#creating-an-account) or [sign in](#sign-in).
 
-## Creating an account
+### Creating an account
 From the login screen, click the `create account` button at the bottom of the screen.
 
 <img src="./assets/login.png" alt="Create account button" width="50%">
@@ -75,14 +80,14 @@ Fill out the following fields:
 Note that the `password` must be 6 characters or more and the `confirm password` should match what is in the `password` field.
 Finally, check the box next to `Accept terms & conditions` and click `create account` to create your account.
 
-## Sign in
+### Sign in
 1. Enter your username and password in the appropriate fields
 2. (Optional) click `remember me`
 3. Click the `LOGIN` button
 
 You will be redirected to a page that give you an option to [start a new game](#starting-a-new-game)  
 
-## Starting a new game
+### Starting a new game
 After logging in, you will be taken to the menu screen with a button that says `start game`. Clicking this button will bring you to to a screen that explains the game. Click `next` in the bottom right to continue.
 
 You will then be given a couple of options for your game:
@@ -92,12 +97,12 @@ You will then be given a couple of options for your game:
 After selecting your options, the AI will generate a story, floor, enemies, and weapons. While this process is usually quick, there are some cases where it may take a long time. See the [Troubleshooting](#troubleshooting) section for more details if you encounter this.
 
 
-## Playing the Game
+### Playing the Game
 
-### Objective
+#### Objective
 The goal of __The Last Game__ is to reach the highest floor that you can without loosing all of your health. To do this you will need to fight enemies, upgrade your weapons, and locate the stairs to progress.
 
-### Controls
+#### Controls
 <img src="./assets/controls.png" alt="Controls Diagram" width="50%">
 
 [_Controls_]
@@ -106,7 +111,7 @@ The goal of __The Last Game__ is to reach the highest floor that you can without
 - Press **Space** when facing an enemy to attack. This only works if the enemy is within range of your current weapon.
 - Press **Escape** to bring up the menu.
 
-### Combat
+#### Combat
 <img src="./assets/attackRange.png" alt="Combat Range" width="20%">
 
 [_Combat range_]
@@ -116,7 +121,7 @@ The goal of __The Last Game__ is to reach the highest floor that you can without
 - You can only attack directly to the side, above, or below your current position
 - If your health reaches 0, it is game over
 
-### Changing weapons
+#### Changing weapons
 <img src="./assets/chest1.png" alt="Chest" width="25%">
 
 [_Example Chest_]
@@ -135,7 +140,7 @@ You will see the weapon in the chest as well as your current weapon. You will be
 - Click `Swap Weapons` (Option 1) to change your current weapon
 - Click `Leave Weapon` (Option 2) to keep your current weapon
 
-### Stairs
+#### Changing floors
 
 Stepping on a stair tile will allow you to move to the next room. **Note** that once you move to the next floor via the stairs you will not be able to return and the game will become more difficult.
 
@@ -144,17 +149,28 @@ Stepping on a stair tile will allow you to move to the next room. **Note** that 
 [_Stair Tile_]
 
 
-## Saving and Exiting the Game
+### Saving and Exiting the Game
 - Press `esc` to bring up the menu
 - Click on `Save Game` to save the game and continue playing (Option 1 in the picture below)
 - Click on `Exit and Save` to save the game and then quit (Option 2 in the picture below)
 
 <img src="./assets/saveexit.png" alt="Save & Exit" width="30%">
 
+### Changing Menu Theme
+<img src="./assets/settings.png" alt="Settings Menu" width="30%">
 
-# For Moderators
+[_Settings menu_]
 
-## Accessing the Docker logs
+- Click the settings menu in the top right corner
+- Click `Toggle Dark Mode`
+- Click `Save Changes`
+
+<img src="./assets/toggleTheme.png" alt="Toggle theme option" width="50%">
+
+
+## For Moderators
+
+### Accessing the Docker logs
 1. Navigate to the folder where the Last Game is in your terminal
 2. run `docker-compose logs -f backend` to view the logs for the backend
     - Replace `backend` with either `frontend` or `db` to get the logs for those Docker containers
@@ -162,7 +178,26 @@ Stepping on a stair tile will allow you to move to the next room. **Note** that 
 
 
 # Installation Instructions 
-See the[DOCKER_README](../DOCKER_README.md) for instructions on how to install and run the game.
+You will need to create a `.env` file and place it in the root directory of The Last Game. The `.env` file should have the following fields: 
+```.env
+GROQ_API_KEY=<YOUR-API-KEY>
+DATABASE_URL=postgres://user:password@db:5473/game
+POSTGRES_USER=kgardner
+POSTGRES_PASSWORD=kwit2323!
+POSTGRES_DB=game_db
+ACCESS_TOKEN_SECRET=asdf
+REFRESH_TOKEN_SECRET=asdf
+DB_HOST=game_db
+DB_USER=kgardner
+DB_PASSWORD=kwit2323!
+DB_NAME=game_db
+DB_PORT=5432
+DB_SSLMODE=disable
+DB_TIMEZONE=UTC
+```
+The `GROQ_API_KEY` can be acquired by going to [Groq's](https://console.groq.com/home?utm_source=website&utm_medium=outbound_link&utm_campaign=dev_console_click) website and creating a free account. After you have created an account, create a new API key and replace the <YOUR-API-KEY> with your API key.
+
+See the [DOCKER_README](../DOCKER_README.md) for instructions on how to install and run the game.
 
 
 # Contact Information 
