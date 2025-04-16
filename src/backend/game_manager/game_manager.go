@@ -4,17 +4,17 @@ import (
 	"backend/model"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
-	"strings"
 	"strconv"
+	"strings"
 
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 type Floors struct {
@@ -107,8 +107,6 @@ func toJSONString(v interface{}) string {
 }
 
 func loadAPIKey() string {
-	_ = godotenv.Load(".env-personal")
-	_ = godotenv.Load(".env")
 	return os.Getenv("API_KEY")
 }
 
@@ -118,7 +116,7 @@ func runPythonAI(apiKey string, args1, enemies, weapons []string) ([]byte, error
 	weaponsJSON, _ := json.Marshal(weapons)
 
 	cmd := exec.Command(
-		"python3.11", "../ai/ai_agent.py",
+		"python3", "/app/ai/ai_agent.py",
 		"-k", apiKey,
 		"-f", "7", "cave",
 		string(args1JSON), string(args1JSON),
@@ -126,6 +124,8 @@ func runPythonAI(apiKey string, args1, enemies, weapons []string) ([]byte, error
 		"-w", "4", string(weaponsJSON),
 		"-s", "castle", "cave", "None",
 	)
+
+	log.Println(cmd)
 
 	return cmd.CombinedOutput()
 }
@@ -336,6 +336,9 @@ func CreateFloor(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("Python AI Output:", string(output))
+
+
 	floorData, err := parseAIResponse(output)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "JSON parsing failed", "details": err.Error()})
@@ -381,12 +384,18 @@ func CreateGame(c *gin.Context) {
 	output, err := runPythonAI(apiKey, args1, enemies, weapons)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "AI agent failed", "details": err.Error()})
+		log.Println("The AI failed to work, check runPythonAI")
+		log.Println("Output from the AI: ")
+		log.Println(output)
+		log.Println(err.Error())
 		return
 	}
 
 	floorData, err := parseAIResponse(output)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "JSON parsing failed", "details": err.Error()})
+		log.Println("The JSon parsing failed to work, check parseAIResponse")
+		log.Println(err)
 		return
 	}
 

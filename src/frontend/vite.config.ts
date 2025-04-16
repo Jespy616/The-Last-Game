@@ -5,7 +5,7 @@ const config: UserConfig = {
   plugins: [sveltekit()],
   server: {
     proxy: {
-      '/api': 'http://localhost:8080' // wherever your Go backend is running
+      '/api': 'http://backend:8080' // wherever your Go backend is running
     }
   }
 };
