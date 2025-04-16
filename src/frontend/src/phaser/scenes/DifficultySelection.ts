@@ -6,7 +6,8 @@ export class DifficultySelection extends Phaser.Scene {
     constructor() {
         super({ key: 'DifficultySelection' });
     }
-
+    
+    devMode: boolean = false;
     theme?: string;
     gameData?: GameObject;
 
@@ -21,6 +22,27 @@ export class DifficultySelection extends Phaser.Scene {
 
     create() {
         const { width, height } = this.scale;
+
+        // Konami code sequence
+        const konamiCode = [
+            'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+            'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+            'KeyB', 'KeyA'
+        ];
+        let konamiIndex = 0;
+
+        this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
+            if (event.code === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    this.devMode = true;
+                    console.log('Dev mode activated!');
+                    konamiIndex = 0; // Reset the sequence
+                }
+            } else {
+                konamiIndex = 0; // Reset if sequence is broken
+            }
+        });
 
         const easyButton = this.add.text(width / 2 - 300, height / 2, 'Easy', { fontFamily: 'cc-pixel-arcade-display', fontSize: '48px', color: '#fff' })
             .setOrigin(0.5)
@@ -55,10 +77,10 @@ export class DifficultySelection extends Phaser.Scene {
 
     async startGame(difficulty: string) {
         if (this.theme) { // New Game
-            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { theme: this.theme, difficulty: difficulty } });
+            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { theme: this.theme, difficulty: difficulty, devMode: this.devMode } });
         }
         else { // New Floor
-            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { gameData: this.gameData, difficulty: difficulty } });
+            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { gameData: this.gameData, difficulty: difficulty, devMode: this.devMode } });
         }
     }
 }

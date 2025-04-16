@@ -1,5 +1,4 @@
 import { Scene } from "phaser";
-import { formatButton } from "../ui/FormatButton";
 import type { GameObject } from "../backend/types";
 import { saveGame } from "../backend/API";
 import { EventBus } from '../EventBus';

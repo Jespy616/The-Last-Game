@@ -328,7 +328,7 @@ export class Room extends Scene {
             nextSceneKey: sceneKey, 
             nextSceneData: { ...data, gameData: this.gameData } 
         });
-        if (sceneKey === 'GameOver' || sceneKey === 'MainMenu') {
+        if (sceneKey === 'GameOver' || sceneKey === 'MainMenu' || sceneKey === 'DifficultySelection') {
             this.scene.stop('Gui');
         }
     }
