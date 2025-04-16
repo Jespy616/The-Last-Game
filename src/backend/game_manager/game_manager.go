@@ -442,8 +442,8 @@ func CreateGame(c *gin.Context) {
 	}
 
 	player := model.Player{
-		MaxHealth: 45,
-		CurrentHealth: 45,
+		MaxHealth: 100,
+		CurrentHealth: 100,
 		SpriteName: "Knight",
 		PosX: startX,
 		PosY: startY,

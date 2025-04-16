@@ -38,16 +38,55 @@ export class SettingsOverlay extends Scene {
 
         this.buttons = [
             this.add.text(0, -0.10 * height, 'Resume', { fontSize: '24px', color: '#ffffff' })
-                .on('pointerdown', this.resume),
+                .on('pointerdown', this.resume)
+                .on('pointerover', () => {
+                    this.currentButtonIndex = 0;
+                    this.highlightButton();
+                })
+                .on('pointerout', () => {
+                    this.currentButtonIndex = -1;
+                    this.highlightButton();
+                })
+                .setInteractive({ useHandCursor: true })
+                .setOrigin(0.5),
             this.add.text(0, 0, 'Save Game', { fontSize: '24px', color: '#ffffff' })
-                .on('pointerdown', this.save),
+                .on('pointerdown', this.save)
+                .on('pointerover', () => {
+                    this.currentButtonIndex = 1;
+                    this.highlightButton();
+                })
+                .on('pointerout', () => {
+                    this.currentButtonIndex = -1;
+                    this.highlightButton();
+                })
+                .setInteractive({ useHandCursor: true })
+                .setOrigin(0.5),
             this.add.text(0, 0.05 * height, 'Exit and Save', { fontSize: '24px', color: '#ffffff' })
-                .on('pointerdown', this.exitAndSave),
+                .on('pointerdown', this.exitAndSave)
+                .on('pointerover', () => {
+                    this.currentButtonIndex = 2;
+                    this.highlightButton();
+                })
+                .on('pointerout', () => {
+                    this.currentButtonIndex = -1;
+                    this.highlightButton();
+                })
+                .setInteractive({ useHandCursor: true })
+                .setOrigin(0.5),
             this.add.text(0, 0.10 * height, 'Exit', { fontSize: '24px', color: '#ffffff' })
                 .on('pointerdown', this.exit)
+                .on('pointerover', () => {
+                    this.currentButtonIndex = 3;
+                    this.highlightButton();
+                })
+                .on('pointerout', () => {
+                    this.currentButtonIndex = -1;
+                    this.highlightButton();
+                })
+                .setInteractive({ useHandCursor: true })
+                .setOrigin(0.5)
         ];
 
-        this.buttons.forEach(button => formatButton(button));
         this.overlay.add(this.buttons);
 
         // Animate the overlay to rise up into view
@@ -63,7 +102,7 @@ export class SettingsOverlay extends Scene {
         // Add other settings options (e.g., volume control, key bindings) here
     }
 
-    resume() {
+    resume = () => {
         const { width, height } = this.scale;
 
         this.tweens.add({
@@ -76,30 +115,30 @@ export class SettingsOverlay extends Scene {
                 this.scene.wake('Room');
             }
         });
-    }
+    };
 
-    exit() {
-        EventBus.emit('change-scene', { sceneKey: 'MainMenu' });
+    exit = () => {
         this.scene.stop();
-    }
+        EventBus.emit('change-scene', { sceneKey: 'MainMenu' });
+    };
 
-    async save() {
+    save = async () => {
         this.buttons[1].setText('Saving...');
         this.buttons[1].setColor('#ffffff');
         this.scene.pause();
         await saveGame(this.gameData);
         this.scene.wake();
         this.buttons[1].setText('Save Game');
-    }
+    };
 
-    async exitAndSave() {
+    exitAndSave = async () => {
         this.buttons[2].setText('Saving...');
         this.scene.pause();
         await saveGame(this.gameData);
         this.scene.wake();
-        EventBus.emit('change-scene', { sceneKey: 'MainMenu' });
         this.scene.stop();
-    }
+        EventBus.emit('change-scene', { sceneKey: 'MainMenu' });
+    };
 
     highlightButton() {
         this.buttons.forEach((button, i) => {
