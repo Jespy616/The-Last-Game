@@ -14,7 +14,7 @@ COPY . .
 
 # Create a virtual environment and install Python dependencies
 RUN python3 -m venv /app/venv
-RUN /app/venv/bin/pip install --no-cache-dir -r /app/ai/requirements.txt
+RUN pip install --no-cache-dir -r /app/ai/requirements.txt --break-system-package
 
 # Build the Go application
 RUN go build -v -o ./build/ ./...
