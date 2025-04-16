@@ -1,17 +1,19 @@
 import Phaser, { Game } from 'phaser';
-import type { GameObject } from '../backend/types';
 import { getGame } from '../backend/API';
+import type { GameObject } from '../backend/types';
 
 export class DifficultySelection extends Phaser.Scene {
     constructor() {
         super({ key: 'DifficultySelection' });
     }
 
-    theme: string;
+    theme?: string;
+    gameData?: GameObject;
 
-    init(data: { theme: string }) {
+    init(data: { theme?: string, gameData?: GameObject }) {
         // Get the theme from the previous scene
         this.theme = data.theme;
+        this.gameData = data.gameData;
     }
 
     preload() {
@@ -20,37 +22,43 @@ export class DifficultySelection extends Phaser.Scene {
     create() {
         const { width, height } = this.scale;
 
-        const easyButton = this.add.text(width / 2 - 150, height / 2, 'Easy', { fontSize: '32px', color: '#fff' })
+        const easyButton = this.add.text(width / 2 - 300, height / 2, 'Easy', { fontFamily: 'cc-pixel-arcade-display', fontSize: '48px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => easyButton.setColor('#f00'))
             .on('pointerout', () => easyButton.setColor('#fff'))
-            .on('pointerdown', () => this.startGame(0));
+            .on('pointerdown', () => {
+                this.startGame("easy");
+                easyButton.setColor('#fff');
+            });
 
-        const mediumButton = this.add.text(width / 2, height / 2, 'Medium', { fontSize: '32px', color: '#fff' })
+        const mediumButton = this.add.text(width / 2, height / 2, 'Medium', { fontFamily: 'cc-pixel-arcade-display', fontSize: '48px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => mediumButton.setColor('#f00'))
             .on('pointerout', () => mediumButton.setColor('#fff'))
-            .on('pointerdown', () => this.startGame(1));
+            .on('pointerdown', () => {
+                this.startGame("medium")
+                mediumButton.setColor('#fff');
+            });
 
-        const hardButton = this.add.text(width / 2 + 160, height / 2, 'Hard', { fontSize: '32px', color: '#fff' })
+        const hardButton = this.add.text(width / 2 + 300, height / 2, 'Hard', { fontFamily: 'cc-pixel-arcade-display', fontSize: '48px', color: '#fff' })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .on('pointerover', () => hardButton.setColor('#f00'))
             .on('pointerout', () => hardButton.setColor('#fff'))
-            .on('pointerdown', () => this.startGame(2));
+            .on('pointerdown', () => {
+                this.startGame("hard")
+                hardButton.setColor('#fff');
+            });
     }
 
-    async startGame(difficulty: number) {
-        // Fetch game data from backend
-        const gameData: (GameObject | null) = await getGame(difficulty, this.theme);
-
-        // Start first room scene
-        if (gameData) {
-            this.scene.start('Room', { roomId: 1, gameData, pos: "center" });
-        } else {
-            console.error('Failed to create game data');
+    async startGame(difficulty: string) {
+        if (this.theme) { // New Game
+            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { theme: this.theme, difficulty: difficulty } });
+        }
+        else { // New Floor
+            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { gameData: this.gameData, difficulty: difficulty } });
         }
     }
 }
