@@ -56,9 +56,11 @@ export class MainMenu extends Scene
 
 		});
 
+		
+
         EventBus.emit('current-scene-ready', this);
     }
-    
+
     createRoundedButton(
 		x: number,
 		y: number,

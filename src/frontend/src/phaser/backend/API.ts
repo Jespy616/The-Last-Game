@@ -39,8 +39,8 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
         game: {
             ID: 6,
             Theme: 'castle',
+            Level: 1,
             Floor: {
-                Level: 1,
                 ID: 6,
                 Rooms: [
                     {
@@ -107,7 +107,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Enemies: [
                             {
                                 ID: 58,
-                                
+
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
@@ -118,7 +118,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                             },
                             {
                                 ID: 59,
-                                
+
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
@@ -129,7 +129,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                             },
                             {
                                 ID: 60,
-                                
+
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
@@ -152,11 +152,11 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                     },
                     {
                         ID: 39,
-                        
+
                         Enemies: [
                             {
                                 ID: 61,
-                                
+
                                 Damage: 11,
                                 Level: 1,
                                 CurrentHealth: 12.1,
@@ -182,7 +182,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Enemies: [
                             {
                                 ID: 62,
-                                
+
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
@@ -234,7 +234,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                         Enemies: [
                             {
                                 ID: 64,
-                                
+
                                 Damage: 22,
                                 Level: 3,
                                 CurrentHealth: 24.2,
@@ -283,12 +283,56 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
     return game.game;
 }
 
-export async function saveGame(FloorData: Partial<GameObject>): Promise<void> {
+interface SaveRoom {
+    ID: number;
+    X: number;
+    Y: number;
+    EnemyIDs: number[];
+    ChestID?: number;
+  }
+
+  interface SaveFloor {
+    ID: number;
+    Rooms: SaveRoom[];
+  }
+
+  interface SaveGame {
+    ID: number;
+    Level: number;
+    Floor: SaveFloor;
+    PlayerID: number;
+  }
+
+  function toSaveable(g: GameObject): SaveGame {
+    return {
+      ID: g.ID,
+      Level: g.Level,
+      PlayerID: g.Player.ID,
+      Floor: {
+        ID: g.Floor.ID,
+        Rooms: g.Floor.Rooms.map(r => ({
+          ID: r.ID,
+          X: r.X,
+          Y: r.Y,
+          EnemyIDs: r.Enemies.map(e => e.ID),
+          ChestID: r.Chest?.ID,
+        })),
+      },
+    };
+  }
+
+
+export async function saveGame(Game: GameObject): Promise<void> {
     try {
-        const response = await fetch('/save_game', {
+
+        let token;
+        authStore.subscribe((value) => {
+            token = value.token;
+        })();
+        const response = await fetch(`${API_URL}/save_game`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(FloorData)
+            headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` },
+            body: JSON.stringify({ game: toSaveable(Game) }),
         });
 
         if (!response.ok) throw new Error('Failed to save game');
@@ -300,18 +344,21 @@ export async function saveGame(FloorData: Partial<GameObject>): Promise<void> {
     }
 }
 
+
+
 export async function getFloor(difficulty: string, theme: string, level: number): Promise<FloorObject | null> {
     try {
         let token;
         authStore.subscribe((value) => {
             token = value.token;
         })();
+        console.log(`Making request: ${JSON.stringify({ difficulty: difficulty, theme: theme, level: level })}`)
         const response = await fetch(`${API_URL}/create_floor`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` },
             body: JSON.stringify({ difficulty: difficulty, theme: theme, level: level })
         });
-
+        console.log("Here is the response, ", response)
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const floorResponse: FloorResponse = await response.json();
