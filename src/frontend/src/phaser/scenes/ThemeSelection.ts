@@ -1,12 +1,13 @@
 import Phaser from 'phaser';
+import type { GameObject } from '../backend/types';
 
 export class ThemeSelection extends Phaser.Scene {
     constructor() {
         super({ key: 'ThemeSelection' });
     }
-
-    preload() {
-        // Load any assets here if needed
+    private gameData?: GameObject;
+    init(data: { gameData?: GameObject }) {
+        this.gameData = data.gameData;
     }
 
     create() {
@@ -36,6 +37,6 @@ export class ThemeSelection extends Phaser.Scene {
     }
 
     startGame(theme: string) {
-        this.scene.launch('Transition', { prevSceneKey: 'ThemeSelection', nextSceneKey: 'DifficultySelection', nextSceneData: { theme } }); // Use prevSceneKey
+        this.scene.launch('Transition', { prevSceneKey: 'ThemeSelection', nextSceneKey: 'DifficultySelection', nextSceneData: { theme: theme, gameData: this.gameData } }); // Use prevSceneKey
     }
 }

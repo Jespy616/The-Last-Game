@@ -66,7 +66,7 @@ export class Room extends Scene {
 
     preload() {
         this.load.audio("YWWWS", 'assets/audio/YWWWS.ogg');
-        this.load.image('tiles', `assets/tilesets/${this.gameData.Theme}-tileset.png`);
+        this.load.image(`${this.gameData.Theme}-tiles`, `assets/tilesets/${this.gameData.Theme}-tileset.png`);
         this.load.spritesheet('player', `assets/${this.player.SpriteName}.png`, {
             frameWidth: 24,
             frameHeight: 24,
@@ -102,7 +102,7 @@ export class Room extends Scene {
         }
 
         // Create Tilemap
-        const tilemap = createTilemap(this, this.room.Tiles, 'tiles', this.room);
+        const tilemap = createTilemap(this, this.room.Tiles, `${this.gameData.Theme}-tiles`, this.room);
         
         // Create Player and Health Bar
         this.player.SpriteObject = this.add.sprite(0, 0, 'player'); 
@@ -292,7 +292,7 @@ export class Room extends Scene {
 
     checkFloorChange() {
         if (this.room.Type === 2 && this.gridEngine.getPosition('player').x === this.room.StairX && this.gridEngine.getPosition('player').y === this.room.StairY) {
-            this.changeScene('DifficultySelection', { gameData: this.gameData });
+            this.changeScene('ThemeSelection', { gameData: this.gameData });
         }
     }
  
@@ -328,7 +328,7 @@ export class Room extends Scene {
             nextSceneKey: sceneKey, 
             nextSceneData: { ...data, gameData: this.gameData } 
         });
-        if (sceneKey === 'GameOver' || sceneKey === 'MainMenu' || sceneKey === 'DifficultySelection') {
+        if (sceneKey === 'GameOver' || sceneKey === 'MainMenu' || sceneKey === 'ThemeSelection') {
             this.scene.stop('Gui');
         }
     }

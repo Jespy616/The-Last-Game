@@ -106,6 +106,8 @@ export const createTilemap = (scene: Phaser.Scene, tiles: string, tilesetKey: st
         }
         catch (error) {
             tileIDs[4][6] = 2; // Default to center if out of bounds
+            room.StairX = 6;
+            room.StairY = 4;
         }
     }
 

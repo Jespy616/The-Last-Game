@@ -14,7 +14,7 @@ export class Loader extends Phaser.Scene {
         }
         else if (data.gameData) {
             data.gameData.Level = data.gameData.Level + 1;
-            const newFloor = await getFloor(data.difficulty, data.gameData.Theme, data.gameData.Level);
+            const newFloor = await getFloor(data.difficulty, data.gameData.Theme, data.gameData.Level, data.gameData.Floor.StoryText);
             if (!newFloor) {
                 this.scene.start('MainMenu');
                 console.error('Failed to fetch new floor');
@@ -34,7 +34,6 @@ export class Loader extends Phaser.Scene {
             gameData.Player.PrimaryWeapon.Damage = 999999;
             gameData.Player.PrimaryWeapon.Sprite = "Erik's Lightsaber";
         }
-        console.log('Game Data:\n', gameData);
         this.scene.launch('Transition', { prevSceneKey: 'Loader', nextSceneKey: 'StoryText', nextSceneData: {gameData: gameData} });
     }
 

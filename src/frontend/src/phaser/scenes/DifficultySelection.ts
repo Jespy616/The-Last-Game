@@ -8,10 +8,10 @@ export class DifficultySelection extends Phaser.Scene {
     }
     
     devMode: boolean = false;
-    theme?: string;
+    theme!: string;
     gameData?: GameObject;
 
-    init(data: { theme?: string, gameData?: GameObject }) {
+    init(data: { theme: string, gameData?: GameObject }) {
         // Get the theme from the previous scene
         this.theme = data.theme;
         this.gameData = data.gameData;
@@ -36,7 +36,7 @@ export class DifficultySelection extends Phaser.Scene {
                 konamiIndex++;
                 if (konamiIndex === konamiCode.length) {
                     this.devMode = true;
-                    console.log('Dev mode activated!');
+                    console.log('\nDev mode activated!');
                     konamiIndex = 0; // Reset the sequence
                 }
             } else {
@@ -76,11 +76,11 @@ export class DifficultySelection extends Phaser.Scene {
     }
 
     async startGame(difficulty: string) {
-        if (this.theme) { // New Game
+        if (!this.gameData) { // New Game
             this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { theme: this.theme, difficulty: difficulty, devMode: this.devMode } });
         }
         else { // New Floor
-            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { gameData: this.gameData, difficulty: difficulty, devMode: this.devMode } });
+            this.scene.launch('Transition', { prevSceneKey: 'DifficultySelection', nextSceneKey: 'Loader', nextSceneData: { gameData: this.gameData, theme: this.theme, difficulty: difficulty, devMode: this.devMode } });
         }
     }
 }

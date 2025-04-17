@@ -8,7 +8,6 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
         authStore.subscribe((value) => {
             token = value.token;
         })();
-        console.log(`Making request: ${JSON.stringify({ difficulty: difficultyLevel, theme: Theme })}`)
         const response = await fetch(`${API_URL}/create_game`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` },
@@ -300,7 +299,7 @@ export async function saveGame(FloorData: Partial<GameObject>): Promise<void> {
     }
 }
 
-export async function getFloor(difficulty: string, theme: string, level: number): Promise<FloorObject | null> {
+export async function getFloor(difficulty: string, theme: string, level: number, lastStory: string): Promise<FloorObject | null> {
     try {
         let token;
         authStore.subscribe((value) => {
@@ -309,7 +308,7 @@ export async function getFloor(difficulty: string, theme: string, level: number)
         const response = await fetch(`${API_URL}/create_floor`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` },
-            body: JSON.stringify({ difficulty: difficulty, theme: theme, level: level })
+            body: JSON.stringify({ difficulty: difficulty, theme: theme, level: level, lastStory: lastStory })
         });
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
