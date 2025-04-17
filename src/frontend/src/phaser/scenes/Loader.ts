@@ -7,7 +7,7 @@ export class Loader extends Phaser.Scene {
         super({ key: 'Loader' });
     }
 
-    async init(data: { theme?: string; difficulty: string; gameData?: GameObject }) {
+    async init(data: { theme?: string; difficulty: string; gameData?: GameObject, devMode?: boolean }) {
         let gameData: GameObject | null = null;
         if (data.theme) {
             gameData = await getGame(data.difficulty, data.theme);
@@ -25,8 +25,14 @@ export class Loader extends Phaser.Scene {
         }
         if (!gameData) {
             this.scene.start('MainMenu');
-            console.error('Failed to fetch story text');
+            console.error('Failed to fetch game object');
             return;
+        }
+        if (data.devMode) {
+            gameData.Player.MaxHealth = 999999;
+            gameData.Player.CurrentHealth = 999999;
+            gameData.Player.PrimaryWeapon.Damage = 999999;
+            gameData.Player.PrimaryWeapon.Sprite = "Erik's Lightsaber";
         }
         console.log('Game Data:\n', gameData);
         this.scene.launch('Transition', { prevSceneKey: 'Loader', nextSceneKey: 'StoryText', nextSceneData: {gameData: gameData} });

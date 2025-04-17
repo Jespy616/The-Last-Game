@@ -101,7 +101,12 @@ export const createTilemap = (scene: Phaser.Scene, tiles: string, tilesetKey: st
     const tileIDs = generateTileIDs(tileMatrix);
     // Add stairs (if any)
     if (room.Type == 2) {
-        tileIDs[room.StairY!][room.StairX!] = 2; // Stairs
+        try {
+            tileIDs[room.StairY!][room.StairX!] = 2; // Add stairs
+        }
+        catch (error) {
+            tileIDs[4][6] = 2; // Default to center if out of bounds
+        }
     }
 
     const map = scene.make.tilemap({

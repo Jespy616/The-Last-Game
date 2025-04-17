@@ -21,13 +21,13 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
         gameResponse.game.Theme = Theme;
         gameResponse.game.Player.PrimaryWeapon = {
             ID: 0,
-            Name: 'Sword',
+            Sprite: 'Sword',
             Damage: 10,
             Type: 0
         };
         gameResponse.game.Player.SecondaryWeapon = {
             ID: 0,
-            Name: 'Sword',
+            Sprite: 'Sword',
             Damage: 10,
             Type: 0
         };
@@ -37,6 +37,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
     }
     const game: GameResponse = {
         game: {
+            Level: 1,
             ID: 6,
             Theme: 'castle',
             Level: 1,
@@ -211,7 +212,7 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                             RoomInID: 41,
                             Weapon: {
                                 ID: 41,
-                                Name: 'bow',
+                                Sprite: 'bow',
                                 Damage: 19.36,
                                 Type: 2
                             },
@@ -264,13 +265,13 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                 CurrentHealth: 100,
                 PrimaryWeapon: {
                     ID: 0,
-                    Name: 'Sword',
+                    Sprite: 'Sword',
                     Damage: 10,
                     Type: 0
                 },
                 SecondaryWeapon: {
                     ID: 0,
-                    Name: 'Sword',
+                    Sprite: 'Sword',
                     Damage: 10,
                     Type: 0
                 },
@@ -367,7 +368,6 @@ export async function getFloor(difficulty: string, theme: string, level: number)
         console.error('Error loading Floor: ', error);
     }
     return {
-        Level: 2,
         ID: 2,
         Rooms: [
             {
@@ -389,7 +389,7 @@ export async function getFloor(difficulty: string, theme: string, level: number)
                     RoomInID: 101,
                     Weapon: {
                         ID: 401,
-                        Name: 'Axe',
+                        Sprite: 'Axe',
                         Damage: 20,
                         Type: 1
                     },

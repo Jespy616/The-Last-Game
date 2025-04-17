@@ -12,12 +12,7 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	err := godotenv.Load(".env-personal")
-	if err != nil {
-		log.Println("No .env-personal found, falling back to .env")
-		_ = godotenv.Load(".env")
-	}
-
+	
 	dsn := "host=" + os.Getenv("DB_HOST") +
 		" user=" + os.Getenv("DB_USER") +
 		" password=" + os.Getenv("DB_PASSWORD") +

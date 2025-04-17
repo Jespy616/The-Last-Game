@@ -28,7 +28,7 @@ export interface EnemyObject {
 
 export interface WeaponObject {
     ID: number;
-    Name: string;
+    Sprite: string;
     Damage: number;
     Type: 0 | 1 | 2 | 3; // 0: Melee, 1: Ranged, 2: Sweep, 3: AoE
 }
