@@ -71,6 +71,8 @@ type FloorConfig struct {
 	Theme     string `json:"theme" binding:"required"`
 	Difficulty string `json:"difficulty" binding:"required"`
 	Level int `json:"level" binding:"required"`
+	LastStory string `json:"lastStory" binding:"required"`
+	LastTheme string `json:"lastTheme" binding:"required"`
 }
 
 func getRoomNeighbors(floorMap [][]int) map[int]RoomNeighbors {
@@ -121,7 +123,7 @@ func loadAPIKey() string {
 	return os.Getenv("API_KEY")
 }
 
-func runPythonAI(apiKey string, args1, enemies, weapons []string, theme string) ([]byte, error) {
+func runPythonAI(apiKey string, args1, enemies, weapons []string, theme string, pastTheme string, story string) ([]byte, error) {
 	args1JSON, _ := json.Marshal(args1)
 	enemiesJSON, _ := json.Marshal(enemies)
 	weaponsJSON, _ := json.Marshal(weapons)
@@ -133,7 +135,7 @@ func runPythonAI(apiKey string, args1, enemies, weapons []string, theme string) 
 		string(args1JSON), string(args1JSON),
 		"-e", "4", string(enemiesJSON),
 		"-w", "4", string(weaponsJSON),
-		"-s", theme, theme, "None",
+		"-s", pastTheme, theme, story,
 	)
 
 	log.Println(cmd)
@@ -341,7 +343,7 @@ func CreateFloor(c *gin.Context) {
 	enemies := []string{"goblin", "bat", "knight"}
 	weapons := []string{"sword", "spear", "bow"}
 
-	output, err := runPythonAI(apiKey, args1, enemies, weapons, config.Theme)
+	output, err := runPythonAI(apiKey, args1, enemies, weapons, config.Theme, config.LastTheme, config.LastTheme)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "AI agent failed", "details": err.Error()})
 		return
@@ -392,7 +394,7 @@ func CreateGame(c *gin.Context) {
 	enemies := []string{"goblin", "bat", "knight"}
 	weapons := []string{"sword", "spear", "bow"}
 
-	output, err := runPythonAI(apiKey, args1, enemies, weapons, config.Theme)
+	output, err := runPythonAI(apiKey, args1, enemies, weapons, config.Theme, "None", "None")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "AI agent failed", "details": err.Error()})
 		log.Println("The AI failed to work, check runPythonAI")
@@ -453,8 +455,8 @@ func CreateGame(c *gin.Context) {
 	}
 
 	player := model.Player{
-		MaxHealth: 45,
-		CurrentHealth: 45,
+		MaxHealth: 100,
+		CurrentHealth: 100,
 		SpriteName: "Knight",
 		PosX: startX,
 		PosY: startY,

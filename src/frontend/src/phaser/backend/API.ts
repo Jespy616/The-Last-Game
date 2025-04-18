@@ -343,7 +343,7 @@ export async function saveGame(Game: GameObject): Promise<void> {
     }
 }
 
-export async function getFloor(difficulty: string, theme: string, level: number, lastStory: string): Promise<FloorObject | null> {
+export async function getFloor(difficulty: string, theme: string, level: number, lastStory: string, lastTheme: string): Promise<FloorObject | null> {
     try {
         let token;
         authStore.subscribe((value) => {
@@ -353,7 +353,7 @@ export async function getFloor(difficulty: string, theme: string, level: number,
         const response = await fetch(`${API_URL}/create_floor`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` },
-            body: JSON.stringify({ difficulty: difficulty, theme: theme, level: level, lastStory: lastStory })
+            body: JSON.stringify({ difficulty: difficulty, theme: theme, level: level, lastStory: lastStory, lastTheme: lastTheme, })
         });
         console.log("Here is the response, ", response)
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);

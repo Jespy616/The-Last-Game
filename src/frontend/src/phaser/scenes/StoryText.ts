@@ -33,7 +33,7 @@ export class StoryText extends Phaser.Scene {
         this.tweens.add({
             targets: text,
             y: -height,
-            duration: 40000,
+            duration: 80000,
             ease: 'Linear',
         });
 
