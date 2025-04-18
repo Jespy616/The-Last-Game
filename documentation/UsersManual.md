@@ -2,6 +2,7 @@
 - Player:
   - Create an account and start a new game
   - Engage in combat against procedurally generated enemies
+  - Load a saved game
 - Developer
   - Enable developer mode to get unlimited health and damage 
 
@@ -21,8 +22,10 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
   - [The game has stopped responding](#the-game-has-stopped-responding)
   - [Stairs are unreachable](#stairs-are-unreachable)
   - [Player starts on a wall](#player-starts-on-a-wall)
+  - [A chest spawned in front of the door and I can't get out](#a-chest-spawned-in-front-of-the-door-and-i-cant-get-out)
   - [There is a pop up saying `navigator is not defined`](#there-is-a-pop-up-saying-navigator-is-not-defined)
   - [The screen is stuck on a black screen](#the-screen-is-stuck-on-a-black-screen)
+  - [The room generated wrong and I cant progress](#the-room-generated-wrong-and-i-cant-progress)
 - [FAQs](#faqs)
   - [Where are the Terms and Conditions?](#where-are-the-terms-and-conditions)
 - [Features and Functions](#features-and-functions)
@@ -80,6 +83,10 @@ This is a known issue with a fix planned in a future update. To fix this [start 
 ## Player starts on a wall
 Move towards a floor tile to get unstuck. If no floor tiles are reachable within 1 space, you may need to [start a new game](#starting-a-new-game)
 
+## A chest spawned in front of the door and I can't get out
+- This is a known issue that is planned to be fixed in a future update
+- Exit the game and [start a new game](#starting-a-new-game)
+
 ## There is a pop up saying `navigator is not defined`
 1. First try refreshing the page
 2. If that doesn't work navigate back to [http://localhost:3000](http://localhost:3000) and [sign in](#sign-in) again
@@ -87,6 +94,10 @@ Move towards a floor tile to get unstuck. If no floor tiles are reachable within
 ## The screen is stuck on a black screen
 - refresh the page
 - If that doesn't work, [load your game](#loading-a-saved-game) or [start a new game](#starting-a-new-game)
+
+## The room generated wrong and I cant progress
+- This is a known issue that is planned to be fixed in a future update
+- Exit the game and [start a new game](#starting-a-new-game) 
 
 
 # FAQs 
@@ -124,7 +135,7 @@ Finally, check the box next to `Accept terms & conditions` and click `create acc
 You will be redirected to a page that give you an option to [start a new game](#starting-a-new-game)  
 
 ### Starting a new game
-After logging in, you will be taken to the menu screen with a button that says `start game`. Clicking this button will bring you to to a screen that explains the game. Click `next` in the bottom right to continue.
+After logging in, you will be taken to the menu screen with two buttons that say `start game` and `load game`. Clicking the `start game` button will bring you to to a screen that explains the game. Click `next` in the bottom right to continue.
 
 You will then be given a couple of options for your game:
 - Theme - this affects the aesthetic of the map
@@ -134,7 +145,9 @@ After selecting your options, the AI will generate a story, floor, enemies, and 
 
 
 ### Loading a Saved Game
-1. 
+Navigate to the game menu where there are two buttons saying `start game` and `load game`. If you are unsure how to get there, navigate back to [localhost:3000](http://localhost:3000) and [log in](#sign-in) to your account. From this menu:
+1. Select `load game`
+2. Select which game you want to load
 
 ### Playing the Game
 
@@ -238,7 +251,7 @@ Stepping on a stair tile will allow you to move to the next room. **Note** that 
 # Installation Instructions 
 You will need to create a `.env` file and place it in the root directory of The Last Game. The `.env` file should have the following fields: 
 ```.env
-GROQ_API_KEY=<YOUR-API-KEY>
+API_KEY=<YOUR-API-KEY>
 DATABASE_URL=postgres://user:password@db:5473/game
 POSTGRES_USER=kgardner
 POSTGRES_PASSWORD=kwit2323!
@@ -253,7 +266,7 @@ DB_PORT=5432
 DB_SSLMODE=disable
 DB_TIMEZONE=UTC
 ```
-The `GROQ_API_KEY` can be acquired by going to [Groq's](https://console.groq.com/home?utm_source=website&utm_medium=outbound_link&utm_campaign=dev_console_click) website and creating a free account. After you have created an account, create a new API key and replace the <YOUR-API-KEY> with your API key.
+The `API_KEY` can be acquired by going to [Groq's](https://console.groq.com/home?utm_source=website&utm_medium=outbound_link&utm_campaign=dev_console_click) website and creating a free account. After you have created an account, create a new API key and replace the <YOUR-API-KEY> with your API key.
 
 See the [DOCKER_README](../DOCKER_README.md) for instructions on how to install and run the game.
 
