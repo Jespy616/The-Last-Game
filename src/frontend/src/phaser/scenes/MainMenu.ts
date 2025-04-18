@@ -53,7 +53,10 @@ export class MainMenu extends Scene
 
 		this.createRoundedButton(width / 2, height * 0.55, 600, 70, 20, 0x48ddd4, 'START GAME', () => {
             this.scene.launch('Transition', { prevSceneKey: 'MainMenu', nextSceneKey: 'Overview'});
+		});
 
+		this.createRoundedButton(width / 2, height * 0.65, 600, 70, 20, 0x48ddd4, 'LOAD GAME', () => {
+			this.scene.launch('Transition', { prevSceneKey: 'MainMenu', nextSceneKey: 'GamesList'});
 		});
 
 		

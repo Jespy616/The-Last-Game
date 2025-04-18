@@ -1,8 +1,8 @@
-import type { FloorObject, FloorResponse, GameObject, GameResponse } from './types';
+import type { FloorObject, FloorResponse, GameObject, GamePreview, GameResponse, GamesResponse } from './types';
 import { authStore } from '../../lib/stores/authStore';
 const API_URL = 'http://127.0.0.1:8080/api/protected';
 
-export async function getGame(difficultyLevel: string, Theme: string): Promise<GameObject | null> {
+export async function createGame(difficultyLevel: string, Theme: string): Promise<GameObject | null> {
     try {
         let token;
         authStore.subscribe((value) => {
@@ -17,19 +17,6 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const gameResponse: GameResponse = await response.json();
-        gameResponse.game.Theme = Theme;
-        gameResponse.game.Player.PrimaryWeapon = {
-            ID: 0,
-            Sprite: 'Sword',
-            Damage: 10,
-            Type: 0
-        };
-        gameResponse.game.Player.SecondaryWeapon = {
-            ID: 0,
-            Sprite: 'Sword',
-            Damage: 10,
-            Type: 0
-        };
         return gameResponse.game;
     } catch (error) {
         console.error('Error loading Floor:', error);
@@ -267,12 +254,6 @@ export async function getGame(difficultyLevel: string, Theme: string): Promise<G
                     Damage: 10,
                     Type: 0
                 },
-                SecondaryWeapon: {
-                    ID: 0,
-                    Sprite: 'Sword',
-                    Damage: 10,
-                    Type: 0
-                },
                 SpriteName: 'Knight',
                 PosX: 6,
                 PosY: 4
@@ -406,4 +387,55 @@ export async function getFloor(difficulty: string, theme: string, level: number,
         ],
         StoryText: 'You find yourself in a dense forest, the air thick with the scent of pine and damp earth. The path ahead is unclear, but you sense danger lurking in the shadows.'
     };
+}
+
+export async function getGames(): Promise<GamePreview[] | null> {
+    try {
+        let token;
+        authStore.subscribe((value) => {
+            token = value.token;
+        })();
+        const response = await fetch(`${API_URL}/get_games`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        console.log(response)
+        const gamesResponse: GamesResponse = await response.json();
+        const gamePreviews: GamePreview[] = [];
+        for (let i = 0; i < gamesResponse.GameIDs.length; i++) {
+            gamePreviews.push({
+                ID: gamesResponse.GameIDs[i],
+                Level: gamesResponse.Levels[i]
+            });
+        }
+        console.log(gamePreviews)
+        return gamePreviews;
+    } catch (error) {
+        console.error('Error loading games:', error);
+    }
+    return null;
+}
+
+export async function getGame(gameID: number): Promise<GameObject | null> {
+    try {
+        let token;
+        authStore.subscribe((value) => {
+            token = value.token;
+        })();
+        const response = await fetch(`${API_URL}/game/${gameID}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization':`Bearer ${token}` },
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const gameResponse: GameResponse = await response.json();
+        return gameResponse.game;
+        
+    } catch (error) {
+        console.error('Error loading game:', error);
+    }
+    return null;
 }

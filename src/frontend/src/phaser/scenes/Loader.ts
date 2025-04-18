@@ -1,16 +1,25 @@
 import Phaser from 'phaser';
 import type { GameObject } from '../backend/types';
-import { getFloor, getGame } from '../backend/API';
+import { getFloor, createGame, getGame } from '../backend/API';
 
 export class Loader extends Phaser.Scene {
     constructor() {
         super({ key: 'Loader' });
     }
 
-    async init(data: { theme: string; difficulty: string; gameData?: GameObject, devMode?: boolean }) {
+    async init(data: { theme: string; difficulty: string; gameData?: GameObject, devMode?: boolean, gameID?: number }) {
         let gameData: GameObject | null = null;
-        if (!data.gameData) {
-            gameData = await getGame(data.difficulty, data.theme);
+        if (data.gameID) {
+            const game: GameObject | null = await getGame(data.gameID);
+            if (!game) {
+                this.scene.start('MainMenu');
+                console.error('Failed to fetch game');
+                return;
+            }
+            gameData = game;
+        }
+        else if (!data.gameData) {
+            gameData = await createGame(data.difficulty, data.theme);
         }
         else {
             data.gameData.Level = data.gameData.Level + 1;

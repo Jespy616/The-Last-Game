@@ -8,7 +8,6 @@ export interface PlayerObject {
     PosX: number;
     PosY: number;
     PrimaryWeapon: WeaponObject;
-    SecondaryWeapon: WeaponObject;
     SpriteName: string;
     SpriteObject?: Phaser.GameObjects.Sprite; // Initialized in Phaser
 }
@@ -78,4 +77,14 @@ export interface GameResponse {
 
 export interface FloorResponse {
     floor: FloorObject;
+}
+
+export interface GamePreview {
+    ID: number;
+    Level: number;
+}
+
+export interface GamesResponse {
+    GameIDs: number[];
+    Levels: number[];
 }
