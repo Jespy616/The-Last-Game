@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"math"
 
 	"gorm.io/gorm"
 
@@ -73,6 +74,20 @@ type FloorConfig struct {
 	Level int `json:"level" binding:"required"`
 	LastStory string `json:"lastStory" binding:"required"`
 	LastTheme string `json:"lastTheme" binding:"required"`
+}
+
+const (
+	cols   = 13
+	rows   = 9
+	midX   = cols/2  // 6
+	midY   = rows/2  // 4
+)
+
+var forbidden = map[[2]int]struct{}{
+	{midX, 0}:   {},
+	{midX, rows-1}: {},
+	{0, midY}:   {},
+	{cols-1, midY}: {},
 }
 
 func getRoomNeighbors(floorMap [][]int) map[int]RoomNeighbors {
@@ -149,6 +164,25 @@ func parseAIResponse(output []byte) (FloorData, error) {
 	return floorData, err
 }
 
+func pickLocation(roomTiles []rune) (int, int) {
+    for {
+        // only pick inside the walls (1..cols-2, 1..rows-2)
+        x := rand.Intn(cols-2) + 1
+        y := rand.Intn(rows-2) + 1
+
+        // skip entrances
+        if _, bad := forbidden[[2]int{x, y}]; bad {
+            continue
+        }
+
+        // compute linear index
+        idx := y*cols + x
+        if roomTiles[idx] == '.' {
+            return x, y
+        }
+    }
+}
+
 func buildAndSaveFloor(floorData FloorData, level float32, difficulty float32, theme string, c *gin.Context) (model.Floor, error) {
 	floor := model.Floor{
 		FloorMap:  toJSONString(floorData.Floors.FloorMap),
@@ -181,8 +215,10 @@ func buildAndSaveFloor(floorData FloorData, level float32, difficulty float32, t
 			roomIndex++
 
 			weaponData := floorData.Weapons[rand.Intn(len(floorData.Weapons))]
+			weaponDamage := math.Ceil(float64(weaponData.Attack * (float32(1) + level * multiplier) * (float32(1) + level * multiplier) * difficulty))
+
 			weapon := model.Weapon{
-				Damage: weaponData.Attack * (float32(1) + level * multiplier) * (float32(1) + level * multiplier) * difficulty,
+				Damage: 	  float32(weaponDamage),
 				Sprite:       strings.Trim(weaponData.Sprite, "\""),
 				Type:         weaponData.Type,
 			}
@@ -238,24 +274,12 @@ func buildAndSaveFloor(floorData FloorData, level float32, difficulty float32, t
 
 			if roomIndex == 6 {
 				room.Type = &stairRoom
-				stairX := rand.Intn(6) + 2
-				stairY := rand.Intn(10) + 2
-
-				stair_loc := roomTiles[stairX * stairY]
-
-				if stair_loc == '.' {
-					room.StairX = &stairX
-					room.StairY = &stairY
-				} else {
-					for i := len(roomTiles) - 1; i >= 0; i-- {
-						if roomTiles[i] == '.' {
-							stairX = i / 13
-							stairY = i % 9
-						}
-					}
-					room.StairX = &stairX
-					room.StairY = &stairY
-				}
+				
+				tiles := []rune(roomTiles) // len == cols*rows
+				sx, sy := pickLocation(tiles)
+				room.StairX = &sx
+				room.StairY = &sy
+					
 			} else {
 				room.Type = &normalRoom
 			}
@@ -442,24 +466,16 @@ func CreateGame(c *gin.Context) {
 	}
 
 	start_room := floor.Rooms[0]
-	startX := 6
-	startY := 4
-
-	if start_room.Tiles[4 * 9 + 6] != '.' {
-		for i := len(start_room.Tiles) - 1; i >= 0; i-- {
-			if start_room.Tiles[i] == '.' {
-				startX = i / 13
-				startY = i % 9
-			}
-		}
-	}
+	tiles := []rune(start_room.Tiles) // len == cols*rows
+	sx, sy := pickLocation(tiles)
+	
 
 	player := model.Player{
 		MaxHealth: 100,
 		CurrentHealth: 100,
 		SpriteName: "Knight",
-		PosX: startX,
-		PosY: startY,
+		PosX: sx,
+		PosY: sy,
 		PrimaryWeaponID: &primary_weapon.ID,
 		PrimaryWeapon: &primary_weapon,
 	}
@@ -608,10 +624,12 @@ func GetGames(c *gin.Context) {
 
 	// 3) Collect all game IDs that belong to this user
 	var gameIDs []uint
+	var gameLevel []uint
 	if err := model.DB.
 		Model(&model.Game{}).
 		Where("user_id = ?", userID).
 		Pluck("id", &gameIDs).
+		Pluck("level", &gameLevel).
 		Error; err != nil {
 
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch games"})
@@ -620,8 +638,9 @@ func GetGames(c *gin.Context) {
 
 	// 4) Respond
 	c.JSON(http.StatusOK, gin.H{
-		"user_id":  userID,
-		"game_ids": gameIDs,
+		"user_d":  userID,
+		"GameIDs": gameIDs,
+		"Levels": gameLevel,
 	})
 }
 
