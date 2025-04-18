@@ -17,23 +17,28 @@ export class Loader extends Phaser.Scene {
                 return;
             }
             gameData = game;
+            console.log('Load Game')
+
         }
         else if (!data.gameData) {
             gameData = await createGame(data.difficulty, data.theme);
+            console.log('New Game')
+
         }
         else {
             data.gameData.Level = data.gameData.Level + 1;
-            const newFloor = await getFloor(data.difficulty, data.theme, data.gameData.Level, data.gameData.Floor.StoryText, data.gameData.Theme);
+            const newFloor = await getFloor(data.difficulty, data.theme, data.gameData.Level, data.gameData.Floor.StoryText, data.gameData.Floor.Theme);
             if (!newFloor) {
                 this.scene.start('MainMenu');
                 console.error('Failed to fetch new floor');
                 return;
             }
             data.gameData.Floor = newFloor;
-            data.gameData.Theme = data.theme;
+            data.gameData.Floor.Theme = data.theme;
             gameData = data.gameData;
-            
+            console.log('New Floor')
         }
+        console.log('Game data:', gameData);
         if (data.devMode) {
             gameData!.Player.MaxHealth = 999999;
             gameData!.Player.CurrentHealth = 999999;

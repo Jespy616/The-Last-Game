@@ -59,14 +59,14 @@ export class Room extends Scene {
         }
         for (let room of this.gameData.Floor.Rooms) {
             for (let enemy of room.Enemies) {
-                enemy.Sprite = `${this.gameData.Theme}`;
+                enemy.Sprite = `${this.gameData.Floor.Theme}`;
             }
         }
     }
 
     preload() {
         this.load.audio("YWWWS", 'assets/audio/YWWWS.ogg');
-        this.load.image(`${this.gameData.Theme}-tiles`, `assets/tilesets/${this.gameData.Theme}-tileset.png`);
+        this.load.image(`${this.gameData.Floor.Theme}-tiles`, `assets/tilesets/${this.gameData.Floor.Theme}-tileset.png`);
         this.load.spritesheet('player', `assets/${this.player.SpriteName}.png`, {
             frameWidth: 24,
             frameHeight: 24,
@@ -102,7 +102,7 @@ export class Room extends Scene {
         }
 
         // Create Tilemap
-        const tilemap = createTilemap(this, this.room.Tiles, `${this.gameData.Theme}-tiles`, this.room);
+        const tilemap = createTilemap(this, this.room.Tiles, `${this.gameData.Floor.Theme}-tiles`, this.room);
         
         // Create Player and Health Bar
         this.player.SpriteObject = this.add.sprite(0, 0, 'player');

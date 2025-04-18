@@ -25,8 +25,8 @@ export async function createGame(difficultyLevel: string, Theme: string): Promis
         game: {
             Level: 1,
             ID: 6,
-            Theme: 'castle',
             Floor: {
+                Theme: 'castle',
                 ID: 6,
                 Rooms: [
                     {
@@ -346,6 +346,7 @@ export async function getFloor(difficulty: string, theme: string, level: number,
     }
     return {
         ID: 2,
+        Theme: "desert",
         Rooms: [
             {
                 ID: 101,
@@ -431,8 +432,8 @@ export async function getGame(gameID: number): Promise<GameObject | null> {
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
-        const gameResponse: GameResponse = await response.json();
-        return gameResponse.game;
+        const gameResponse: GameObject = await response.json();
+        return gameResponse;
         
     } catch (error) {
         console.error('Error loading game:', error);
