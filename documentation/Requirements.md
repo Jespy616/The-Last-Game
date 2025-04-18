@@ -10,7 +10,7 @@ Functional Must-Have: https://chatgpt.com/share/6797b787-ef7c-8004-a949-38e1939d
 
 ## Functional Requirements:
 (* indicates A.I.-generated content)
-
+./assets/
 ### Must-Have:
 * [**Save/Load States**](#saveload-states)
 * [**Login/Register**](#loginregister)
@@ -712,5 +712,5 @@ The game will remain a single-player experience, and features for community inte
 
 ## Use Case Diagrams:
 
-![Alt text](Use-Case-Diagram-1.png)
-![Alt text](Use-Case-Diagram-2.png)
+![Alt text](./assets/Use-Case-Diagram-1.png)
+![Alt text](./assets/Use-Case-Diagram-2.png)

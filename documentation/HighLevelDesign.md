@@ -356,17 +356,17 @@ Our game follows key UI/UX design principles to ensure an engaging and accessibl
     - cffffc
     - 000000
 
-<img src="Color-Pallet.png" width="40%">
+<img src="./assets/Color-Pallet.png" width="40%">
 
 ### Mockups
 
-<img src="Login-Mockup.png" width="90%">
+<img src="./assets/Login-Mockup.png" width="90%">
 
-<img src="Create-Account-Mockup.png" width="90%">
+<img src="./assets/Create-Account-Mockup.png" width="90%">
 
-<img src="Settings-Mockup.png" width="90%">
+<img src="./assets/Settings-Mockup.png" width="90%">
 
-<img src="Subscription-Mockup.png" width="90%">
+<img src="./assets/Subscription-Mockup.png" width="90%">
 
 ### Navigation Flow
 
@@ -644,7 +644,7 @@ To ensure testing remains consistent across developers, NaN has decided to use D
 ## 12. Interactions Diagram
 The diagram below represents how the components will interact with each other. The user will interact with the front end web pages which will send and recieve data from the server using HTTP protocol. The server will be able to interact with [Stripe](#11-businesslegal) to handle payments, a Python script which handles the connection to [Groq](#6-integration-points-external-interfaces), and the [database](#5-data-design). 
 
-![Interaction diagram](interaction-diagram.png)
+![Interaction diagram](./assets/interaction-diagram.png)
 ---
 
 

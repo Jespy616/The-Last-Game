@@ -266,6 +266,7 @@ Make with the assistance of ChatGPT.
       - [ ] Implement animations for movement, attacks, and UI transitions.
       - [ ] Implement additional sound effects for interaction.
       - [ ] Final round of playtesting for balancing and bug fixes.
+      - [x] Add music and sound effects
 
 - **Back end:**
     - [ ] Implement Story generation for between floors
@@ -498,13 +499,13 @@ The frontend communicates with **backend APIs** to fetch/update user data.
 ![UML](./assets/UML-backend.png)
 
 #### Game State Manager
-![Db Flow Chart](DBFlow.png)
+![Db Flow Chart](./assets/DBFlow.png)
 
 #### LLM functions
-![LLM UML](ai-uml.png)
+![LLM UML](./assets/ai-uml.png)
 
 #### LLM Flow Chart
-![LLM flow chart](ai-flow-chart.png)
+![LLM flow chart](./assets/ai-flow-chart.png)
 
 
 ### System Performance
