@@ -14,6 +14,7 @@ import (
 	"math"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/gin-gonic/gin"
 )
@@ -855,32 +856,44 @@ func DeleteFloorHandler(c *gin.Context) {
 }
 
 func GetGameHandler(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	var game model.Game
-	if err := model.DB.
-		// Player and their weapons
-		Preload("Player").
-		Preload("Player.PrimaryWeapon").
-		Preload("Player.SecondaryWeapon").
-		// Floor → Rooms → Enemies + Chest (+ Chest.Weapon)
-		Preload("Floor").
-		Preload("Floor.Rooms", func(db *gorm.DB) *gorm.DB {
-			return db.
-				Preload("Enemies").
-				Preload("Chest").
-				Preload("Chest.Weapon")
-		}).
-		// finally load the game row itself
-		First(&game, id).Error; err != nil {
+    // Parse the game ID
+    id, _ := strconv.Atoi(c.Param("id"))
+    var game model.Game
 
-		if err == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "game not found"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "db error", "details": err.Error()})
-		}
-		return
-	}
-	c.JSON(http.StatusOK, game)
+    // Build the query
+    if err := model.DB.
+        Preload(clause.Associations).
+
+        Preload("Player", func(db *gorm.DB) *gorm.DB {
+            return db.Preload(clause.Associations)
+        }).
+
+        Preload("Floor", func(db *gorm.DB) *gorm.DB {
+            return db.
+                Preload(clause.Associations).
+
+                // 4) For each Room, load all its associations (Enemies, Chest → Weapon)
+                Preload("Rooms", func(db *gorm.DB) *gorm.DB {
+                    return db.Preload(clause.Associations)
+                })
+        }).
+
+        First(&game, id).Error; err != nil {
+
+        // Handle not‑found vs other errors
+        if err == gorm.ErrRecordNotFound {
+            c.JSON(http.StatusNotFound, gin.H{"error": "game not found"})
+        } else {
+            c.JSON(http.StatusInternalServerError, gin.H{
+                "error":   "db error",
+                "details": err.Error(),
+            })
+        }
+        return
+    }
+
+    // Return the fully‑populated Game
+    c.JSON(http.StatusOK, game)
 }
 
 func SetGameLevelHandler(c *gin.Context) {
