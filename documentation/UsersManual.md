@@ -1,8 +1,18 @@
+# Use Cases
+- Player:
+  - Create an account and start a new game
+  - Engage in combat against procedurally generated enemies
+  - Load a saved game
+- Developer
+  - Enable developer mode to get unlimited health and damage 
+
+
 # The Last Game
 Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
 
 
 # Table of Contents
+- [Use Cases](#use-cases)
 - [The Last Game](#the-last-game)
 - [Table of Contents](#table-of-contents)
 - [Overview of the Software](#overview-of-the-software)
@@ -13,6 +23,7 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
   - [Stairs are unreachable](#stairs-are-unreachable)
   - [Player starts on a wall](#player-starts-on-a-wall)
   - [There is a pop up saying `navigator is not defined`](#there-is-a-pop-up-saying-navigator-is-not-defined)
+  - [The screen is stuck on a black screen](#the-screen-is-stuck-on-a-black-screen)
 - [FAQs](#faqs)
   - [Where are the Terms and Conditions?](#where-are-the-terms-and-conditions)
 - [Features and Functions](#features-and-functions)
@@ -20,6 +31,7 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
     - [Creating an account](#creating-an-account)
     - [Sign in](#sign-in)
     - [Starting a new game](#starting-a-new-game)
+    - [Loading a Saved Game](#loading-a-saved-game)
     - [Playing the Game](#playing-the-game)
       - [Objective](#objective)
       - [Controls](#controls)
@@ -29,8 +41,9 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
     - [Saving and Exiting the Game](#saving-and-exiting-the-game)
     - [Changing Menu Theme](#changing-menu-theme)
   - [For Moderators](#for-moderators)
-    - [Enabling Developer Mode](#enabling-developer-mode)
     - [Accessing the Docker logs](#accessing-the-docker-logs)
+  - [For Developers](#for-developers)
+    - [Enabling Developer Mode](#enabling-developer-mode)
 - [Installation Instructions](#installation-instructions)
 - [Contact Information](#contact-information)
 
@@ -58,6 +71,7 @@ If you are running __The Last Game__ locally, start with [Installation instructi
 - [Sign in](#sign-in) to your account again and either load a game or start a new game
 
 ## The game has stopped responding
+- Refresh the page
 - Go back to [http://localhost:3000](http://localhost:3000)
 - [Sign in](#sign-in) to your account again and either load a game or start a new game
 
@@ -70,6 +84,10 @@ Move towards a floor tile to get unstuck. If no floor tiles are reachable within
 ## There is a pop up saying `navigator is not defined`
 1. First try refreshing the page
 2. If that doesn't work navigate back to [http://localhost:3000](http://localhost:3000) and [sign in](#sign-in) again
+
+## The screen is stuck on a black screen
+- refresh the page
+- If that doesn't work, [load your game](#loading-a-saved-game) or [start a new game](#starting-a-new-game)
 
 
 # FAQs 
@@ -115,6 +133,9 @@ You will then be given a couple of options for your game:
 
 After selecting your options, the AI will generate a story, floor, enemies, and weapons. While this process is usually quick, there are some cases where it may take a long time. See the [Troubleshooting](#troubleshooting) section for more details if you encounter this.
 
+
+### Loading a Saved Game
+1. 
 
 ### Playing the Game
 
@@ -189,15 +210,30 @@ Stepping on a stair tile will allow you to move to the next room. **Note** that 
 
 ## For Moderators
 
-### Enabling Developer Mode
-1. Navigate to the settings page
-2. Enter the Konami code 
-
 ### Accessing the Docker logs
 1. Navigate to the folder where the Last Game is in your terminal
 2. run `docker-compose logs -f backend` to view the logs for the backend
     - Replace `backend` with either `frontend` or `db` to get the logs for those Docker containers
 3. Press `Ctrl + c` to stop viewing the logs for the container.
+
+
+## For Developers
+
+### Enabling Developer Mode
+1. Start a game like normal and continue until reaching the difficulty selection
+2. Enter the Konami code:
+  a. up
+  b. up
+  c. down
+  d. down
+  e. left
+  f. right
+  g. left
+  h. right
+  i. b
+  j. a
+3. Open the dev console to confirm that developer mode is activated
+
 
 
 # Installation Instructions 
