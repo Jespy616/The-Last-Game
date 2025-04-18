@@ -29,7 +29,7 @@ async function enemyAttack(scene: Phaser.Scene, enemy: EnemyObject, player: Play
                 hitSound.play();
             }
             else {
-                const deathSound = scene.sound.add("death", {volume: 0.3});
+                const deathSound = scene.sound.add("death", {volume: 0.25});
                 deathSound.play();
             }
         });
@@ -61,7 +61,7 @@ export async function playerAttack(scene: Phaser.Scene, enemy: EnemyObject, play
                 hitSound.play();
             }
             else {
-                const deathSound = scene.sound.add("death", {volume: 0.3});
+                const deathSound = scene.sound.add("death", {volume: 0.25});
                 deathSound.play();
             }
         });        
