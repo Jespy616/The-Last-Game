@@ -20,7 +20,7 @@ export class Room extends Scene {
     private gridEngine!: GridEngine;
     private inputEnabled: boolean = true;
     private observers: Subscription[] = [];
-    
+
 
     constructor() {
         super('Room');
@@ -59,14 +59,14 @@ export class Room extends Scene {
         }
         for (let room of this.gameData.Floor.Rooms) {
             for (let enemy of room.Enemies) {
-                enemy.Sprite = `${this.gameData.Theme}`;
+                enemy.Sprite = `${this.gameData.Floor.Theme}`;
             }
         }
     }
 
     preload() {
         this.load.audio("YWWWS", 'assets/audio/YWWWS.ogg');
-        this.load.image('tiles', `assets/tilesets/${this.gameData.Theme}-tileset.png`);
+        this.load.image(`${this.gameData.Floor.Theme}-tiles`, `assets/tilesets/${this.gameData.Floor.Theme}-tileset.png`);
         this.load.spritesheet('player', `assets/${this.player.SpriteName}.png`, {
             frameWidth: 24,
             frameHeight: 24,
@@ -102,10 +102,10 @@ export class Room extends Scene {
         }
 
         // Create Tilemap
-        const tilemap = createTilemap(this, this.room.Tiles, 'tiles', this.room);
+        const tilemap = createTilemap(this, this.room.Tiles, `${this.gameData.Floor.Theme}-tiles`, this.room);
         
         // Create Player and Health Bar
-        this.player.SpriteObject = this.add.sprite(0, 0, 'player'); 
+        this.player.SpriteObject = this.add.sprite(0, 0, 'player');
 
         // Start the GUI scene
         this.scene.launch('Gui', this.player);
@@ -123,7 +123,7 @@ export class Room extends Scene {
             -this.player.SpriteObject.height / 2
         );
         this.cameras.main.setZoom(5);
-        
+
         // Create Enemy Animations
         for (let enemy of this.room.Enemies) {
             createEnemyAnimation(this, enemy.ID, 'walk');
@@ -143,7 +143,7 @@ export class Room extends Scene {
             this.room.Chest.SpriteObject = this.add.sprite(0, 0, 'chest');
             createChestAnimation(this);
         }
-        
+
         // Configure Grid Engine
         const gridEngineConfig = {
             characters: [
@@ -175,7 +175,7 @@ export class Room extends Scene {
                 })),
             ],
         };
-        
+
         // Create Grid Engine
         this.gridEngine.create(tilemap, gridEngineConfig);
 
@@ -192,7 +192,7 @@ export class Room extends Scene {
 
         this.checkRoomCleared(); // If a Chest room and no enemies, set Chest position
         this.inputEnabled = true;
-        
+
         const moveStart = this.gridEngine.movementStarted().subscribe(({ direction, charId }) => {
             // Player Movement: Enemies follow
             if (charId === 'player') {
@@ -292,10 +292,10 @@ export class Room extends Scene {
 
     checkFloorChange() {
         if (this.room.Type === 2 && this.gridEngine.getPosition('player').x === this.room.StairX && this.gridEngine.getPosition('player').y === this.room.StairY) {
-            this.changeScene('DifficultySelection', { gameData: this.gameData });
+            this.changeScene('ThemeSelection', { gameData: this.gameData });
         }
     }
- 
+
     checkRoomChange(x: number, y: number) {
         if (x === 0 && y === 4 && this.gridEngine.getFacingDirection('player') === Direction.LEFT && this.room.LeftID) {
             this.changeScene('Room', { roomId: this.room.LeftID, pos: 'right' });
@@ -315,7 +315,7 @@ export class Room extends Scene {
         for (let observer of this.observers) {
             observer.unsubscribe();
         }
-        this.sound.play("transition", { volume: 0.6 });  
+        this.sound.play("transition", { volume: 0.6 });
 
         for (let observer of this.observers) {
             observer.unsubscribe();
@@ -323,12 +323,12 @@ export class Room extends Scene {
         destroyAnimations(this);
         this.inputEnabled = true;
         this.scene.pause()
-        this.scene.launch('Transition', { 
-            prevSceneKey: 'Room', 
-            nextSceneKey: sceneKey, 
-            nextSceneData: { ...data, gameData: this.gameData } 
+        this.scene.launch('Transition', {
+            prevSceneKey: 'Room',
+            nextSceneKey: sceneKey,
+            nextSceneData: { ...data, gameData: this.gameData }
         });
-        if (sceneKey === 'GameOver' || sceneKey === 'MainMenu') {
+        if (sceneKey === 'GameOver' || sceneKey === 'MainMenu' || sceneKey === 'ThemeSelection') {
             this.scene.stop('Gui');
         }
     }
@@ -341,7 +341,7 @@ export class Room extends Scene {
         const targetPos = this.gridEngine.getFacingPosition('player');
 
         // Check if there is an enemy at the target position
-        const interactingObject = this.gridEngine.getCharactersAt(targetPos).pop() 
+        const interactingObject = this.gridEngine.getCharactersAt(targetPos).pop()
         if (interactingObject) {
             if (interactingObject.startsWith('enemy')) {
                 const enemyIdNumber = parseInt(interactingObject.replace('enemy', ''));
@@ -377,7 +377,9 @@ export class Room extends Scene {
                 break;
             case 'esc':
                 this.scene.pause();
-                this.scene.launch('SettingsOverlay');
+                console.log("From room page:")
+                console.log(this.gameData)
+                this.scene.launch('SettingsOverlay', {gameData: this.gameData});
                 break;
             default:
                 break;

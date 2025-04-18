@@ -49,9 +49,9 @@ export class GameOver extends Scene
             stroke: '#000000', strokeThickness: 8
         }).setOrigin(0.5)
             .on('pointerdown', () => this.scene.start('MainMenu'))
-            
+
         formatButton(mainMenuButton)
-        
+
         EventBus.emit('current-scene-ready', this);
     }
 

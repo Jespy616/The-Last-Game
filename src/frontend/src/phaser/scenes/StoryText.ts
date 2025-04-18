@@ -22,7 +22,6 @@ export class StoryText extends Phaser.Scene {
         // Background
         this.add.image(width / 2, height / 2, 'space-background').setOrigin(0.5).setDisplaySize(width, height);
 
-        console.log(`Game Data:\n`, this.gameData);
         const text = this.add.text(width / 2, height, this.gameData.Floor.StoryText, {
             fontSize: '32px',
             color: '#fff',
@@ -34,7 +33,7 @@ export class StoryText extends Phaser.Scene {
         this.tweens.add({
             targets: text,
             y: -height,
-            duration: 40000,
+            duration: 80000,
             ease: 'Linear',
         });
 
@@ -48,7 +47,6 @@ export class StoryText extends Phaser.Scene {
             .on('pointerdown', () => {
                 this.scene.stop('StoryText');
                 const roomID = Math.min(...(this.gameData.Floor.Rooms.map(room => room.ID)));
-                console.log('Starting Room ID:', roomID);
                 this.scene.launch('Transition', { prevSceneKey: 'Loader', nextSceneKey: 'Room', nextSceneData: { roomId: roomID, gameData: this.gameData, pos: 'center' } }); // Use prevSceneKey
             })
             .on('pointerover', () => proceedButton.setColor('#f00'))

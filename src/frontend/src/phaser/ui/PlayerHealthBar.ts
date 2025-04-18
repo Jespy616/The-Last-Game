@@ -15,7 +15,7 @@ export class PlayerHealthBar extends HealthBarBase {
         this.bar.strokeRect(this.x, this.y, WIDTH, HEIGHT);
 
         // Draw dividing lines every 5 HP
-        const numDivisions = Math.floor(this.MaxHealth / 5);
+        const numDivisions = this.MaxHealth > 200 ? 1 : Math.floor(this.MaxHealth / 5);
         for (let i = 1; i < numDivisions; i++) {
             const divisionX = this.x + (WIDTH * (i * 5) / this.MaxHealth);
             this.bar.lineBetween(divisionX, this.y, divisionX, this.y + HEIGHT);

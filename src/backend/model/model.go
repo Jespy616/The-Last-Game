@@ -12,12 +12,7 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	err := godotenv.Load(".env-personal")
-	if err != nil {
-		log.Println("No .env-personal found, falling back to .env")
-		_ = godotenv.Load(".env")
-	}
-
+	
 	dsn := "host=" + os.Getenv("DB_HOST") +
 		" user=" + os.Getenv("DB_USER") +
 		" password=" + os.Getenv("DB_PASSWORD") +
@@ -131,6 +126,7 @@ func TeardownTestDB() {
 
 func MigrateDB() {
 	err := DB.AutoMigrate(
+		&User{},
 		&Floor{},
 		&Room{},
 		&Chest{},
@@ -138,7 +134,6 @@ func MigrateDB() {
 		&Enemy{},
 		&Player{},
 		&Game{},
-		&User{},
 		)
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
@@ -162,6 +157,7 @@ type User struct {
 	Password	string
 	SubscriptionLevel	int
 	StripeID	int
+	Games []Game `gorm:"foreignKey:UserID" json:"games,omitempty"`
 }
 
 type Player struct {
@@ -179,7 +175,7 @@ type Player struct {
 
 type Game struct {
 	gorm.Model
-	Level	int
+	Level int
 	FloorID uint
 	Floor	Floor
 	PlayerSpecifications	string
@@ -204,7 +200,7 @@ type Room struct {
     FloorID      *uint  `gorm:"default:null"`
     Floor        *Floor  `gorm:"constraint:OnDelete:CASCADE;"`
     Enemies      []Enemy `gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE;"`
-    ChestID      *uint   `gorm:"default:null"` 
+    ChestID      *uint   `gorm:"default:null"`
     Chest        *Chest   `gorm:"constraint:OnDelete:SET NULL;"`
     TopID        *uint  `gorm:"constraint:OnDelete:SET NULL;"`
     BottomID     *uint  `gorm:"constraint:OnDelete:SET NULL;"`
