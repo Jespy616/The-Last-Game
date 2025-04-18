@@ -17,7 +17,7 @@ export class GameOver extends Scene
     init (data: {gameData: GameObject}) {
         // Initialize any data needed from the gameData
         console.log('GameOver scene initialized with data:', data);
-        this.level = data.gameData.Floor.Level;
+        this.level = data.gameData.Level;
     }
 
     preload () {
@@ -49,9 +49,9 @@ export class GameOver extends Scene
             stroke: '#000000', strokeThickness: 8
         }).setOrigin(0.5)
             .on('pointerdown', () => this.scene.start('MainMenu'))
-            
+
         formatButton(mainMenuButton)
-        
+
         EventBus.emit('current-scene-ready', this);
     }
 

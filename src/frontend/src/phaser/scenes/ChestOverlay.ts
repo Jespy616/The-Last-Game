@@ -39,7 +39,7 @@ export class ChestOverlay extends Phaser.Scene {
         }).setOrigin(0.5));
 
         // Display chest weapon stats
-        const chestWeaponText = this.add.text(0, -0.20 * height, `Chest Weapon: ${this.chestWeapon.Name}`, { fontSize: '24px', color: '#ffffff' })
+        const chestWeaponText = this.add.text(0, -0.20 * height, `Chest Weapon: ${this.chestWeapon.Sprite}`, { fontSize: '24px', color: '#ffffff' })
             .setOrigin(0.5);
         overlay.add(chestWeaponText);
 
@@ -48,7 +48,7 @@ export class ChestOverlay extends Phaser.Scene {
         overlay.add(chestDamageText);
 
         // Display player weapon stats
-        const playerWeaponText = this.add.text(0, -0.05 * height, `Your Weapon: ${this.playerWeapon.Name}`, { fontSize: '24px', color: '#ffffff' })
+        const playerWeaponText = this.add.text(0, -0.05 * height, `Your Weapon: ${this.playerWeapon.Sprite}`, { fontSize: '24px', color: '#ffffff' })
             .setOrigin(0.5);
         overlay.add(playerWeaponText);
 
@@ -60,14 +60,29 @@ export class ChestOverlay extends Phaser.Scene {
             this.add.text(0, 0.10 * height, 'Swap Weapons', { fontSize: '24px', color: '#ffffff' })
                 .setOrigin(0.5)
                 .setInteractive()
-                .on('pointerdown', () => this.onPrimary()),
+                .on('pointerdown', () => this.onPrimary())
+                .on('pointerover', () => {
+                    this.currentButtonIndex = 0;
+                    this.highlightButton();
+                })
+                .on('pointerout', () => {
+                    this.currentButtonIndex = -1;
+                    this.highlightButton();
+                }),
             this.add.text(0, 0.15 * height, 'Leave Weapon', { fontSize: '24px', color: '#ffffff' })
                 .setOrigin(0.5)
                 .setInteractive()
                 .on('pointerdown', () => this.onLeave())
+                .on('pointerover', () => {
+                    this.currentButtonIndex = 1;
+                    this.highlightButton();
+                })
+                .on('pointerout', () => {
+                    this.currentButtonIndex = -1;
+                    this.highlightButton();
+                })
         ];
 
-        this.buttons.forEach(button => formatButton(button));
         overlay.add(this.buttons);
 
         // Animate the overlay to rise up into view
