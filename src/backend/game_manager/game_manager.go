@@ -242,26 +242,15 @@ func buildAndSaveFloor(floorData FloorData, level float32, difficulty float32, t
 			}
 
 			if rand.Intn(4) == 1 {
-				chestX := rand.Intn(6) + 2
-				chestY := rand.Intn(10) + 2
-
-				chest_loc := roomTiles[chestX * chestY]
-
-				if chest_loc != '.' {
-					for i, char := range roomTiles {
-						if char == '.' {
-							chestX = i / 13
-							chestY = i % 9
-						}
-					}
-				}
+				tiles := []rune(roomTiles) // len == cols*rows
+				sx, sy := pickLocation(tiles)
 
 
 				chest := model.Chest{
 					WeaponID: &weapon.ID,
 					Weapon:   &weapon,
-					PosX: chestX,
-					PosY: chestY,
+					PosX: sx,
+					PosY: sy,
 				}
 				if err := model.DB.Create(&chest).Error; err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
