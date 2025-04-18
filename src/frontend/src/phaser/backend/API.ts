@@ -265,6 +265,14 @@ export async function createGame(difficultyLevel: string, Theme: string): Promis
 
 interface SaveRoom {
     ID: number;
+    BottomID: number | null;
+    TopID: number | null;
+    LeftID: number | null;
+    RightID: number | null;
+    StairX: number | null;
+    StairY: number | null;
+    Tiles: string;
+    Type: number;
     X: number;
     Y: number;
     EnemyIDs: number[];
@@ -274,6 +282,8 @@ interface SaveRoom {
   interface SaveFloor {
     ID: number;
     Rooms: SaveRoom[];
+    Theme: string;
+    StoryText: string;
   }
 
   interface SaveGame {
@@ -290,12 +300,35 @@ interface SaveRoom {
       PlayerID: g.Player.ID,
       Floor: {
         ID: g.Floor.ID,
+        Theme: g.Floor.Theme,
+        StoryText: g.Floor.StoryText,
         Rooms: g.Floor.Rooms.map(r => ({
           ID: r.ID,
+          BottomID: r.BottomID,
+          TopID: r.TopID,
+          LeftID: r.LeftID,
+          RightID: r.RightID,
+          StairX: r.StairX,
+          StairY: r.StairY,
+          Tiles: r.Tiles,
+          Type: r.Type,
           X: r.StairX ?? 0, // Provide a default value if StairX is null
           Y: r.StairY ?? 0, // Provide a default value if StairY is null
           EnemyIDs: r.Enemies.map(e => e.ID),
           ChestID: r.Chest?.ID,
+          Chest: {
+            ID: r.Chest?.ID,
+            PosX: r.Chest?.PosX,
+            PosY: r.Chest?.PosY,
+            RoomInID: r.Chest?.RoomInID,
+            WeaponID: r.Chest?.Weapon.ID,
+            Weapon: {
+                Damage: r.Chest?.Weapon.Damage,
+                ID: r.Chest?.Weapon.ID,
+                Sprite: r.Chest?.Weapon.Sprite,
+                Type: r.Chest?.Weapon.Type,
+            }
+          }
         })),
       },
     };

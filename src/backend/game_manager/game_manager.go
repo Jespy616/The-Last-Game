@@ -874,8 +874,13 @@ func GetGameHandler(c *gin.Context) {
 
                 // 4) For each Room, load all its associations (Enemies, Chest → Weapon)
                 Preload("Rooms", func(db *gorm.DB) *gorm.DB {
-                    return db.Preload(clause.Associations)
+                    return db.Preload(clause.Associations).
+
+					Preload("Chest", func(db *gorm.DB) *gorm.DB {
+						return db.Preload(clause.Associations)
+					})
                 })
+
         }).
 
         First(&game, id).Error; err != nil {
