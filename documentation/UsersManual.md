@@ -10,7 +10,11 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
 - [Troubleshooting](#troubleshooting)
   - [The game is taking a long time to load](#the-game-is-taking-a-long-time-to-load)
   - [The game has stopped responding](#the-game-has-stopped-responding)
+  - [Stairs are unreachable](#stairs-are-unreachable)
+  - [Player starts on a wall](#player-starts-on-a-wall)
+  - [There is a pop up saying `navigator is not defined`](#there-is-a-pop-up-saying-navigator-is-not-defined)
 - [FAQs](#faqs)
+  - [Where are the Terms and Conditions?](#where-are-the-terms-and-conditions)
 - [Features and Functions](#features-and-functions)
   - [For Players](#for-players)
     - [Creating an account](#creating-an-account)
@@ -25,6 +29,7 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
     - [Saving and Exiting the Game](#saving-and-exiting-the-game)
     - [Changing Menu Theme](#changing-menu-theme)
   - [For Moderators](#for-moderators)
+    - [Enabling Developer Mode](#enabling-developer-mode)
     - [Accessing the Docker logs](#accessing-the-docker-logs)
 - [Installation Instructions](#installation-instructions)
 - [Contact Information](#contact-information)
@@ -56,7 +61,21 @@ If you are running __The Last Game__ locally, start with [Installation instructi
 - Go back to [http://localhost:3000](http://localhost:3000)
 - [Sign in](#sign-in) to your account again and either load a game or start a new game
 
+## Stairs are unreachable
+This is a known issue with a fix planned in a future update. To fix this [start a new game](#starting-a-new-game)
+
+## Player starts on a wall
+Move towards a floor tile to get unstuck. If no floor tiles are reachable within 1 space, you may need to [start a new game](#starting-a-new-game)
+
+## There is a pop up saying `navigator is not defined`
+1. First try refreshing the page
+2. If that doesn't work navigate back to [http://localhost:3000](http://localhost:3000) and [sign in](#sign-in) again
+
+
 # FAQs 
+
+## Where are the Terms and Conditions?
+- They are planned in a future update
 
 
 # Features and Functions 
@@ -169,6 +188,10 @@ Stepping on a stair tile will allow you to move to the next room. **Note** that 
 
 
 ## For Moderators
+
+### Enabling Developer Mode
+1. Navigate to the settings page
+2. Enter the Konami code 
 
 ### Accessing the Docker logs
 1. Navigate to the folder where the Last Game is in your terminal
