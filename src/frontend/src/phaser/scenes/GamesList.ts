@@ -1,5 +1,6 @@
 import { getGames } from "../backend/API";
 import type { GamePreview } from "../backend/types";
+import { formatButton } from "../ui/FormatButton";
 
 export class GamesList extends Phaser.Scene {
     constructor() {
@@ -25,7 +26,16 @@ export class GamesList extends Phaser.Scene {
             fontSize: '48px',
             color: '#fff'
         }).setOrigin(0.5);
-    
+
+        const back = this.add.text(width * .1 , height * 0.1, 'Back', {
+            fontSize: '32px',
+            color: '#fff'
+        }).setOrigin(0.5)
+            .on('pointerdown', () => {
+                this.scene.launch('Transition', { prevSceneKey: 'GamesList', nextSceneKey: 'MainMenu' });
+            });
+            
+        formatButton(back);
         // Create a container for the game buttons
         const gamesContainer = this.add.container(0, 0);
     
@@ -36,31 +46,14 @@ export class GamesList extends Phaser.Scene {
                     fontSize: '32px',
                     color: '#fff'
                 }).setOrigin(0.5)
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerover', () => gameButton.setColor('#f00'))
-                    .on('pointerout', () => gameButton.setColor('#fff'))
                     .on('pointerdown', () => {
                         this.scene.launch('Transition', { prevSceneKey: 'GamesList', nextSceneKey: 'Loader', nextSceneData: { gameID: game.ID } });
                         gameButton.setColor('#fff');
                     });
-    
+                formatButton(gameButton);
                 gamesContainer.add(gameButton);
             });
         }
-    
-        // Create a mask to restrict the visible area
-        const maskShape = this.add.graphics();
-        maskShape.fillStyle(0x000000, 1);
-        maskShape.fillRect(0, height * 0.2, width, height * 0.6); // Adjust the mask area
-        const mask = maskShape.createGeometryMask();
-        gamesContainer.setMask(mask);
-    
-        // Enable scrolling with the mouse wheel
-        this.input.on('wheel', (deltaY: number) => {
-            gamesContainer.y -= deltaY * 0.5; // Adjust scroll speed
-            // Prevent scrolling beyond the content
-            gamesContainer.y = Phaser.Math.Clamp(gamesContainer.y, -gamesContainer.height + height * 0.8, 0);
-        });
     }
 
     displayGames() {
