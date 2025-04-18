@@ -13,8 +13,9 @@ export class SettingsOverlay extends Scene {
     private overlay!: Phaser.GameObjects.Container;
     private currentButtonIndex: number = 0;
 
-    init(gameData: GameObject) {
-        this.gameData = gameData;
+    init(data: { gameData: GameObject }) {
+        this.gameData = data.gameData;
+        console.log(this.gameData)
     }
 
     preload() {
@@ -49,7 +50,7 @@ export class SettingsOverlay extends Scene {
                 .setInteractive({ useHandCursor: true })
                 .setOrigin(0.5),
             this.add.text(0, 0, 'Save Game', { fontSize: '24px', color: '#ffffff' })
-                .on('pointerdown', this.save)
+                .on('pointerdown', () => {this.save(this.gameData)})
                 .on('pointerover', () => {
                     this.currentButtonIndex = 1;
                     this.highlightButton();
@@ -61,7 +62,7 @@ export class SettingsOverlay extends Scene {
                 .setInteractive({ useHandCursor: true })
                 .setOrigin(0.5),
             this.add.text(0, 0.05 * height, 'Exit and Save', { fontSize: '24px', color: '#ffffff' })
-                .on('pointerdown', this.exitAndSave)
+                .on('pointerdown', () => {this.exitAndSave(this.gameData)})
                 .on('pointerover', () => {
                     this.currentButtonIndex = 2;
                     this.highlightButton();
@@ -105,12 +106,12 @@ export class SettingsOverlay extends Scene {
         const { width, height } = this.scale;
 
         this.tweens.add({
-            targets: this.overlay, 
-            y: height + height / 2, 
+            targets: this.overlay,
+            y: height + height / 2,
             duration: 500,
             ease: 'Power2',
             onComplete: () => {
-                this.scene.stop(); 
+                this.scene.stop();
                 this.scene.wake('Room');
             }
         });
@@ -121,19 +122,20 @@ export class SettingsOverlay extends Scene {
         EventBus.emit('change-scene', { sceneKey: 'MainMenu' });
     };
 
-    save = async () => {
+    async save(gameData: GameObject) {
         this.buttons[1].setText('Saving...');
         this.buttons[1].setColor('#ffffff');
         this.scene.pause();
-        await saveGame(this.gameData);
+        console.log(gameData)
+        await saveGame(gameData);
         this.scene.wake();
         this.buttons[1].setText('Save Game');
     };
 
-    exitAndSave = async () => {
+    async exitAndSave(gameData: GameObject) {
         this.buttons[2].setText('Saving...');
         this.scene.pause();
-        await saveGame(this.gameData);
+        await saveGame(gameData);
         this.scene.wake();
         this.scene.stop();
         EventBus.emit('change-scene', { sceneKey: 'MainMenu' });
@@ -149,18 +151,18 @@ export class SettingsOverlay extends Scene {
         const esc = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
         const tab = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.TAB);
         const enter = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-    
+
         // Escape
         if (Phaser.Input.Keyboard.JustDown(esc!)) {
             this.resume();
         }
-    
+
         // Tab
         if (Phaser.Input.Keyboard.JustDown(tab!)) {
             this.currentButtonIndex = (this.currentButtonIndex + 1) % this.buttons.length; // Cycle through buttons
             this.highlightButton();
         }
-        
+
         // Enter
         if (Phaser.Input.Keyboard.JustDown(enter!)) {
             // Activate the current setting
@@ -169,10 +171,10 @@ export class SettingsOverlay extends Scene {
                     this.resume();
                     break;
                 case 1:
-                    this.save();
+                    this.save(this.gameData);
                     break;
                 case 2:
-                    this.exitAndSave();
+                    this.exitAndSave(this.gameData);
                     break;
                 case 3:
                     this.exit();

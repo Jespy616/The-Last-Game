@@ -17,6 +17,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type UserDTO struct {
+	ID       uint   `json:"id"`
+	Username string `json:"username"`
+	GameIDs  []uint `json:"game_ids"`
+}
+
+type saveGameRequest struct {
+	Game model.Game `json:"game" binding:"required"`
+}
+
+
 type Floors struct {
 	Rooms           map[string][][]string `json:"rooms"`
 	FloorMap        [][]int               `json:"floorMap"`
@@ -110,7 +121,7 @@ func loadAPIKey() string {
 	return os.Getenv("API_KEY")
 }
 
-func runPythonAI(apiKey string, args1, enemies, weapons []string) ([]byte, error) {
+func runPythonAI(apiKey string, args1, enemies, weapons []string, theme string) ([]byte, error) {
 	args1JSON, _ := json.Marshal(args1)
 	enemiesJSON, _ := json.Marshal(enemies)
 	weaponsJSON, _ := json.Marshal(weapons)
@@ -122,7 +133,7 @@ func runPythonAI(apiKey string, args1, enemies, weapons []string) ([]byte, error
 		string(args1JSON), string(args1JSON),
 		"-e", "4", string(enemiesJSON),
 		"-w", "4", string(weaponsJSON),
-		"-s", "castle", "cave", "None",
+		"-s", theme, theme, "None",
 	)
 
 	log.Println(cmd)
@@ -330,7 +341,7 @@ func CreateFloor(c *gin.Context) {
 	enemies := []string{"goblin", "bat", "knight"}
 	weapons := []string{"sword", "spear", "bow"}
 
-	output, err := runPythonAI(apiKey, args1, enemies, weapons)
+	output, err := runPythonAI(apiKey, args1, enemies, weapons, config.Theme)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "AI agent failed", "details": err.Error()})
 		return
@@ -381,7 +392,7 @@ func CreateGame(c *gin.Context) {
 	enemies := []string{"goblin", "bat", "knight"}
 	weapons := []string{"sword", "spear", "bow"}
 
-	output, err := runPythonAI(apiKey, args1, enemies, weapons)
+	output, err := runPythonAI(apiKey, args1, enemies, weapons, config.Theme)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "AI agent failed", "details": err.Error()})
 		log.Println("The AI failed to work, check runPythonAI")
@@ -432,7 +443,7 @@ func CreateGame(c *gin.Context) {
 	startX := 6
 	startY := 4
 
-	if start_room.Tiles[24] == 'w' {
+	if start_room.Tiles[4 * 9 + 6] != '.' {
 		for i := len(start_room.Tiles) - 1; i >= 0; i-- {
 			if start_room.Tiles[i] == '.' {
 				startX = i / 13
@@ -442,8 +453,8 @@ func CreateGame(c *gin.Context) {
 	}
 
 	player := model.Player{
-		MaxHealth: 100,
-		CurrentHealth: 100,
+		MaxHealth: 45,
+		CurrentHealth: 45,
 		SpriteName: "Knight",
 		PosX: startX,
 		PosY: startY,
@@ -472,60 +483,101 @@ func CreateGame(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Game created successfully", "game": game})
 }
 
-func SaveGame(c *gin.Context) {
-	var game model.Game
+func SaveGame(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req saveGameRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":   "invalid request body",
+				"details": err.Error(),
+			})
+			return
+		}
+		game := &req.Game // convenience pointer
 
-	// Bind incoming JSON to game model
-	if err := c.ShouldBindJSON(&game); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid game payload", "details": err.Error()})
-		return
-	}
+		uidRaw, ok := c.Get("userID")
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			return
+		}
+		userID, ok := uidRaw.(uint)
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id in context"})
+			return
+		}
+		game.UserID = userID // claim / re‑claim
 
-	// Link FloorID in Game
-	if game.Floor.ID != 0 {
-		game.FloorID = game.Floor.ID
-	}
-
-	// Link PlayerID in Game
-	if game.Player.ID != 0 {
-		game.PlayerID = game.Player.ID
-	}
-
-	// Link Rooms to Floor
-	for i := range game.Floor.Rooms {
-		room := &game.Floor.Rooms[i]
-		room.FloorID = &game.Floor.ID
-
-		// Link Enemies to Room
-		for j := range room.Enemies {
-			room.Enemies[j].RoomID = room.ID
+		// Player
+		if game.Player.ID != 0 {
+			game.PlayerID = game.Player.ID
+		}
+		if game.Player.PrimaryWeapon != nil {
+			game.Player.PrimaryWeaponID = &game.Player.PrimaryWeapon.ID
+		}
+		if game.Player.SecondaryWeapon != nil {
+			game.Player.SecondaryWeaponID = &game.Player.SecondaryWeapon.ID
 		}
 
-		// Link Chest to Room (if exists)
-		if room.Chest != nil {
-			room.Chest.RoomInID = &room.ID
-			if room.Chest.Weapon != nil {
-				room.Chest.WeaponID = &room.Chest.Weapon.ID
+		// Floor
+		if game.Floor.ID != 0 {
+			game.FloorID = game.Floor.ID
+		}
+
+		// Rooms / Enemies / Chests
+		for i := range game.Floor.Rooms {
+			room := &game.Floor.Rooms[i]
+			room.FloorID = &game.Floor.ID
+
+			for j := range room.Enemies {
+				room.Enemies[j].RoomID = room.ID
+			}
+
+			if room.Chest != nil {
+				room.Chest.RoomInID = &room.ID
+				if room.Chest.Weapon != nil {
+					room.Chest.WeaponID = &room.Chest.Weapon.ID
+				}
 			}
 		}
-	}
 
-	// Link weapons to Player if they exist
-	if game.Player.PrimaryWeapon != nil {
-		game.Player.PrimaryWeaponID = &game.Player.PrimaryWeapon.ID
-	}
-	if game.Player.SecondaryWeapon != nil {
-		game.Player.SecondaryWeaponID = &game.Player.SecondaryWeapon.ID
-	}
+		var err error
+		if game.ID == 0 {
+			// brand‑new: insert everything
+			err = db.Session(&gorm.Session{FullSaveAssociations: true}).
+				Create(game).Error
+		} else {
+			// existing: make sure the user owns it, then update
+			var existing model.Game
+			if err = db.Select("user_id").First(&existing, game.ID).Error; err != nil {
+				if err == gorm.ErrRecordNotFound {
+					c.JSON(http.StatusNotFound, gin.H{"error": "game not found"})
+					return
+				}
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "db error", "details": err.Error()})
+				return
+			}
+			if existing.UserID != userID {
+				c.JSON(http.StatusForbidden, gin.H{"error": "you do not own this game"})
+				return
+			}
 
-	// --- Save the full object tree ---
-	err := model.DB.Session(&gorm.Session{FullSaveAssociations: true}).Create(&game).Error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save game", "details": err.Error()})
-		return
-	}
+			err = db.Session(&gorm.Session{FullSaveAssociations: true}).
+				Save(game).Error
+		}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Game saved successfully", "game": game})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error":   "failed to save game",
+				"details": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "game saved successfully",
+			"game":    game,
+		})
+	}
 }
 
 func GetUser(c *gin.Context) {
@@ -540,6 +592,35 @@ func GetUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func GetGames(c *gin.Context) {
+	userID := c.MustGet("userID").(uint)
+
+	// 2) Make sure the user exists
+	var user model.User
+	if err := model.DB.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	// 3) Collect all game IDs that belong to this user
+	var gameIDs []uint
+	if err := model.DB.
+		Model(&model.Game{}).
+		Where("user_id = ?", userID).
+		Pluck("id", &gameIDs).
+		Error; err != nil {
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch games"})
+		return
+	}
+
+	// 4) Respond
+	c.JSON(http.StatusOK, gin.H{
+		"user_id":  userID,
+		"game_ids": gameIDs,
+	})
 }
 
 func GetPlayer(c *gin.Context) {
@@ -766,8 +847,27 @@ func DeleteFloorHandler(c *gin.Context) {
 func GetGameHandler(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var game model.Game
-	if err := model.DB.Preload("Player").Preload("Floor").First(&game, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "game not found"})
+	if err := model.DB.
+		// Player and their weapons
+		Preload("Player").
+		Preload("Player.PrimaryWeapon").
+		Preload("Player.SecondaryWeapon").
+		// Floor → Rooms → Enemies + Chest (+ Chest.Weapon)
+		Preload("Floor").
+		Preload("Floor.Rooms", func(db *gorm.DB) *gorm.DB {
+			return db.
+				Preload("Enemies").
+				Preload("Chest").
+				Preload("Chest.Weapon")
+		}).
+		// finally load the game row itself
+		First(&game, id).Error; err != nil {
+
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "game not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "db error", "details": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusOK, game)

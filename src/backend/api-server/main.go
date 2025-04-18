@@ -21,7 +21,7 @@ func main() {
 	r.POST("/refresh", auth.RefreshToken)
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, 
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length", "Authorization"},
@@ -48,12 +48,13 @@ func main() {
 		// game stuff
 		protected.POST("/create_game", game_manager.CreateGame)
 		protected.POST("/create_floor", game_manager.CreateFloor)
-		protected.POST("/save_game", game_manager.SaveGame)
+		protected.POST("/save_game", game_manager.SaveGame(model.DB))
 		//protected.POST("/subscribe", auth.Subscribe)
 		//protected.POST("/unsubscribe", game_manager.Unsubscribe)
 
 		// get models
 		protected.GET("/get_user/:userId", game_manager.GetUser)
+		protected.GET("/get_games", game_manager.GetGames)
 		protected.GET("/get_player/:playerId", game_manager.GetPlayer)
 
 		// Enemy routes
