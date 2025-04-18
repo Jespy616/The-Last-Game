@@ -65,7 +65,7 @@ export class GamesList extends Phaser.Scene {
         const { width, height } = this.scale;
 
         this.games.forEach((game, index) => {
-            const gameButton = this.add.text(width * .2, height * .25 + (index * 50), `Game ${index}: Floor ${game.Level}`, {
+            const gameButton = this.add.text(width * .2, height * .25 + (index * 50), `Game ${index + 1}`, {
                 fontSize: '32px',
                 color: '#fff'
             }).setOrigin(0.5)
