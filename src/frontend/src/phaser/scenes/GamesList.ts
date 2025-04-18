@@ -11,11 +11,13 @@ export class GamesList extends Phaser.Scene {
 
     async init() {
         const games: GamePreview[] | null = await getGames();
-        if (!games) {
+        if (games == null) {
             console.error('Failed to fetch games');
-            this.scene.start('MainMenu');
+            this.games = []
         }
-        this.games = games;
+        else {
+            this.games = games;
+        }
         this.displayGames();
     }
 
@@ -37,23 +39,6 @@ export class GamesList extends Phaser.Scene {
             
         formatButton(back);
         // Create a container for the game buttons
-        const gamesContainer = this.add.container(0, 0);
-    
-        // Add game buttons to the container
-        if (this.games) {
-            this.games.forEach((game, index) => {
-                const gameButton = this.add.text(width * 0.2, height * 0.25 + (index * 50), `Game ${index}: Floor ${game.Level}`, {
-                    fontSize: '32px',
-                    color: '#fff'
-                }).setOrigin(0.5)
-                    .on('pointerdown', () => {
-                        this.scene.launch('Transition', { prevSceneKey: 'GamesList', nextSceneKey: 'Loader', nextSceneData: { gameID: game.ID } });
-                        gameButton.setColor('#fff');
-                    });
-                formatButton(gameButton);
-                gamesContainer.add(gameButton);
-            });
-        }
     }
 
     displayGames() {
