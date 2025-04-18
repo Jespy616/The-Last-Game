@@ -2,7 +2,6 @@
 - Player:
   - Create an account and start a new game
   - Engage in combat against procedurally generated enemies
-  - Load a saved game
 - Developer
   - Enable developer mode to get unlimited health and damage 
 
