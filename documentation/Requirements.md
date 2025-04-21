@@ -879,7 +879,9 @@ _Perplexity was used to help generate ideas for the nonfunctional requirements s
 * The game must not be operating system specific and should work on all major operating systems: Mac, Linux, and Windows.
 
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- Seperated the AI from the users so there is no direct interaction
+- encrypted passwords
+- Users are not able to recover passwords or usernames
 
 ---
 
@@ -905,7 +907,12 @@ _Perplexity was used to help generate ideas for the nonfunctional requirements s
 * The game should have a login attempt limit to protect against hackers using brute force attacks attempting to login to other users accounts and gain access to their data and personal information stored in the game.
 
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- Codebase was structured modularly
+- AI was handled by Groq, a 3rd party service
+- Does not have a way to handle transactions
+- Does not have an ad api
+- Does not have a login attempt limit
+- There are sound effects, but the user can only control them via system volume
 
 ---
 
@@ -927,7 +934,8 @@ _Perplexity was used to help generate ideas for the nonfunctional requirements s
 * The game should have accessibility features such as aria with screen readers. Due to time constraints, there most likely won't be an accessability option for text-to-speech in version 1.0.
 
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- Can be played offline - uses defaults for floor, enemy, & weapons but there is no story
+- Added music - not AI generated
 
 ---
 
@@ -947,7 +955,7 @@ _Perplexity was used to help generate ideas for the nonfunctional requirements s
 * The game won't have to work on different types of gaming consoles such as Playstation, XBox, or Nintendo.
 
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- We stuck with the Won't haves
 
 ---
 

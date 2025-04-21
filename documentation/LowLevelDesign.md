@@ -76,7 +76,7 @@ The document is intended for developers to ensure alignment in development.
 ---
 
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- Finished floor generation
 
 ---
 
@@ -121,7 +121,9 @@ The document is intended for developers to ensure alignment in development.
 ---
 
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- Added enemy & weapon generation
+- Added basic unit tests
+- Added story generation
 
 ---
 
@@ -160,11 +162,8 @@ The document is intended for developers to ensure alignment in development.
 **What we planned** *(February 17, 2025)*  
 - **Generate AI-based Stories**: Provide narrative elements between floors.
 
----
-Make with the assistance of ChatGPT.
-
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- Cleaned up code & added helpful comments
 
 ---
 
@@ -853,7 +852,8 @@ The frontend communicates with **backend APIs** to fetch/update user data.
 ![LLM UML](./assets/ai-uml.png)
 
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- Mostly stayed the same, but excluded choosing the player sprite
+- Also added enemy generation, which follows the same pattern as weapon generation
 
 ---
 
@@ -864,7 +864,8 @@ The frontend communicates with **backend APIs** to fetch/update user data.
 ![LLM flow chart](./assets/ai-flow-chart.png)
 
 **What we did** *(April 21, 2025)*  
-\ space to write updated documentation
+- removed `choosePlayerSprite`
+- added function to make an enemy
 
 ---
 
