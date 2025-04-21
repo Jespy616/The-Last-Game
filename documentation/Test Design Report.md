@@ -39,6 +39,16 @@ This document outlines a thorough testing plan for Last Game so the end result i
 6. test\_invalid\_api\_key():  
    - Checks if the correct error message is returned when giving an invalid API key
 
+**Actually tested:**
+- response structure
+- floor generation
+- enemy generation
+- weapon generation
+- story generation
+- invalid api keys
+- also added option to test specific funciontalities from the command line
+
+
 ### ---
 
 **Backend \- Go**

@@ -1,18 +1,8 @@
-# Use Cases
-- Player:
-  - Create an account and start a new game
-  - Engage in combat against procedurally generated enemies
-  - Load a saved game
-- Developer
-  - Enable developer mode to get unlimited health and damage 
-
-
 # The Last Game
 Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
 
 
 # Table of Contents
-- [Use Cases](#use-cases)
 - [The Last Game](#the-last-game)
 - [Table of Contents](#table-of-contents)
 - [Overview of the Software](#overview-of-the-software)
@@ -48,6 +38,7 @@ Welcome to __The Last Game__, an AI-driven turn-based rogue-like!
     - [Enabling Developer Mode](#enabling-developer-mode)
 - [Installation Instructions](#installation-instructions)
 - [Contact Information](#contact-information)
+- [Use Cases](#use-cases)
 
 
 # Overview of the Software 
@@ -278,3 +269,12 @@ See the [DOCKER_README](../DOCKER_README.md) for instructions on how to install 
 - Gabe Freeman
 - Kelson Gardner
 - Kevin Shaffer
+
+
+# Use Cases
+- Player:
+  - Create an account and start a new game
+  - Engage in combat against procedurally generated enemies
+  - Load a saved game
+- Developer
+  - Enable developer mode to get unlimited health and damage 

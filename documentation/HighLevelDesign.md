@@ -320,18 +320,6 @@ The backend is responsible for handling **game logic, player interactions, authe
     * Model calls a function to perform a goal (see [interactions diagram](#12-interactions-diagram) for possible functions)
     * Check for valid output
     * return results to server
-* Stripe
-  * Free
-  * Easy to implement
-  * Secure - uses AES-256 encryption, which is considered one of the most secure types
- 
-### Notifications
-* Stripe - handled by API
-* Groq
-  * Uses API to check if the `429 Too Many Requrests` status code occured
-  * Pop up to notify user they hit the rate limit
-
-
 
 ## 7. User Interface (UI) Design Overview
 
@@ -642,7 +630,7 @@ To ensure testing remains consistent across developers, NaN has decided to use D
 
 
 ## 12. Interactions Diagram
-The diagram below represents how the components will interact with each other. The user will interact with the front end web pages which will send and recieve data from the server using HTTP protocol. The server will be able to interact with [Stripe](#11-businesslegal) to handle payments, a Python script which handles the connection to [Groq](#6-integration-points-external-interfaces), and the [database](#5-data-design). 
+The diagram below represents how the components will interact with each other. The user will interact with the front end web pages which will send and recieve data from the server using HTTP protocol. a Python script which handles the connection to [Groq](#6-integration-points-external-interfaces) and the [database](#5-data-design). 
 
 ![Interaction diagram](./assets/interaction-diagram.png)
 ---
