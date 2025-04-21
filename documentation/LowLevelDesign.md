@@ -1,21 +1,44 @@
 # Low Level Design
 
+
 ## Introduction
+
+
+
 ### Purpose
+
 This document serves as a reference for developers working on Last Game, ensuring that the development team can work independently while maintaining code compatibility.
 
+
+
+
 ### Scope
+
 This document focuses on the specific implementation details.
 
+
+
+
 ### Audience
+
 The document is intended for developers to ensure alignment in development.
 
 ---
 
+
+
+
 ## Backlog Development Plan
+
+
+
 ### Sprint 1 - Core Development
 
+
+
 #### Frontend (Svelte & Phaser)
+
+**What we planned** *(February 17, 2025)*  
 - **Authentication Pages**: Login, Signup, Forgot Password.
 - **Subscription Page**: Fetch plans, process Stripe payments.
 - **Settings Page**: Manage user preferences (dark mode, username, email).
@@ -23,22 +46,46 @@ The document is intended for developers to ensure alignment in development.
 - **Global UI Components**: Navbar, buttons, form inputs.
 - **Accessibility Enhancements**: Keyboard navigation, ARIA labels.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Backend
+
+**What we planned** *(February 17, 2025)*  
 - **Authentication System**: Register, Login, Refresh Token.
 - **API Endpoints**: Game creation, saving, subscriptions.
 - **Database Models (GORM)**: User, Game, Floor, Enemies, Rooms, Weapons, Chests.
 - **Game State Manager**: CRUD operations for game state.
 - **Docker Setup**: Create Docker files for backend deployment.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### AI & Procedural Generation
+
+**What we planned** *(February 17, 2025)*  
 - **Map Generation**: Ensure rooms are connected, accessible, and have proper door placement.
 - **Validation Checks**: Test if rooms and objects (chests, doors) are correctly generated.
 
 ---
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Sprint 2 - Feature Enhancements
 
 #### Frontend
+
+**What we planned** *(February 17, 2025)*  
 - **UI/UX Improvements**: Better form validation, improved error handling.
 - **Authentication Features**: Forgot password & change password flow.
 - **Phaser Game Improvements**:
@@ -46,37 +93,95 @@ The document is intended for developers to ensure alignment in development.
   - Add **combat system** (attack, health tracking).
   - Optimize **Svelte-Phaser integration** for UI overlays.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Backend
+
+**What we planned** *(February 17, 2025)*  
 - **Subscription Handling**: Implement full Stripe integration.
 - **Security Enhancements**: Middleware for authentication, encryption, caching.
 - **AI Integration**: Replace placeholder floors/rooms with AI-generated content.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### AI & Procedural Generation
+
+**What we planned** *(February 17, 2025)*  
 - **Generate Enemies, Weapons, and Chests**: Ensure logical placement and balancing.
 - **Add AI-based Tests**: Validate generated elements for format correctness.
 
 ---
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Sprint 3 - Final Testing & Deployment
 
+
+
 #### Frontend
+
+**What we planned** *(February 17, 2025)*  
 - **Final Testing**: Unit & End-to-End testing using Svelte Testing Library & Cypress.
 - **Performance & Accessibility**: Optimize Lighthouse scores.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Backend
+
+**What we planned** *(February 17, 2025)*  
 - **Game State Optimization**: Reduce unnecessary save operations.
 - **Final Testing & Debugging**: Deployment preparation.
 - **Leaderboard & High Scores**: Implement scoring system API.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### AI & Story Generation
+
+**What we planned** *(February 17, 2025)*  
 - **Generate AI-based Stories**: Provide narrative elements between floors.
 
 ---
 Make with the assistance of ChatGPT.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
 
 ### Sprint Task Breakdown (Tasks to acheive Goals)
+
+**What we planned** *(February 17, 2025)*  
+
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Sprint 1
+
 - **Front end:**
   - **Svelte**
     - **Login Page (`Login.svelte`)**
@@ -186,7 +291,12 @@ Make with the assistance of ChatGPT.
       - [x] If generation fails, use a default room
 
 
+
+---
+
+
 #### Sprint 2
+ 
 - **Front end:**
   - **Svelte**
     - **UI/UX Improvements**
@@ -248,7 +358,12 @@ Make with the assistance of ChatGPT.
     - [x] Add story generation for in between floors
 
 
+
+---
+
+
 #### Sprint 3
+
 - **Front end:**
   - **Svelte**
     - **Final Testing & Debugging**
@@ -275,12 +390,22 @@ Make with the assistance of ChatGPT.
     - [ ] Implement endpoints for high score and leader board
 
 
+
+
 ---
+
+
 ## System Architecture
+
+
 ### Subsystems and UML Class Diagrams
+
+
+
 
 #### **Scene Structure & UML Layout - Phaser**
 
+**What we planned** *(February 17, 2025)*  
 The game consists of the following **scenes**:
 
 1. **MainMenuScene** - Displays title screen, allows navigation to settings or new game.
@@ -293,16 +418,40 @@ The game consists of the following **scenes**:
 8. **ChestOpeningScene** - Displays chest contents after opening; triggers save.
 9. **SettingsScene** - Allows the player to manually save, adjust settings, or return to the main menu.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ##### **Scene Interactions**
+
+**What we planned** *(February 17, 2025)*  
 - `MainMenuScene` → `ThemeSelectionScene` → `DifficultySelectionScene` → `StoryScene` → `GameScene`
 - `GameScene` → (`LoseLifeScene` or `ChestOpeningScene`) → `GameScene`
 - `GameScene` → `GameOverScene` → `MainMenuScene`
 - `SettingsScene` is accessible from `GameScene` at any time.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### **Class Design & Inheritance - Phaser**
+
+**What we planned** *(February 17, 2025)*  
 Phaser will be passed all of this information from the backend when calling the `create-game` endpoint. It will create copies of all of these classes to update as the User interacts with the game. The following are the names and descriptions of all the classes that Phaser will use:
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ##### **Rooms**
+
+**What we planned** *(February 17, 2025)*  
 ```plaintext
 Room (abstract)
 │-- NormalRoom
@@ -316,7 +465,15 @@ Room (abstract)
   - `boolean isCleared()`
   - `updateEnemies(EnemyObject[])`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ##### **Interactable Objects**
+
+**What we planned** *(February 17, 2025)*  
 ```plaintext
 Interactable (abstract)
 │-- Chest
@@ -325,7 +482,15 @@ Interactable (abstract)
 - `Interactable`
   - `boolean interact(Player)`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ##### **Other Classes**
+
+**What we planned** *(February 17, 2025)*  
 - `Floor`
   - `String theme` The theme of the dungeon.
   - `number level`
@@ -344,10 +509,18 @@ Interactable (abstract)
   - `number damage`
   - `number type` 0: Melee, 1: Ranged, 2: Sweep, 3: AoE
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### **Backend Interactions - Phaser**
+
 
 ##### **API Endpoints**
 
+**What we planned** *(February 17, 2025)*  
 | Endpoint | Request | Response | Purpose |
 |----------|---------|----------|---------|
 | `GetFloor(number difficultyLevel, String theme)` | `difficultyLevel, theme` | `FloorObject` | Retrieves floor layout, rooms, enemies. |
@@ -355,33 +528,81 @@ Interactable (abstract)
 | `GetText()` | None | `String` | Returns AI-generated story text. |
 | `SetHighScore(number level)` | `level` | `200 OK` | Updates leaderboard on game over. |
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### **Utility Functions - Phaser**
 
+
+
 ##### **1. Room & Floor Management**
+
+**What we planned** *(February 17, 2025)*  
 - `loadRoom(Room room)`: Loads a room when entered.
 - `generateFloor(FloorObject floor)`: Initializes floor data from backend response.
 - `generateRoom(RoomObject room)`: Places tiles, enemies, and objects.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ##### **2. Collision & Movement**
+
+**What we planned** *(February 17, 2025)*  
 - `checkCollision(Player, direction)`: Ensures movement is valid.
 - `enemyPathfind(Enemy, Player)`: Moves enemies toward the player.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ##### **3. Save & Compare Changes**
+
+**What we planned** *(February 17, 2025)*  
 - `compareFloorState(Floor oldFloor, Floor newFloor)`: Determines what changed before saving. This optimizes Save() by only sending to the backend what changed.
 - `openChest(Chest chest)`: Calls `Save()` when a chest is opened. Prompts the user to take or leave the item.
 - `progressToNextFloor()`: Calls `GetFloor()` for the next level.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### **Phaser-Svelte Interaction**
 
+**What we planned** *(February 17, 2025)*  
 - **Svelte UI overlays Phaser**, pausing the game when active.
 - Phaser listens for an event to **resume** gameplay when UI is closed.
 - Svelte handles **login, leaderboards, accessibility settings, and subscription services**; Phaser handles **all other UI**.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Front-End Objects - Svelte
 
+**What we planned** *(February 17, 2025)*  
 The frontend follows a **Component-Based Architecture** using **Svelte** with modular, reusable components.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### **Frontend Subsystems & Component Breakdown - Svelte**
+
+**What we planned** *(February 17, 2025)*  
 Each subsystem is implemented using **Svelte components**.
 
 | **Component**       | **Purpose** |
@@ -398,7 +619,15 @@ Each subsystem is implemented using **Svelte components**.
 | `ToastNotification.svelte` | Shows success/error messages |
 | `LoadingSpinner.svelte` | Displays a loading animation while waiting for API responses |
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### **State Management**
+
+**What we planned** *(February 17, 2025)*  
 We use **Svelte Stores** to efficiently manage UI state.
 
 | **Store Name**  | **Purpose** |
@@ -406,7 +635,15 @@ We use **Svelte Stores** to efficiently manage UI state.
 | `authStore.js` | Stores authentication state (user session, token) |
 | `uiStore.js` | Stores UI preferences (dark mode, accessibility settings) |
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### **Key User Interactions**
+
+**What we planned** *(February 17, 2025)*  
 1. **User visits the Login Page (`Login.svelte`)**
    - Enters credentials → API Request → Redirect to Dashboard.
    - If incorrect credentials → Display **error message**.
@@ -435,20 +672,43 @@ We use **Svelte Stores** to efficiently manage UI state.
 - **Elements:** Change Username, Update Preferences.
 - **Interactions:** Saves settings in **local storage & database**.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Accessibility
 
+**What we planned** *(February 17, 2025)*  
 We ensure **UI accessibility compliance** with **WCAG standards**.
 
 **Keyboard Navigation** – `Tab` key support for form fields
 **Color Contrast Compliance** – Ensuring readability for visually impaired users
 **Screen Reader Support** – Adding `aria-label` attributes to key elements
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Flow and Design for Pages
+
+**What we planned** *(February 17, 2025)*  
 The Phaser application containing all game-related UI will be embeded within a Svelte page. Each component will work independently in a sort-of baton pass system to display all the necessary pages. The following UML diagram displays this interaction and outlines all frontend pages and scenes.
 
 ![Front-End UML](./assets/Frontend%20UML.png)
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ## **Database Interaction (API Endpoints)**
+
+**What we planned** *(February 17, 2025)*  
 The frontend communicates with **backend APIs** to fetch/update user data.
 
 | **API Endpoint**       | **Purpose** |
@@ -460,73 +720,195 @@ The frontend communicates with **backend APIs** to fetch/update user data.
 | `GET /api/settings` | Fetches user preferences |
 | `POST /api/settings` | Updates user preferences |
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ## Database Tables
+
+
 ### Users Table
+
+**What we planned** *(February 17, 2025)*  
 * **Table purpose:** Stores account details for each user. Our subscription level will be an integer telling which type of payment plan they are on and the stripeId being the identifier for stripe since that is all we need for them to be abler to run and process payemnts for our user on the backend.
 * **Columns:** `userId:(primary key) int | username: string | email:(encrytped) string | password:(hashed) string | subscriptionLevel: int | stripeId: int`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Players Table
+
+**What we planned** *(February 17, 2025)*  
 * **Table purpose:** Represents a character controlled by a user. The player will be how the User is able to interact with and traverse through the game. The player will have a specific sprite id which will tell the front end which specific sprites to give the player based on different assumptions the AI has made about the type of game the user would like to play.
 * **Columns:** `playerId:(primary key) int | userId:(foreign key) int | health: int | primaryWeapon:(foreign key) Weapon | secondaryWeapon:(foreign key) Weapon | spriteId: int`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Games Table
+
+**What we planned** *(February 17, 2025)*  
 * **Table purpose:** Stores details about the game session. The game object will be the main object in the game that gets saved when the user wants to save the game state. The game objectw will be updated in the database either after a major level is finished or if the user presses the **"Save Game"** option in the menu.
 * **Columns:** `gameId:(primary key) int | level: int | floorId:(foreign key) Floor Object | playerSpecifications: string | playerId:(foreign key) Player Object | storyText: string`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Floors Table
+
+**What we planned** *(February 17, 2025)*  
 * **Table purpose:** Stores information about different game maps. The floor will store all the needed rooms necessary for the floor object. This will be stored in a two dimensional array. Some of the pieces of the array will contain room objects and some will be null. The floor will only be made up of the valid room objects. The playerIn attribute will be the identifier of the last room the player was in before the game object gets saved. This will allow the player to respawn back into the last room they were in when they try to load up their game again.
 * **Columns:** `floorId:(primary key) int | rooms: 2d array of Room objects | playerIn: Room Object`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Enemies Table
+
+**What we planned** *(February 17, 2025)*  
 * **Table purpose:** Stores information about in-game enemies. The enemies will be generated and placed into specific rooms.
 * **Columns:** `enemyId:(primary key) int | attackLevel: int | attackFrequency: int | health: int | spriteId: int`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Rooms Table
+
+**What we planned** *(February 17, 2025)*  
 * **Table purpose:** Stores a room's details. A room is considered **cleared** when all of the enemies in the room have been defeated. This will be an indicator if the room needs to be updated in the database or not when the user saves the Game state object.
 * **Columns:** `roomId:(primary key) int | enemies: List of Enemy objects | chest: Chest Object | adjacentFloors: A list of adjacent Floor Objects | cleared: boolean`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Weapon Table
+
+**What we planned** *(February 17, 2025)*  
 * **Table purpose:** Stores weapon details.
 * **Columns:** `weaponId:(primary key) | health: int | attackDamage: int`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Chest Table
+
+**What we planned** *(February 17, 2025)*  
 * **Table purpose:** Represents a one-to-many relationship between rooms and chests.
 * **Columns:** `chestId:(primary key) int | roomId:(foreign key) Room Object | weaponId:(foreign key) Weapon Object`
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Backend UML
 
-
+**What we planned** *(February 17, 2025)*  
 ![UML](./assets/UML-backend.png)
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Game State Manager
+
+**What we planned** *(February 17, 2025)*  
 ![Db Flow Chart](./assets/DBFlow.png)
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### LLM functions
+
+**What we planned** *(February 17, 2025)*  
 ![LLM UML](./assets/ai-uml.png)
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### LLM Flow Chart
+
+**What we planned** *(February 17, 2025)*  
 ![LLM flow chart](./assets/ai-flow-chart.png)
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
 
 
 ### System Performance
+
+**What we planned** *(February 17, 2025)*  
 In order to address the latency that LLMs introduce, we are using Groq to handle the computations needed to handle the LLMs. Groq offers access to LLMs on a generous limit for free users. Each user will be responsible for creating a Groq account and getting an API key. This will allow the game to be able to scale with the number of users so long as Groq's servers can handle the number of users.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Security Risks
+
 Last Game is structured in such a way as to block as many potential security risks as possible from the get-go. Last Game will only collect information that is absolutely necessary for a functioning game with accounts, including username, password, and email. Collecting little information will lessen risks of sensitive data leaks due to bad actors, This will also ensure Last Game complies with privacy Laws such as GDPR. Security for other portions of the project are handleded by the external services, such as Stripe or the Groq AI, that Last Game will make API calls to. For more information on how the security of these services will work with Last Game, see the following sections:
 
 [Stripe](#stripe) | [Groq](#groq) | [Postgres](#postgres)
 
 For other security concerns mentioned in the High-Level Design Document, NaN's approach is to divide them between the following sections:
 
+---
+
+
 ### Authentication
 
+**What we planned** *(February 17, 2025)*  
 ![AuthUML](./assets/auth.png)
 
 Last Game will use JWT tokens for authenticating players. This approach will validate users that have logged in and will engage both the back end and front end to ensure user's game sessions are unique to them. When users create an account or log in, a token will be created and sent to the front end. The front end will then send the token through the Authorization header to the backend, which will validate that the user is authorized to retrieve relevant information. This approach will help with validating if users are subscribed or not in regards to Stripe and will keep each user's game experience consistent throughout their sessions and after playing and saving the game.
 
 Implementation of JWT authentication will be done using the robust Go module jwt-go found at https://github.com/golang-jwt/jwt. This module offers multiple methods that will be helpful:
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Key  Methods
+
+**What we planned** *(February 17, 2025)*  
 | Method | Purpose |
 |---------------|---------|
 | `jwt.NewWithClaims(jwt.SigningMethodHS256, claims)` | Creates a new JWT token with claims. |
@@ -535,7 +917,15 @@ Implementation of JWT authentication will be done using the robust Go module jwt
 | `jwt.ParseWithClaims(tokenString, claims, keyFunc)` | Parses a token and extracts claims. |
 | `jwt.NewNumericDate(time.Now().Add(time.Hour * 24))` | Sets an expiration time for a token. |
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Common JWT Claim Fields
+
+**What we planned** *(February 17, 2025)*  
 | Claim | Description |
 |-------|-------------|
 | `sub` | Subject (user ID). |
@@ -545,7 +935,15 @@ Implementation of JWT authentication will be done using the robust Go module jwt
 
 Encryption of user passwords will be done using Go's cryptography package and will use specifically bycrypt, found at golang.org/x/crypto/bcrypt. Bycrypt automatically adds salt to encrypted strings and has provisions for cost factors. The following are related methods offered that will be used:
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Methods for Hashing & Verifying Sensitive Data
+
+**What we planned** *(February 17, 2025)*  
 | **Method** | **Purpose** |
 |------------|------------|
 | `bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)` | Hashes a password securely. |
@@ -563,8 +961,15 @@ For authentication specifically, these methods will be used in the following:
 * Refresh_token()
   - Creates a refresh token that will be sent with the access token so that new access tokens can be created without logging out the user.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Middleware
 
+**What we planned** *(February 17, 2025)*  
 ![MiddlewareUML](./assets/middleware.png)
 
 Following initial encryption and token creation in authentication, any time the user does something that needs authenticating from the front end, endpoints called will be wrapped in middleware. One of these middlewares will be isAuthenticated(), which will be used in the following process:
@@ -587,32 +992,93 @@ The middleware checks the JWT token by:
 This will ensure that the requested data is sent to the correct users.
 
 ---
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ## Programming Languages and Frameworks
+
+
 ### Front End
+
+
 #### Frameworks
+
+**What we planned** *(February 17, 2025)*  
 - Svelte
 - Phaser.js
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Languages
+
+**What we planned** *(February 17, 2025)*  
 - TypeScript
 - HTML
 - CSS
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### Back End
+
+
+
 #### Frameworks
+
+**What we planned** *(February 17, 2025)*  
 - Gin
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Modules Used
+
+**What we planned** *(February 17, 2025)*  
 - Redis for caching
 - Bcypt for password encyption
 - ChaCha20poly1305 for data encyption
 - GORM for ORM
 - LangChain for AI Agent
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### Languages
+
+**What we planned** *(February 17, 2025)*  
 - Golang
 - Python
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 ### APIs and External Interfaces
 
+
+
 #### **Stripe:**
+
+**What we planned** *(February 17, 2025)*  
 Stripe will be used to process payment information for subscriptions to Last Game. Code related to executing Stripe functions  will reside in the Authentication file. Payment information will be input through the front end subscription page, and related information will be sent to the back end and processed in the Authentication file.
 * Create Developer Account with Stripe
 * Secure API key and store in environment variables to keep key secure
@@ -631,13 +1097,29 @@ Stripe will be used to process payment information for subscriptions to Last Gam
 
 This approach  should increase security by removing the need to store payment information in the database. The database will only interact with customer and subscription IDs, meaning the database will never see sensitive payment information. That information and security will be offloaded to Stripe, which is well known and trusted in the community.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### **Groq**
+
+**What we planned** *(February 17, 2025)*  
 Groq will be used to handle the hardware requirements that LLMs have, as explained in [System Performance](#system-performance). Users will be in charge of creating a Groq account from the [Groq dashboard](https://console.groq.com/login) and getting an API key. Users can manage their API key in the .env file if they need to delete or change the API key.
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
 
 
 ## Deployment Plan
 
+
 ### Docker
+
+**What we planned** *(February 17, 2025)*  
 Docker allows the team to avoid "it works on my machine" issues, removes the need for each team member to download every software on the front end and back end to test the game, and makes deployment simple long term. Every team member will be able to fully focus on their respective components or assignments, allowing for a smoother development and testing process. As such, setting up docker for the game is a high priority task and involves the following steps:
 
 1. Make docker account and download docker
@@ -654,8 +1136,15 @@ Docker allows the team to avoid "it works on my machine" issues, removes the nee
 | **PostgreSQL** | Runs in Docker, backend connects via `DATABASE_URL` | `gorm.Open(postgres.Open(dsn))` |
 6. Use docker compose to start and stage the project
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
 
 #### 1. **Development Environment Setup**
+
+**What we planned** *(February 17, 2025)*  
 * **Version Control**: We will be utilizing Git and Gitlab to keep track of our work.
 * Technology Stack:
 	* **FrontEnd**: Svelte, TypeScript, Vite, Phaser.js
@@ -664,14 +1153,40 @@ Docker allows the team to avoid "it works on my machine" issues, removes the nee
 * Local Environments:
 	* Docker Containers will be utilized to keep all of our local environments acting with the same underlying operating system and technologies.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### 2. **Development Pipeline**:
+
+**What we planned** *(February 17, 2025)*  
 * We will be utilizing GitLab CI/CD to ensure that any new changes or additions to the code must pass all required unit tests before being merged into the master branch.
 * Other conditions such as build time and network latency must be passed as well before being merged.
 * All pull request must be approved by at least the team lead at the time and whoever works within a similar development realm as the submitter.
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### 3. **User Acceptance Testing**
+
+**What we planned** *(February 17, 2025)*  
 * Ensure the UI, UX, and MVP is suitable for the key stakeholders in the project.
 * Check ups with the customer after major changes or updates have been pushed to ensure that we are all still aligned with our goals and values.
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
+---
+
+
 #### 4. **Production Environment/Deployment**
+
+**What we planned** *(February 17, 2025)*  
 * Front End:
 	* Will be hosted on Amazon CloudFront in a region closest to the major customers are to ensure quick access to edge locations where cached information will be stored.
 	* Will utilize Route53 for our domain name system service.
@@ -690,7 +1205,8 @@ Docker allows the team to avoid "it works on my machine" issues, removes the nee
 	* Amazon CodePipeline will allow for a seemless transition between our local code and our production, cloud hosted code. Any changes or fixes we need to do will be automatically updated through CodePipeline by updating whenever we make pushes/merges to our master branch.
 	* Frequent updates including bug tickets, network updates/improvements, and needed UX changes will be sent to the backlog so there will always be continual improvement upon the gameplay for the users.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
 
-
-
+---
 
