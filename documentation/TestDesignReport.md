@@ -39,7 +39,7 @@ This document outlines a thorough testing plan for Last Game so the end result i
 6. test\_invalid\_api\_key():  
    - Checks if the correct error message is returned when giving an invalid API key
 
-**Actually tested:**
+**What we did** *(April 21, 2025)*  
 - response structure
 - floor generation
 - enemy generation
@@ -86,6 +86,8 @@ This document outlines a thorough testing plan for Last Game so the end result i
 - Fails if the token is invalid or if the claims are invalid  
 - Fails if the expiration date in the token has passed
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
    
 **Integration Tests**
 
@@ -105,6 +107,9 @@ This document outlines a thorough testing plan for Last Game so the end result i
 - A POST request with incorrect data(non-unique data, injection attacks) will fail  
 4. authenticateMiddleware():  
 - Extracts provided access token associated with a user, checks if it is expired, and allows access to the user if it is not expired
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
 
 ### ---
 
@@ -139,11 +144,17 @@ This document outlines a thorough testing plan for Last Game so the end result i
 6. SaveGame():  
 - A test will be utilized for ensuring our SaveGame endpoint function will properly update the data with correct values from the frontend. This test could potentially be broken up into smaller tests since the SaveGame function will be calling Update on all the different tables within the database that have been changed in the frontend.
 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
 ### ---
 
 **Backend \- Docker**
 
 Because testing Docker amounts to running the docker containers to see if they work, we will ensure that Docker will work during system testing by running the docker-compose.yml file. If all the containers pass their tests and run, then Docker is working correctly. A Docker\_README.md file will be provided to give step-by-step instructions for running Docker in the project.   
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
 
 ### ---
 
@@ -169,6 +180,9 @@ The goals of these tests are to provide confidence in the form validation logic 
 - testPasswordResetFlow: Tests forgot password page and API call for password reset  
 - testSettingsUpdateFlow: Validates that changes are saved and UI feedback is shown  
 - testProtectedRouteRedirect: Checks that unauthenticated users are redirected away from protected pages
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
 
 ### ---
 
@@ -211,28 +225,13 @@ Since Phaser relies heavily on timing and produces mostly visual results, manual
 - saveGame: sends the current state of the game object to the backend  
 - loadGame: loads the state of a previously-saved game from the backend
 
-### 
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
+
 
 ### ---
 
 **System Tests**
-
-Our system tests should replicate the user experience, covering all basic functions that a user might perform.
-
-\[Our system tests will use the following format\]
-
----
-
-**Task**  
-\[Provide a 1-sentence overview. Then, describe any context/prerequisites\]
-
-1. \[Step description\]  
-2. \[Step description\]  
-3. …  
-4. **Expected Output:** \[Output description\]
-
-\[Screenshot\]  
----
 
 The following will be our system tests to replicate E2E user journeys:
 
@@ -252,3 +251,6 @@ The following will be our system tests to replicate E2E user journeys:
    2. Ensure that the User is sent to the main menu page.  
 6. **Load Game**  
    1. Ensure that the exact state of the game that was previously saved to the database is loaded for the user to continue playing.
+
+**What we did** *(April 21, 2025)*  
+\ space to write updated documentation
